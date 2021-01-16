@@ -91,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                                             persona.setCorreo(task.getResult().getUser().getEmail());
                                             persona.setNombre(task.getResult().getUser().getDisplayName());
                                             myRef2.setValue(persona);
+                                            //
                                         }
                                     }
                                     @Override
