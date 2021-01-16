@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".model.QRGenerator"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textViewNombreAct"
+            android:layout_width="225dp"
+            android:layout_height="match_parent"
+            android:text="Nombre :"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/textViewNombreActividad"
+            android:layout_width="201dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/imageView_qr"
+        android:layout_width="match_parent"
+        android:layout_height="545dp"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="27dp"
+        tools:layout_editor_absoluteY="180dp"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:text="Descargar Imagen QR" />
+
+</LinearLayout>

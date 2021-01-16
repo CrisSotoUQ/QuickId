@@ -1,0 +1,44 @@
+{
+  "project_info": {
+    "project_number": "325202218608",
+    "firebase_url": "https://quickid-b2a74.firebaseio.com",
+    "project_id": "quickid-b2a74",
+    "storage_bucket": "quickid-b2a74.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:325202218608:android:3cd15787c59c67feffeeb5",
+        "android_client_info": {
+          "package_name": "com.grade.quickid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "325202218608-6e4ih7tljsi8p9g6mcu5205032mtfdla.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grade.quickid",
+            "certificate_hash": "c910f872a151663ece4963757d0826f0b3eb488e"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmCdBGk1BjofC0_XXVPnIPzcnB3UCYuxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "325202218608-of01uq1o2l6et8liuvu87cf79jivna33.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">QuickId</string>
+    <string name="edit_done">Edit Done</string>
+    <string name="save">save</string>
+    <string name="prefs_file">com.grade.quickid.PREFERENCE_FILE_KEY</string>
+    <string name="title_activity_tabbed__actividades">TabbedActivity_Actividades</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="title_activity_tabbed">TabbedActivity</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
