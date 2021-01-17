@@ -82,7 +82,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         Actividad actividad = (Actividad) retornoObjetoActividad();
                         // envio en el intent
                         Intent act = new Intent(CrearEventoActivity.this, ConfirmarEvento.class);
-                        act.putExtra("Actividad", (Parcelable) actividad);
+                        act.putExtra("Actividad", actividad);
                         startActivity(act);
                     }
                 }else{
@@ -145,15 +145,13 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(CrearEventoActivity.this,
                         Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(CrearEventoActivity.this,"Permiso Aceptado",Toast.LENGTH_SHORT).show();
                     Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(camera,CAMERA_INTENT);
-                    dialog.dismiss();
                     startActivity(camera);
-                }else{
+                    dialog.dismiss();
+                }else {
                     requestCameraPermission();
                 }
-
             }
         });
 

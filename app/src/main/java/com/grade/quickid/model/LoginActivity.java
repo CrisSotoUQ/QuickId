@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if(dataSnapshot.exists()){
-                                            ShowMain(task.getResult().getUser().getEmail(),"Normal",null);
+                                            ShowMain(task.getResult().getUser().getEmail(),"Normal",null,task.getResult().getUser().getDisplayName());
                                         }else{
                                             Persona persona= new Persona();
                                             persona.setId(user.getUid());
@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                                             persona.setNombre(task.getResult().getUser().getDisplayName());
                                             myRef2.setValue(persona);
                                             //m,
-                                            d
+
                                         }                       }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                ShowMain(task.getResult().getUser().getEmail(), "Invitado",null);
+                                ShowMain(task.getResult().getUser().getEmail(), "Invitado",null,task.getResult().getUser().getDisplayName());
                             } else {
                                 ShowAlert();
                             }
@@ -144,13 +144,15 @@ public class LoginActivity extends AppCompatActivity {
         String email;
         String tipo;
         String imagen;
+        String nombre;
         SharedPreferences prefs= (SharedPreferences) getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
         email = prefs.getString("email", null);
         tipo = prefs.getString("tipo", null);
         imagen= prefs.getString("imagen",null);
-        if (email!= null && tipo!= null && imagen !=null){
+        nombre = prefs.getString("nombre", null);
+        if (email!= null && tipo!= null && imagen !=null && nombre != null){
             this.setVisible(false);
-            ShowMain(email,tipo,imagen);
+            ShowMain(email,tipo,imagen,nombre);
         }
 
     }
@@ -166,11 +168,12 @@ public class LoginActivity extends AppCompatActivity {
         setTitle("Login");
 
     }
-    private void ShowMain(String email, String invitado, String imagen){
+    private void ShowMain(String email, String invitado, String imagen, String nombre){
         Intent intent = new Intent(LoginActivity.this, ActividadActivity.class);
         intent.putExtra("email",email);
         intent.putExtra("tipo",invitado);
         intent.putExtra("imagen",imagen);
+        intent.putExtra("nombre",nombre);
         startActivity(intent);
         finish();
     }
@@ -196,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
                                                 if(dataSnapshot.exists()){
-                                                    ShowMain(account.getEmail(),"Normal",account.getPhotoUrl().toString());
+                                                    ShowMain(account.getEmail(),"Normal",account.getPhotoUrl().toString(),account.getDisplayName());
                                                 }else{
                                                     Persona persona= new Persona();
                                                     persona.setId(user.getUid());
