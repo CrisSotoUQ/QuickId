@@ -91,9 +91,9 @@ public class LoginActivity extends AppCompatActivity {
                                             persona.setCorreo(task.getResult().getUser().getEmail());
                                             persona.setNombre(task.getResult().getUser().getDisplayName());
                                             myRef2.setValue(persona);
-                                            //
-                                        }
-                                    }
+                                            //m,
+                                            
+                                        }                       }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
                                         System.out.println("Fallo la lectura: " + databaseError.getCode());
