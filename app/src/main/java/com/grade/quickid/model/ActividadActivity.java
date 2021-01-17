@@ -152,8 +152,8 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
                         Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED){
                     Toast.makeText(ActividadActivity.this,"Permiso Aceptado",Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ActividadActivity.this, QRScanner.class);
-
                     startActivity(intent);
+                    break;
                 }else{
                     requestCameraPermission();
                 }
@@ -161,6 +161,7 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
             } case R.id.menuEventos:{
                 Intent intent = new Intent(ActividadActivity.this, CrearEventoActivity.class);
                 startActivity(intent);
+                break;
             }
         }
         //close navigation drawer
@@ -189,4 +190,5 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
         }
 
     }
+
 }

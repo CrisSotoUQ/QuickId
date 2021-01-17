@@ -147,7 +147,6 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED){
                     Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(camera,CAMERA_INTENT);
-                    startActivity(camera);
                     dialog.dismiss();
                 }else {
                     requestCameraPermission();
@@ -188,15 +187,12 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
              mImageUri = data.getData();
              imageview_photo.setVisibility(View.VISIBLE);
              imageview_photo.setImageURI(mImageUri);
-
-
         }
         if (requestCode == CAMERA_INTENT && resultCode == RESULT_OK ) {
             image = (Bitmap) data.getExtras().get("data");
             imageview_photo.setVisibility(View.VISIBLE);
             imageview_photo.setImageBitmap(image);
             mImageUri = getImageUri(this, image);
-
     }}
 
     private void validacion() {
@@ -251,6 +247,12 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
             ActivityCompat.requestPermissions(this,new String[]{ Manifest.permission.CAMERA},CAMERA_PERMISSION_CODE);
         }
 
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //codigo adicional
+        this.finish();
     }
 
 }

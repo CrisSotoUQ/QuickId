@@ -133,4 +133,10 @@ public class QRScanner extends AppCompatActivity {
         // firebaseDatabase.setPersistenceEnabled(true);
         DatabaseReference databaseReference = firebaseDatabase.getReference();
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //codigo adicional
+        this.finish();
+    }
 }
