@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                                             persona.setNombre(task.getResult().getUser().getDisplayName());
                                             myRef2.setValue(persona);
                                             //m,
-                                            dad
+                                            d
                                         }                       }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
