@@ -160,6 +160,7 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
 
             } case R.id.menuEventos:{
                 Intent intent = new Intent(ActividadActivity.this, CrearEventoActivity.class);
+                intent.putExtra("Update",0);
                 startActivity(intent);
                 break;
             }

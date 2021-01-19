@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,6 +29,7 @@ import java.io.Serializable;
 
 public class ConfirmarEvento extends AppCompatActivity implements Serializable {
     private Button btn_CrearEvento;
+    TextView titulo;
     DatabaseReference databaseReference;
     DatabaseReference myRef;
     Uri mImageUri;
@@ -35,20 +37,27 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
     private StorageReference mStorageRef;
     FirebaseDatabase firebaseDatabase;
     Actividad receive;
+    private int update;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmar_evento);
-
+        titulo = (TextView) findViewById(R.id.txt_tituloConfirmarEvento);
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         mProgress = new ProgressDialog(this);
         btn_CrearEvento = (Button) findViewById(R.id.btn_crearEvento);
         inicializarFirebase();
         receive = (Actividad) getIntent().getSerializableExtra("Actividad");
         mImageUri = Uri.parse(receive.getUrlImagen());
+        update = getIntent().getIntExtra("Update",0);
+        if (update !=0){
+            titulo.setText("Actualizacion evento terminada!");
+            btn_CrearEvento.setText("Actualizar");
+        }
         btn_CrearEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
 
                 if (mImageUri != null) {
                     mProgress.setMessage("Creando Evento");
@@ -60,6 +69,15 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                             fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
+                                    if(update !=0){
+                                        actualizarEvento(uri.toString());
+                                        mProgress.dismiss();
+                                        Toast.makeText(ConfirmarEvento.this, "Evento Creado Satisfactoriamente", Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent(getApplicationContext(),ActividadActivity.class);
+                                        // Closing all the Activities, clear the back stack.
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                    }else{
                                     crearEvento(uri.toString());
                                     mProgress.dismiss();
                                     Toast.makeText(ConfirmarEvento.this, "Evento Creado Satisfactoriamente", Toast.LENGTH_LONG).show();
@@ -67,7 +85,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                                     // Closing all the Activities, clear the back stack.
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
-                                }
+                                }}
                             });
 
                         }
@@ -89,6 +107,13 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
             }
         });
 
+    }
+
+    private void actualizarEvento(String Uri) {
+        myRef = databaseReference.child("Actividad");
+        receive.setUrlImagen(Uri);
+        myRef.child(receive.getIdActividad()).setValue(receive);
+        finish();
     }
 
     private void inicializarFirebase() {

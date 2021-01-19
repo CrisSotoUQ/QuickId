@@ -8,9 +8,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -39,6 +37,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double latitude;
     private double longitude;
     private Button btn_siguiente;
+    private int update;
+    int flaglocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,22 +50,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         //inicializar locacion
         client = LocationServices.getFusedLocationProviderClient(this);
-        // permisos
-        getCurrentLocation();
+        // permisos|
+        getCurrentLocation(1);
         btn_siguiente = (Button) findViewById(R.id.btn_siguiente_maps);
 
         receiveActividad = (Actividad) getIntent().getSerializableExtra("Actividad");
+        update = getIntent().getIntExtra("Update",0);
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
         if (latitude== 0.0 && longitude == 0.0 ){
             Toast.makeText(MapsActivity.this, "Es necesario marcar la ubicacion", Toast.LENGTH_SHORT).show();
-
         }else{
               receiveActividad.setLatitud(latitude);
-               receiveActividad.setLongitud(longitude);
+              receiveActividad.setLongitud(longitude);
             Intent act = new Intent(MapsActivity.this,ConfirmarEvento.class);
             act.putExtra("Actividad", receiveActividad);
+            if(update !=0){
+            act.putExtra("Update",1);
+            }
             startActivity(act);
         }
             }
@@ -73,9 +76,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void getCurrentLocation() {
+    private void marcarOnUpdate() {
+
+        LatLng latLng = new LatLng(latitude,longitude);
+        //marcador
+        MarkerOptions markerOptions = new MarkerOptions();
+        // posicion marcador
+        markerOptions.position(latLng);
+        //latitud y longitud
+        markerOptions.title("ubicacion del evento");
+        //Zoom al marcador
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,18));
+        //agregar el marcador en el mapa
+        mMap.addMarker(markerOptions);
+    }
+
+    private void getCurrentLocation(int flagLocation) {
         //Initialize task location
         //  Task<>
+        final int flaglocation = flagLocation;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -83,6 +102,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Manifest.permission.ACCESS_FINE_LOCATION},44);
         }
         Task<Location> task = client.getLastLocation();
+
+        if (flagLocation != 0){
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -92,21 +113,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mapFragment.getMapAsync(new OnMapReadyCallback() {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
+
                             //inicializar lat long
                             LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
                             // crear marcador
                             MarkerOptions option = new MarkerOptions().position(latLng)
-                                    .title("Estas aqui");
+                                    .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));;
                             //Zoom
+                            // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
                             //agregar marcador en el mapa
-                         //   googleMap.addMarker(option);
+                           googleMap.addMarker(option);
                         }
                     });
 
                 }
             }
         });
+    }else{
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    //satisfactorio
+                    if(location != null ){
+                        //sincronizo
+                        mapFragment.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(GoogleMap googleMap) {
+
+                                //inicializar lat long
+                                LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+                                // crear marcador
+                                MarkerOptions option = new MarkerOptions().position(latLng)
+                                        .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));;
+                                // no hace Zoom
+                                //agregar marcador en el mapa
+                                googleMap.addMarker(option);
+                            }
+                        });
+
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -121,24 +170,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        if (update != 0){
+            latitude = receiveActividad.getLatitud();
+            longitude = receiveActividad.getLongitud();
+            marcarOnUpdate();
+        }
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
     @Override
     public void onMapClick(LatLng latLng) {
+        getCurrentLocation(0);
         //marcador
         MarkerOptions markerOptions = new MarkerOptions();
         // posicion marcador
         markerOptions.position(latLng);
         //latitud y longitud
-        markerOptions.title(latLng.latitude+" : "+ latLng.longitude);
+        markerOptions.title("ubicacion del evento");
         latitude= latLng.latitude;
         longitude= latLng.longitude;
         //limpiar click anterior
         mMap.clear();
         //Zoom al marcador
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,20));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,18));
         //agregar el marcador en el mapa
         mMap.addMarker(markerOptions);
-
     }
 });
 
@@ -148,7 +202,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 44){
             if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                getCurrentLocation();
+                getCurrentLocation(1);
             }
         }
     }

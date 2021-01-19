@@ -31,6 +31,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.grade.quickid.R;
 import com.grade.quickid.model.Actividad;
+import com.grade.quickid.model.ConfirmarEvento;
+import com.grade.quickid.model.CrearEventoActivity;
 import com.grade.quickid.model.QRGenerator;
 import com.grade.quickid.model.adaptadores.AdapterActividades;
 
@@ -129,7 +131,12 @@ public class FragmentActividades extends Fragment {
         btnEliminar = (Button) popActividadFragment.findViewById(R.id.btn_eliminar_actividad);
         btnEditar = (Button)   popActividadFragment.findViewById(R.id.btn_editar_actividad);
         btnDescargarDatos = (Button)   popActividadFragment.findViewById(R.id.btn_descargar_datos);
-
+        btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                actualizarDatos(actividad);
+            }
+        });
         btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,5 +186,14 @@ public class FragmentActividades extends Fragment {
         dialogBuilder.setView(popActividadFragment);
         dialog = dialogBuilder.create();
         dialog.show();
+    }
+
+    private void actualizarDatos(Actividad actividad) {
+        // envio en el intent
+        Intent act = new Intent(getActivity(), CrearEventoActivity.class);
+        act.putExtra("Actividad", actividad);
+        act.putExtra("Update",1);
+        startActivity(act);
+        dialog.dismiss();
     }
 }

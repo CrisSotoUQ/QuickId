@@ -56,6 +56,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     private int CAMERA_PERMISSION_CODE = 1;
     String nombreActividad = null;
     String nombreLugar = null;
+    Actividad receiveActividad;
+    private int update;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,9 +69,28 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         txt_nombreLugar = (EditText) findViewById(R.id.txt_lugarActividad);
         btn_siguiente = findViewById(R.id.btn_Siguiente);
         setup();
+        Intent intent = getIntent();
+        update = intent.getIntExtra("Update",0);
+        receiveActividad = (Actividad) getIntent().getSerializableExtra("Actividad");
+        String imagen= intent.getStringExtra("imagen");
+        if (update!=0){
+            txt_nombreActividad.setText(receiveActividad.getNombre().toString());
+            txt_nombreLugar.setText(receiveActividad.getLugar().toString());
+            Uri myUri = Uri.parse(receiveActividad.getUrlImagen());
+            imageview_photo.setVisibility(View.VISIBLE);
+            imageview_photo.setImageURI(myUri);
+            if (receiveActividad.getGeolocStatus().equals("0")){
+                mapSwitch.setChecked(false);
+                activarGeolocalizacion = "0";
+            }else{
+                mapSwitch.setChecked(true);
+                activarGeolocalizacion = "1";
+            }
+        }
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                  nombreActividad = txt_nombreActividad.getText().toString();
                  nombreLugar = txt_nombreLugar.getText().toString();
 
@@ -78,23 +99,40 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         validacion();
                         return;
                     }else {
-
-                        Actividad actividad = (Actividad) retornoObjetoActividad();
-                        // envio en el intent
-                        Intent act = new Intent(CrearEventoActivity.this, ConfirmarEvento.class);
-                        act.putExtra("Actividad", actividad);
-                        startActivity(act);
+                        //si estamos en un update
+                        if(update!=0){
+                            Intent act = new Intent(CrearEventoActivity.this, ConfirmarEvento.class);
+                            retornoObjetoActividadUpdate();
+                            act.putExtra("Actividad", receiveActividad);
+                            act.putExtra("Update",1);
+                            startActivity(act);
+                        }else {
+                            Actividad actividad = (Actividad) retornoObjetoActividad();
+                            // envio en el intent a la ventana de confirmacion
+                            Intent act = new Intent(CrearEventoActivity.this, ConfirmarEvento.class);
+                            act.putExtra("Actividad", actividad);
+                            startActivity(act);
+                        }
                     }
                 }else{
                     if(nombreActividad.equals("")||nombreLugar.equals("") ||mImageUri==null){
                         validacion();
                         return;
                     }else{
-                    Actividad actividad = (Actividad) retornoObjetoActividad();
-                    // envio en el intent
-                    Intent act = new Intent(CrearEventoActivity.this,MapsActivity.class);
-                    act.putExtra("Actividad", actividad);
-                    startActivity(act);
+                        //si estamos en un update
+                        if (update!=0){
+                            Intent act = new Intent(CrearEventoActivity.this,MapsActivity.class);
+                            retornoObjetoActividadUpdate();
+                            act.putExtra("Actividad", receiveActividad);
+                            act.putExtra("Update",1);
+                            startActivity(act);
+                        }else {
+                            Actividad actividad = (Actividad) retornoObjetoActividad();
+                            // envio en el intent al maps
+                            Intent act = new Intent(CrearEventoActivity.this, MapsActivity.class);
+                            act.putExtra("Actividad", actividad);
+                            startActivity(act);
+                        }
                 }}
             }
         });
@@ -116,6 +154,13 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                 mostrarDialog(v);
             }
         });
+    }
+
+    private void retornoObjetoActividadUpdate() {
+        receiveActividad.setGeolocStatus(activarGeolocalizacion);
+        receiveActividad.setNombre(txt_nombreActividad.getText().toString());
+        receiveActividad.setLugar(txt_nombreLugar.getText().toString());
+        receiveActividad.setUrlImagen(mImageUri.toString());
     }
 
     private Object retornoObjetoActividad() {
@@ -220,7 +265,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode==CAMERA_PERMISSION_CODE){
-            if (grantResults.length>0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length > 0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(this,"Abriendo camara",Toast.LENGTH_SHORT);
             }else{
                 Toast.makeText(this, "Permiso Denegado", Toast.LENGTH_SHORT).show();
