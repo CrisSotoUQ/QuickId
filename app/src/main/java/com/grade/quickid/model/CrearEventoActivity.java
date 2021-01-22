@@ -29,6 +29,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.grade.quickid.R;
 import com.grade.quickid.model.controller.FragmentPagerController;
+import com.squareup.picasso.Picasso;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.UUID;
@@ -57,6 +59,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     String nombreActividad = null;
     String nombreLugar = null;
     Actividad receiveActividad;
+    String imagenOriginal;
     private int update;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +80,12 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
             txt_nombreActividad.setText(receiveActividad.getNombre().toString());
             txt_nombreLugar.setText(receiveActividad.getLugar().toString());
             Uri myUri = Uri.parse(receiveActividad.getUrlImagen());
-            imageview_photo.setVisibility(View.VISIBLE);
             imageview_photo.setImageURI(myUri);
+            imageview_photo.setVisibility(View.VISIBLE);
+            mImageUri = myUri;
+            Picasso.get().load(receiveActividad.getUrlImagen()).fit().centerInside().into(imageview_photo);
+            imagenOriginal = receiveActividad.getUrlImagen();
+
             if (receiveActividad.getGeolocStatus().equals("0")){
                 mapSwitch.setChecked(false);
                 activarGeolocalizacion = "0";
@@ -105,6 +112,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                             retornoObjetoActividadUpdate();
                             act.putExtra("Actividad", receiveActividad);
                             act.putExtra("Update",1);
+                            act.putExtra("Original",imagenOriginal);
                             startActivity(act);
                         }else {
                             Actividad actividad = (Actividad) retornoObjetoActividad();
@@ -125,6 +133,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                             retornoObjetoActividadUpdate();
                             act.putExtra("Actividad", receiveActividad);
                             act.putExtra("Update",1);
+                            act.putExtra("Original",imagenOriginal);
                             startActivity(act);
                         }else {
                             Actividad actividad = (Actividad) retornoObjetoActividad();

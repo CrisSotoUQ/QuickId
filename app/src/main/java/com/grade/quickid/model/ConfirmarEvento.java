@@ -37,6 +37,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
     private StorageReference mStorageRef;
     FirebaseDatabase firebaseDatabase;
     Actividad receive;
+    String imagenOriginal;
     private int update;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
         inicializarFirebase();
         receive = (Actividad) getIntent().getSerializableExtra("Actividad");
         mImageUri = Uri.parse(receive.getUrlImagen());
+        imagenOriginal = getIntent().getStringExtra("Original");
         update = getIntent().getIntExtra("Update",0);
         if (update !=0){
             titulo.setText("Actualizacion evento terminada!");
@@ -58,49 +60,50 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
             @Override
             public void onClick(View v) {
 
-
                 if (mImageUri != null) {
                     mProgress.setMessage("Creando Evento");
                     mProgress.show();
-                    final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
-                    fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    if(update !=0){
-                                        actualizarEvento(uri.toString());
+                     if(mImageUri.toString().equals(imagenOriginal)){
+                         actualizarEvento(imagenOriginal);
+                         mProgress.dismiss();
+                         Toast.makeText(ConfirmarEvento.this, "Evento Actualizado Satisfactoriamente", Toast.LENGTH_LONG).show();
+                         Intent intent = new Intent(getApplicationContext(),ActividadActivity.class);
+                         // Closing all the Activities, clear the back stack.
+                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                         startActivity(intent);
+                     }else{
+
+                        final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
+                        fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        crearEvento(uri.toString());
                                         mProgress.dismiss();
-                                        Toast.makeText(ConfirmarEvento.this, "Evento Creado Satisfactoriamente", Toast.LENGTH_LONG).show();
-                                        Intent intent = new Intent(getApplicationContext(),ActividadActivity.class);
+                                        Toast.makeText(ConfirmarEvento.this, "Ok", Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent(getApplicationContext(), ActividadActivity.class);
                                         // Closing all the Activities, clear the back stack.
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
-                                    }else{
-                                    crearEvento(uri.toString());
-                                    mProgress.dismiss();
-                                    Toast.makeText(ConfirmarEvento.this, "Evento Creado Satisfactoriamente", Toast.LENGTH_LONG).show();
-                                    Intent intent = new Intent(getApplicationContext(),ActividadActivity.class);
-                                    // Closing all the Activities, clear the back stack.
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                }}
-                            });
+                                    }
+                                });
 
-                        }
+                            }
 
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(ConfirmarEvento.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                            double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                        }
-                    });
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(ConfirmarEvento.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                                double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                            }
+                        });
+                    }
                 } else {
                     Toast.makeText(ConfirmarEvento.this, "Debe seleccionar una imagen", Toast.LENGTH_SHORT).show();
                 }

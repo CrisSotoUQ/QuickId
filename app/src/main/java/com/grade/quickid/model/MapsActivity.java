@@ -38,7 +38,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double longitude;
     private Button btn_siguiente;
     private int update;
-    int flaglocation;
+    String imagenOriginal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         receiveActividad = (Actividad) getIntent().getSerializableExtra("Actividad");
         update = getIntent().getIntExtra("Update",0);
+        imagenOriginal = getIntent().getStringExtra("Original");
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
               receiveActividad.setLongitud(longitude);
             Intent act = new Intent(MapsActivity.this,ConfirmarEvento.class);
             act.putExtra("Actividad", receiveActividad);
+            act.putExtra("Original",imagenOriginal);
             if(update !=0){
             act.putExtra("Update",1);
             }
