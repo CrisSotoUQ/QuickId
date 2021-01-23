@@ -57,7 +57,6 @@ public class AdapterActividades extends RecyclerView.Adapter<AdapterActividades.
             imageview = itemView.findViewById(R.id.idImagen);
             this.item = itemView;
         }
-
     }
     @NonNull
     @Override

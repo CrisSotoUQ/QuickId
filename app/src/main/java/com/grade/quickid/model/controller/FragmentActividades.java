@@ -1,11 +1,14 @@
 package com.grade.quickid.model.controller;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,14 +32,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.grade.quickid.BuildConfig;
 import com.grade.quickid.R;
 import com.grade.quickid.model.Actividad;
 import com.grade.quickid.model.ConfirmarEvento;
 import com.grade.quickid.model.CrearEventoActivity;
 import com.grade.quickid.model.QRGenerator;
 import com.grade.quickid.model.adaptadores.AdapterActividades;
+import com.grade.quickid.model.adaptadores.GenerateCsv;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class FragmentActividades extends Fragment {
     AdapterActividades adapterActividades;
@@ -49,6 +59,7 @@ public class FragmentActividades extends Fragment {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Button btnPausar,btnEliminar,btnEditar,btnDescargarDatos;
+    private Context context;
     public FragmentActividades() {
         // Required empty public constructor
     }
@@ -131,6 +142,39 @@ public class FragmentActividades extends Fragment {
         btnEliminar = (Button) popActividadFragment.findViewById(R.id.btn_eliminar_actividad);
         btnEditar = (Button)   popActividadFragment.findViewById(R.id.btn_editar_actividad);
         btnDescargarDatos = (Button)   popActividadFragment.findViewById(R.id.btn_descargar_datos);
+
+        btnDescargarDatos.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+        StringBuilder data = new StringBuilder();
+        data.append("TIme,Distance");
+        for (int i=0; i<5; i++){
+            data.append("\n"+String.valueOf(i)+","+ String.valueOf(i*i));
+        }
+        try {
+            FileOutputStream out = getContext().openFileOutput("data.csv",Context.MODE_PRIVATE);
+            out.write((data.toString()).getBytes());
+            out.close();
+            Context context= getContext();
+            File filelocation = new File(context.getFilesDir(),"data.csv");
+            Uri path = FileProvider.getUriForFile(context,BuildConfig.APPLICATION_ID+".provider",filelocation);
+
+            Intent fileIntent = new Intent(Intent.ACTION_SEND);
+            fileIntent.setType("text/csv");
+            fileIntent.putExtra(Intent.EXTRA_SUBJECT,"Data");
+            fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            fileIntent.putExtra(Intent.EXTRA_STREAM,path);
+            dialog.dismiss();
+            startActivity(Intent.createChooser(fileIntent,"Send mail"));
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+            }
+        });
+
         btnEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

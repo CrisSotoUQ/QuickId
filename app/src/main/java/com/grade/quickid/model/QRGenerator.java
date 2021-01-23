@@ -122,10 +122,12 @@ final int REQUEST_CODE = 1;
         }catch (Exception e){
             e.printStackTrace();
         }
-        Intent intent =  new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        intent.setData(Uri.fromFile(outfile));
-        sendBroadcast(intent);
-        Toast.makeText(this, "Se ha guardado la imagen en galeria", Toast.LENGTH_LONG).show();
+        Intent intent =  new Intent(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        Uri path = Uri.parse(outfile.toString());
+        intent.putExtra(Intent.EXTRA_STREAM,path);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(intent,"Share image"));
     }
     private void titulo() {
         this.setTitle("Generador QR");
