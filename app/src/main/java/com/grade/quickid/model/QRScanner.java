@@ -38,6 +38,7 @@ public class QRScanner extends AppCompatActivity {
         scannView = findViewById(R.id.scanner_view);
         mCodeScanner = new CodeScanner(this, scannView);
         resultData= findViewById(R.id.txtResult);
+        resultData.setText("");
         inicializarFirebase();
         mCodeScanner.setDecodeCallback(new DecodeCallback() {
             @Override
@@ -85,6 +86,7 @@ public class QRScanner extends AppCompatActivity {
                                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                             FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
                                             DatabaseReference databaseReference3 = firebaseDatabase3.getReference();
+
                                             databaseReference3.child("RegistroActividad").orderByChild("idAct_idPer")
                                                     .equalTo(claveActPer).addValueEventListener(
                                                     new ValueEventListener() {
@@ -93,15 +95,17 @@ public class QRScanner extends AppCompatActivity {
                                                             if (snapshot.exists()){
                                                                 for (DataSnapshot ds : snapshot.getChildren()) {
                                                                     String fecha = ds.child("fechaRegistro").getValue(String.class);
-                                                                if (ds.equals(registroActividad.getFechaRegistro())) {
+                                                                if (fecha.equals(registroActividad.getFechaRegistro())) {
                                                                     resultData.setText("Ya estas registrado en esta fecha");
                                                                 }else{
                                                                     final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
                                                                     myRef2.getRef().child(id).setValue(registroActividad);
+                                                                    finish();
                                                                 }}
                                                             }else{
                                                                 final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
                                                                 myRef2.getRef().child(id).setValue(registroActividad);
+                                                                finish();
                                                             }
 
                                                         }
@@ -115,7 +119,7 @@ public class QRScanner extends AppCompatActivity {
                                             Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                                             vibrator.vibrate(500);
                                             vibrator.vibrate(500);
-                                            finish();
+
                                         }
                                     }
                                     @Override
