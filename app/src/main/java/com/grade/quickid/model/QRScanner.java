@@ -45,12 +45,14 @@ public class QRScanner extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
+                        DatabaseReference databaseReference2 = firebaseDatabase2.getReference();
+                        String idUsuario = user.getUid();
                         String idActividad = result.getText();
                         // valido el identificador de los codigos QR por ahora un numero por default para separarlos del resto
                         if (idActividad.substring(0, 2).equals("23")) {
-                                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
-                                DatabaseReference databaseReference2 = firebaseDatabase2.getReference();
+
                                 //copio los datos de la actividad para el nuevo registro
                                 databaseReference2.child("Actividad").orderByChild("idActividad").equalTo(
                                         result.getText()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -61,7 +63,7 @@ public class QRScanner extends AppCompatActivity {
                                             String lugarActividad = (String) objSnapshot.child("lugar").getValue();
                                             String imagenUrl = (String) objSnapshot.child("urlImagen").getValue();
                                             Time time = new Time();
-                                            String id = UUID.randomUUID().toString();
+                                            String id = result.getText()+""+user.getUid();
                                             // En este momento el usuario toma una copia
                                             // y se crea un nuevo registro
                                             // tengo que validar que en la misma fecha no se registre mas de una vez
@@ -77,10 +79,38 @@ public class QRScanner extends AppCompatActivity {
                                             registroActividad.setHoraRegistro(time.hora());
                                             registroActividad.setFechaRegistro(time.fecha());
                                             registroActividad.setImagenActividad(imagenUrl);
-//decision
+                                            registroActividad.setIdAct_idPer(result.getText()+""+user.getUid());
+                                            //decision
+                                            String claveActPer = idActividad+""+idUsuario;
+                                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                            FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+                                            DatabaseReference databaseReference3 = firebaseDatabase3.getReference();
+                                            databaseReference3.child("RegistroActividad").orderByChild("idAct_idPer")
+                                                    .equalTo(claveActPer).addValueEventListener(
+                                                    new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                            if (snapshot.exists()){
+                                                                for (DataSnapshot ds : snapshot.getChildren()) {
+                                                                    String fecha = ds.child("fechaRegistro").getValue(String.class);
+                                                                if (ds.equals(registroActividad.getFechaRegistro())) {
+                                                                    resultData.setText("Ya estas registrado en esta fecha");
+                                                                }else{
+                                                                    final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
+                                                                    myRef2.getRef().child(id).setValue(registroActividad);
+                                                                }}
+                                                            }else{
+                                                                final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
+                                                                myRef2.getRef().child(id).setValue(registroActividad);
+                                                            }
 
-                                            final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
-                                            myRef2.getRef().child(id).setValue(registroActividad);
+                                                        }
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                                        }
+                                                    }
+                                            );
                                             //vibra el cel
                                             Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                                             vibrator.vibrate(500);

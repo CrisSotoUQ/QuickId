@@ -30,10 +30,14 @@ public class RegistroActividad {
     String nombreActividad;
     String lugarActividad;
     String imagenActividad;
+    //campo para poder filtrar actividadPersona en un mismo query
+    String idAct_idPer;
 
     public RegistroActividad() {
     }
-    public RegistroActividad(String idRegistro, String fechaRegistro, String idActividad, String horaRegistro, String idPersona, String nombreActividad, String lugarActividad, String imagenActividad) {
+    public RegistroActividad(String idRegistro, String fechaRegistro, String idActividad,
+                             String horaRegistro, String idPersona, String nombreActividad,
+                             String lugarActividad, String imagenActividad, String idAct_idPer ) {
         this.idRegistro = idRegistro;
         this.fechaRegistro = fechaRegistro;
         this.idActividad = idActividad;
@@ -42,6 +46,15 @@ public class RegistroActividad {
         this.nombreActividad = nombreActividad;
         this.lugarActividad = lugarActividad;
         this.imagenActividad = imagenActividad;
+        this.idAct_idPer = idAct_idPer;
+    }
+
+    public String getIdAct_idPer() {
+        return idAct_idPer;
+    }
+
+    public void setIdAct_idPer(String idAct_idPer) {
+        this.idAct_idPer = idAct_idPer;
     }
 
     public String getImagenActividad() {
