@@ -19,25 +19,27 @@ public class Actividad implements Serializable  {
     public String geolocStatus;
     public String cargueArchivoStatus;
     public String id_persona;
+    public String horaIni;
     public String urlImagen;
 
     public Actividad() {
     }
 
-    public Actividad(String idActividad, String nombre, String fIni, String fFin, String lugar,
-                     double latitud, double longitud,
-                     String estadoActividad, String geolocStatus, String cargueArchivoStatus, String id_persona, String urlImagen) {
+    public Actividad(String idActividad, String nombre, String fIni, String fFin, String lugar, double latitud, double longitud,
+                     String estadoActividad, String geolocStatus, String cargueArchivoStatus, String id_persona, String horaIni,
+                     String urlImagen) {
         this.idActividad = idActividad;
         this.nombre = nombre;
         this.fIni = fIni;
         this.fFin = fFin;
         this.lugar = lugar;
-         this.latitud = latitud;
-         this.longitud = longitud;
+        this.latitud = latitud;
+        this.longitud = longitud;
         this.estadoActividad = estadoActividad;
         this.geolocStatus = geolocStatus;
         this.cargueArchivoStatus = cargueArchivoStatus;
         this.id_persona = id_persona;
+        this.horaIni = horaIni;
         this.urlImagen = urlImagen;
     }
 
@@ -81,7 +83,13 @@ public class Actividad implements Serializable  {
         this.latitud = latitud;
     }
 
+    public String getHoraIni() {
+        return horaIni;
+    }
 
+    public void setHoraIni(String horaIni) {
+        this.horaIni = horaIni;
+    }
 
     public double getLongitud() {
         return longitud;

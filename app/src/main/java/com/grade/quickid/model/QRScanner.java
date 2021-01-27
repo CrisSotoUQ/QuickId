@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,21 +45,13 @@ public class QRScanner extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        String subs = result.getText();
-                        // valido el identificador de los codigos QR
-                        if (subs.substring(0, 2).equals("23")) {
-                        Time time = new Time();
-                        String fecha = time.fecha();
-                        String hora = time.hora();
-                        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                        DatabaseReference databaseReference1 = firebaseDatabase.getReference();
-                        databaseReference1.child("Registro").orderByChild("idActividad").equalTo(
-                                result.getText()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
+                        String idActividad = result.getText();
+                        // valido el identificador de los codigos QR por ahora un numero por default para separarlos del resto
+                        if (idActividad.substring(0, 2).equals("23")) {
                                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                                DatabaseReference databaseReference2 = firebaseDatabase.getReference();
+                                FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
+                                DatabaseReference databaseReference2 = firebaseDatabase2.getReference();
+                                //copio los datos de la actividad para el nuevo registro
                                 databaseReference2.child("Actividad").orderByChild("idActividad").equalTo(
                                         result.getText()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -71,18 +62,26 @@ public class QRScanner extends AppCompatActivity {
                                             String imagenUrl = (String) objSnapshot.child("urlImagen").getValue();
                                             Time time = new Time();
                                             String id = UUID.randomUUID().toString();
-                                            Registro registro = new Registro();
-                                            registro.setIdRegistro(id);
-                                            registro.setNombreActividad(nombreActividad);
-                                            registro.setLugarActividad(lugarActividad);
-                                            registro.setIdActividad(result.getText());
-                                            registro.setIdPersona(user.getUid());
-                                            registro.setHoraRegistro(time.hora());
-                                            registro.setFechaRegistro(time.fecha());
-                                            registro.setImagenActividad(imagenUrl);
+                                            // En este momento el usuario toma una copia
+                                            // y se crea un nuevo registro
+                                            // tengo que validar que en la misma fecha no se registre mas de una vez
+                                            // o llevar por parametro las veces que se necesita tomar asistencia
+                                            // el registro ajuste que se realizara mas adelante
 
-                                            final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Registro");
-                                            myRef2.getRef().child(id).setValue(registro);
+                                            RegistroActividad registroActividad = new RegistroActividad();
+                                            registroActividad.setIdRegistro(id);
+                                            registroActividad.setNombreActividad(nombreActividad);
+                                            registroActividad.setLugarActividad(lugarActividad);
+                                            registroActividad.setIdActividad(result.getText());
+                                            registroActividad.setIdPersona(user.getUid());
+                                            registroActividad.setHoraRegistro(time.hora());
+                                            registroActividad.setFechaRegistro(time.fecha());
+                                            registroActividad.setImagenActividad(imagenUrl);
+//decision
+
+                                            final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
+                                            myRef2.getRef().child(id).setValue(registroActividad);
+                                            //vibra el cel
                                             Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                                             vibrator.vibrate(500);
                                             vibrator.vibrate(500);
@@ -94,13 +93,6 @@ public class QRScanner extends AppCompatActivity {
                                         System.out.println("Fallo la lectura: " + databaseError.getCode());
                                     }
                                 });
-                                }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                System.out.println("Fallo la lectura: " + databaseError.getCode());
-                            }
-                        });
-
                     }else{
                             resultData.setText("Codigo QR invalido");
                         }

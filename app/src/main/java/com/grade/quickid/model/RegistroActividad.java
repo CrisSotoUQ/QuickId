@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Registro {
+public class RegistroActividad {
     String idRegistro;
     String fechaRegistro;
     String idActividad;
@@ -31,9 +31,9 @@ public class Registro {
     String lugarActividad;
     String imagenActividad;
 
-    public Registro() {
+    public RegistroActividad() {
     }
-    public Registro(String idRegistro, String fechaRegistro, String idActividad, String horaRegistro, String idPersona, String nombreActividad, String lugarActividad, String imagenActividad) {
+    public RegistroActividad(String idRegistro, String fechaRegistro, String idActividad, String horaRegistro, String idPersona, String nombreActividad, String lugarActividad, String imagenActividad) {
         this.idRegistro = idRegistro;
         this.fechaRegistro = fechaRegistro;
         this.idActividad = idActividad;

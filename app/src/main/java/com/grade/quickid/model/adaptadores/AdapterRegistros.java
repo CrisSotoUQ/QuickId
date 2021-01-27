@@ -11,20 +11,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.grade.quickid.R;
-import com.grade.quickid.model.Registro;
+import com.grade.quickid.model.RegistroActividad;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class AdapterRegistros extends RecyclerView.Adapter<AdapterRegistros.ViewHolder>implements  View.OnClickListener,View.OnLongClickListener {
-    ArrayList<Registro> modelRegistro;
+    ArrayList<RegistroActividad> modelRegistroActividad;
     LayoutInflater layoutInflater;
     //listener
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
-public AdapterRegistros(Context context, ArrayList<Registro> modelRegistro){
+public AdapterRegistros(Context context, ArrayList<RegistroActividad> modelRegistroActividad){
     this.layoutInflater = LayoutInflater.from(context);
-    this.modelRegistro = modelRegistro;
+    this.modelRegistroActividad = modelRegistroActividad;
 }
     @Override
     public void onClick(View v) {
@@ -64,21 +64,21 @@ if (onClickListener!= null){
 
     @Override
     public void onBindViewHolder(@NonNull AdapterRegistros.ViewHolder holder, int position) {
-        String nombreActividad = modelRegistro.get(position).getNombreActividad();
-        String fechaRegistro = modelRegistro.get(position).getFechaRegistro();
-        String lugarActividad= modelRegistro.get(position).getLugarActividad();
+        String nombreActividad = modelRegistroActividad.get(position).getNombreActividad();
+        String fechaRegistro = modelRegistroActividad.get(position).getFechaRegistro();
+        String lugarActividad= modelRegistroActividad.get(position).getLugarActividad();
 
         holder.txt_nombre.setText(nombreActividad);
         holder.txt_fecha.setText(fechaRegistro);
         holder.txt_lugar.setText(lugarActividad);
-        Picasso.get().load(modelRegistro.get(position).getImagenActividad()).fit().centerInside().into(holder.imageview);
+        Picasso.get().load(modelRegistroActividad.get(position).getImagenActividad()).fit().centerInside().into(holder.imageview);
     }
 
     @Override
     public int getItemCount() {
-        if (modelRegistro != null)
-            return modelRegistro.size();
-        System.out.println(modelRegistro.size());
+        if (modelRegistroActividad != null)
+            return modelRegistroActividad.size();
+        System.out.println(modelRegistroActividad.size());
         return 0;
 
     }

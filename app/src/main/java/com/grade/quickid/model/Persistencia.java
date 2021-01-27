@@ -2,7 +2,7 @@ package com.grade.quickid.model;
 
 import com.google.firebase.database.FirebaseDatabase;
 
-public class MyFirebaseApp extends android.app.Application {
+public class Persistencia extends android.app.Application {
 
     @Override
     public void onCreate() {

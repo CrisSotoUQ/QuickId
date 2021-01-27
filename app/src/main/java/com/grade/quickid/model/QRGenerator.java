@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -21,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.grade.quickid.BuildConfig;
 import com.grade.quickid.MainActivity;
 import com.grade.quickid.R;
 
@@ -97,36 +100,15 @@ final int REQUEST_CODE = 1;
     }
 
     private void saveToGallery() throws IOException {
-        BitmapDrawable bitmapDrawable= (BitmapDrawable) imgQR.getDrawable();
-        Bitmap bitmap = bitmapDrawable.getBitmap();
-        File sdcard =  Environment.getExternalStorageDirectory();
-        File directory = new File(sdcard.getAbsolutePath()+ "/Folder");
-
-        if (!directory.exists()){
-            directory.mkdir();
-        }
-        String filename =  String.format("%d.jpg",System.currentTimeMillis());
-        File outfile = new File(directory,filename);
-        try {
-             outputStream = new FileOutputStream(outfile);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-        try {
-            outputStream.flush();
-        }catch (Exception e){
-            e.printStackTrace();
-        }try {
-            outputStream.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        Context context = getApplicationContext();
         Intent intent =  new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
-        Uri path = Uri.parse(outfile.toString());
-        intent.putExtra(Intent.EXTRA_STREAM,path);
+        File filelocation = new File(context.getFilesDir(),"imagen.jpg");
+        Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider", filelocation);
+        intent.putExtra(Intent.EXTRA_SUBJECT,"Data");
+        intent.putExtra(Intent.EXTRA_STREAM,uri);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(Intent.createChooser(intent,"Share image"));
     }
     private void titulo() {
