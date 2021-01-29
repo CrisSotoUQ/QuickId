@@ -58,7 +58,7 @@ public class FragmentActividades extends Fragment {
     private AlertDialog.Builder dialogBuilder;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
-    private Button btnPausar,btnEliminar,btnEditar,btnDescargarDatos;
+    private Button btnEliminar,btnEditar,btnDescargarDatos;
     private Context context;
     public FragmentActividades() {
         // Required empty public constructor

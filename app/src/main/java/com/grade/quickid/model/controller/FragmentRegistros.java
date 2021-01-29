@@ -117,6 +117,7 @@ public class FragmentRegistros extends Fragment {
                 databaseReference.child("RegistroActividad").child(registroActividad.getIdRegistro()).removeValue();
                 adapterRegistros.notifyDataSetChanged();
                 listRegistroActividads.remove(registroActividad);
+                System.gc();
                 Toast t=Toast.makeText(getActivity(),"Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
                 t.show();
                 dialog.dismiss();

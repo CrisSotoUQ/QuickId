@@ -3,8 +3,10 @@ package com.grade.quickid.model;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,18 +25,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.grade.quickid.R;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class QRScanner extends AppCompatActivity {
         CodeScanner mCodeScanner;
         CodeScannerView scannView;
         TextView resultData;
+        static  int OnScannerElse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_q_r_scanner);
-
+        OnScannerElse = 0;
         scannView = findViewById(R.id.scanner_view);
         mCodeScanner = new CodeScanner(this, scannView);
         resultData= findViewById(R.id.txtResult);
@@ -64,13 +68,13 @@ public class QRScanner extends AppCompatActivity {
                                             String lugarActividad = (String) objSnapshot.child("lugar").getValue();
                                             String imagenUrl = (String) objSnapshot.child("urlImagen").getValue();
                                             Time time = new Time();
-                                            String id = result.getText()+""+user.getUid();
+                                            String id = UUID.randomUUID().toString();
                                             // En este momento el usuario toma una copia
                                             // y se crea un nuevo registro
                                             // tengo que validar que en la misma fecha no se registre mas de una vez
                                             // o llevar por parametro las veces que se necesita tomar asistencia
                                             // el registro ajuste que se realizara mas adelante
-
+                                            String claveActPer = idActividad+""+idUsuario;
                                             RegistroActividad registroActividad = new RegistroActividad();
                                             registroActividad.setIdRegistro(id);
                                             registroActividad.setNombreActividad(nombreActividad);
@@ -80,34 +84,26 @@ public class QRScanner extends AppCompatActivity {
                                             registroActividad.setHoraRegistro(time.hora());
                                             registroActividad.setFechaRegistro(time.fecha());
                                             registroActividad.setImagenActividad(imagenUrl);
-                                            registroActividad.setIdAct_idPer(result.getText()+""+user.getUid());
+                                            registroActividad.setVisibilidad("1");
+                                            registroActividad.setIdAct_idPer(claveActPer);
                                             //decision
-                                            String claveActPer = idActividad+""+idUsuario;
-                                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                             FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
                                             DatabaseReference databaseReference3 = firebaseDatabase3.getReference();
 
                                             databaseReference3.child("RegistroActividad").orderByChild("idAct_idPer")
-                                                    .equalTo(claveActPer).addValueEventListener(
+                                                    .equalTo(claveActPer).addListenerForSingleValueEvent(
                                                     new ValueEventListener() {
                                                         @Override
                                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                            if (snapshot.exists()){
-                                                                for (DataSnapshot ds : snapshot.getChildren()) {
-                                                                    String fecha = ds.child("fechaRegistro").getValue(String.class);
-                                                                if (fecha.equals(registroActividad.getFechaRegistro())) {
-                                                                    resultData.setText("Ya estas registrado en esta fecha");
-                                                                }else{
+                                                            if (snapshot.exists()) {
+                                                                    validacionNodos(claveActPer, registroActividad);
+                                                            }else{
+                                                                if (OnScannerElse == 0) {
                                                                     final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
                                                                     myRef2.getRef().child(id).setValue(registroActividad);
                                                                     finish();
-                                                                }}
-                                                            }else{
-                                                                final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
-                                                                myRef2.getRef().child(id).setValue(registroActividad);
-                                                                finish();
+                                                                }
                                                             }
-
                                                         }
                                                         @Override
                                                         public void onCancelled(@NonNull DatabaseError error) {
@@ -141,6 +137,63 @@ public class QRScanner extends AppCompatActivity {
             }
         });
     }
+
+    private void validacionNodos(String id, RegistroActividad registroActividad) {
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference reference = firebaseDatabase.getReference();
+        reference.child("RegistroActividad").orderByChild("idAct_idPer")
+                .equalTo(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                    int contador =0;
+                    for(DataSnapshot d : dataSnapshot.getChildren()) {
+                        String fechaRegistro = d.child("fechaRegistro").getValue(String.class);
+                        if (fechaRegistro.equals(registroActividad.getFechaRegistro())) {
+                            contador++;
+                        }
+                        if (contador > 0) {
+                            resultData.setText("Ya estas registrado en esta fecha");
+                            return;
+                        } else {
+                            actualizarVisibilidadNodos(id);
+                        }
+                    }
+                }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    // quito la visibilidad de los registros anteriores
+    private void actualizarVisibilidadNodos(String id) {
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+             DatabaseReference reference = firebaseDatabase.getReference();
+            reference.child("RegistroActividad").orderByChild("idAct_idPer")
+            .equalTo(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for(DataSnapshot d : dataSnapshot.getChildren()) {
+                            Log.d("Keys",String.valueOf(d.getKey())); //returning all the keys
+                            HashMap<String, Object> result = new HashMap<>();
+                            result.put("visibilidad", "0");
+                            reference.child(String.valueOf(d.getKey())).updateChildren(result);  //update according to keys
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

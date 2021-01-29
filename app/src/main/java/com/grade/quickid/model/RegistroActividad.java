@@ -30,6 +30,7 @@ public class RegistroActividad {
     String nombreActividad;
     String lugarActividad;
     String imagenActividad;
+    String visibilidad;
     //campo para poder filtrar actividadPersona en un mismo query
     String idAct_idPer;
 
@@ -37,7 +38,8 @@ public class RegistroActividad {
     }
     public RegistroActividad(String idRegistro, String fechaRegistro, String idActividad,
                              String horaRegistro, String idPersona, String nombreActividad,
-                             String lugarActividad, String imagenActividad, String idAct_idPer ) {
+                             String lugarActividad, String imagenActividad, String idAct_idPer,
+                             String visibilidad) {
         this.idRegistro = idRegistro;
         this.fechaRegistro = fechaRegistro;
         this.idActividad = idActividad;
@@ -47,6 +49,15 @@ public class RegistroActividad {
         this.lugarActividad = lugarActividad;
         this.imagenActividad = imagenActividad;
         this.idAct_idPer = idAct_idPer;
+        this.visibilidad = visibilidad;
+    }
+
+    public String getVisibilidad() {
+        return visibilidad;
+    }
+
+    public void setVisibilidad(String visibilidad) {
+        this.visibilidad = visibilidad;
     }
 
     public String getIdAct_idPer() {
