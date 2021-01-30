@@ -2,6 +2,8 @@ package com.grade.quickid.model;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.grade.quickid.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -33,6 +36,11 @@ public class QRScanner extends AppCompatActivity {
         CodeScannerView scannView;
         TextView resultData;
         static  int OnScannerElse;
+        DatabaseReference databaseReference;
+        DatabaseReference myRef;
+        FirebaseDatabase firebaseDatabase;
+        int processDone = 0;
+    ValueEventListener mSendEventListner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +51,12 @@ public class QRScanner extends AppCompatActivity {
         mCodeScanner = new CodeScanner(this, scannView);
         resultData= findViewById(R.id.txtResult);
         resultData.setText("");
+        scannView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCodeScanner.startPreview();
+            }
+        });
         inicializarFirebase();
         mCodeScanner.setDecodeCallback(new DecodeCallback() {
             @Override
@@ -53,146 +67,168 @@ public class QRScanner extends AppCompatActivity {
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
                         DatabaseReference databaseReference2 = firebaseDatabase2.getReference();
-                        String idUsuario = user.getUid();
                         String idActividad = result.getText();
-                        // valido el identificador de los codigos QR por ahora un numero por default para separarlos del resto
+                        String idUsuario = user.getUid();
+                        // valido el identificador de los codigos QR por ahora un numero por default para separarlos del resto de QRS
                         if (idActividad.substring(0, 2).equals("23")) {
+                            //copio los datos de la actividad para el nuevo registro
+                            databaseReference2.child("Actividad").orderByChild("idActividad").equalTo(
+                                    result.getText()).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot2) {
 
-                                //copio los datos de la actividad para el nuevo registro
-                                databaseReference2.child("Actividad").orderByChild("idActividad").equalTo(
-                                        result.getText()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot2) {
-                                        for (DataSnapshot objSnapshot : dataSnapshot2.getChildren()) {
-                                            String nombreActividad = (String) objSnapshot.child("nombre").getValue();
-                                            String lugarActividad = (String) objSnapshot.child("lugar").getValue();
-                                            String imagenUrl = (String) objSnapshot.child("urlImagen").getValue();
-                                            Time time = new Time();
-                                            String id = UUID.randomUUID().toString();
-                                            // En este momento el usuario toma una copia
-                                            // y se crea un nuevo registro
-                                            // tengo que validar que en la misma fecha no se registre mas de una vez
-                                            // o llevar por parametro las veces que se necesita tomar asistencia
-                                            // el registro ajuste que se realizara mas adelante
-                                            String claveActPer = idActividad+""+idUsuario;
-                                            RegistroActividad registroActividad = new RegistroActividad();
-                                            registroActividad.setIdRegistro(id);
-                                            registroActividad.setNombreActividad(nombreActividad);
-                                            registroActividad.setLugarActividad(lugarActividad);
-                                            registroActividad.setIdActividad(result.getText());
-                                            registroActividad.setIdPersona(user.getUid());
-                                            registroActividad.setHoraRegistro(time.hora());
-                                            registroActividad.setFechaRegistro(time.fecha());
-                                            registroActividad.setImagenActividad(imagenUrl);
-                                            registroActividad.setVisibilidad("1");
-                                            registroActividad.setIdAct_idPer(claveActPer);
-                                            //decision
-                                            FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-                                            DatabaseReference databaseReference3 = firebaseDatabase3.getReference();
+                                    if (dataSnapshot2.exists()){
+                                    for (DataSnapshot objSnapshot : dataSnapshot2.getChildren()) {
+                                        String claveActPer = idActividad + "" + idUsuario;
+                                        String idRegistro = UUID.randomUUID().toString();
+                                        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+                                        myRef = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
 
-                                            databaseReference3.child("RegistroActividad").orderByChild("idAct_idPer")
-                                                    .equalTo(claveActPer).addListenerForSingleValueEvent(
-                                                    new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                            if (snapshot.exists()) {
-                                                                    validacionNodos(claveActPer, registroActividad);
-                                                            }else{
-                                                                if (OnScannerElse == 0) {
-                                                                    final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
-                                                                    myRef2.getRef().child(id).setValue(registroActividad);
-                                                                    finish();
-                                                                }
-                                                            }
-                                                        }
-                                                        @Override
-                                                        public void onCancelled(@NonNull DatabaseError error) {
-
+                                        ValueEventListener valueEventListener = new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if (snapshot.exists() && processDone != 1) {
+                                                    processDone = 1;
+                                                    int contador = 0;
+                                                    int parametro = 0;
+                                                    ArrayList<RegistroActividad> list = new ArrayList<RegistroActividad>();
+                                                    for (DataSnapshot objSnapshot : snapshot.getChildren()) {
+                                                        RegistroActividad ra = objSnapshot.getValue(RegistroActividad.class);
+                                                        list.add(ra);
+                                                        Time time = new Time();
+                                                        if (ra.getFechaRegistro().equals((time.fecha()))) {
+                                                            contador++;
                                                         }
                                                     }
-                                            );
-                                            //vibra el cel
-                                            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                                            vibrator.vibrate(500);
-                                            vibrator.vibrate(500);
+                                                    if (contador > parametro) {
+                                                        resultData.setText("Ya esta registrado en esta fecha");
+                                                        final Handler handler = new Handler(Looper.getMainLooper());
+                                                        handler.postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                finish();
+                                                                startActivity(getIntent());
+                                                            }
+                                                        }, 1000);
 
-                                        }
+                                                    } else {
+                                                        myRef = databaseReference.child("RegistroActividad");
+                                                        for (int i = 0; i < list.size(); i++) {
+                                                            RegistroActividad ra = list.get(i);
+                                                            String key = String.valueOf(ra.getIdRegistro());
+                                                            ra.setVisibilidad("0");
+                                                            myRef.child(key).setValue(ra);
+                                                        }
+                                                        //creo el nodo Registro actividad
+                                                        crearRegistro(objSnapshot, result, claveActPer, idRegistro);
+                                                    }
+                                                } else {
+                                                    if (processDone == 0) {
+                                                        processDone++;
+                                                        //creo el nodo Registro actividad
+                                                        crearRegistro(objSnapshot, result, claveActPer, idRegistro);
+                                                    }
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        };
+                                        myRef.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(valueEventListener);
+                                        mSendEventListner = valueEventListener;
+                                        //vibra el cel
+                                        Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                        vibrator.vibrate(500);
+                                        vibrator.vibrate(500);
+
                                     }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        System.out.println("Fallo la lectura: " + databaseError.getCode());
+                                    }else{
+                                        resultData.setText("El evento no existe");
+                                        Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                        vibrator.vibrate(500);
+                                        vibrator.vibrate(500);
+                                        final Handler handler = new Handler(Looper.getMainLooper());
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                finish();
+                                                startActivity(getIntent());
+                                            }
+                                        }, 1500);
                                     }
-                                });
-                    }else{
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    System.out.println("Fallo la lectura: " + databaseError.getCode());
+                                }
+                            });
+                        } else {
                             resultData.setText("Codigo QR invalido");
+                            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(500);
+                            vibrator.vibrate(500);
+                            final Handler handler = new Handler(Looper.getMainLooper());
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                    startActivity(getIntent());
+                                }
+                            }, 1500);
                         }
-                    }
+
+                        }
                 });
             }
         });
-        scannView.setOnClickListener(new View.OnClickListener() {
+    }
+    private void crearRegistro(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
+        RegistroActividad registroActividad = (RegistroActividad) CrearObjetoRegistro(objSnapshot,result,claveActPer,idRegistro);
+        final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
+        myRef2.getRef().child(idRegistro).setValue(registroActividad);
+        final Handler handler = new Handler(Looper.getMainLooper());
+        resultData.setText("Registro Exitoso");
+        handler.postDelayed(new Runnable() {
             @Override
-            public void onClick(View view) {
-                mCodeScanner.startPreview();
+            public void run() {
+
+                finish();
             }
-        });
+        }, 1500);
     }
 
-    private void validacionNodos(String id, RegistroActividad registroActividad) {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference reference = firebaseDatabase.getReference();
-        reference.child("RegistroActividad").orderByChild("idAct_idPer")
-                .equalTo(id).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                    int contador =0;
-                    for(DataSnapshot d : dataSnapshot.getChildren()) {
-                        String fechaRegistro = d.child("fechaRegistro").getValue(String.class);
-                        if (fechaRegistro.equals(registroActividad.getFechaRegistro())) {
-                            contador++;
-                        }
-                        if (contador > 0) {
-                            resultData.setText("Ya estas registrado en esta fecha");
-                            return;
-                        } else {
-                            actualizarVisibilidadNodos(id);
-                        }
-                    }
-                }
 
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+    private Object CrearObjetoRegistro(DataSnapshot objSnapshot, Result result, String actPer, String idRegistro) {
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String nombreActividad = (String) objSnapshot.child("nombre").getValue();
+        String lugarActividad = (String) objSnapshot.child("lugar").getValue();
+        String imagenUrl = (String) objSnapshot.child("urlImagen").getValue();
+        Time time = new Time();
+        // En este momento el usuario toma una copia
+        // y se crea un nuevo registro
+        // tengo que validar que en la misma fecha no se registre mas de una vez
+        // o llevar por parametro las veces que se necesita tomar asistencia
+        // el registro ajuste que se realizara mas adelante
 
-            }
-        });
+        RegistroActividad registroActividad = new RegistroActividad();
+        registroActividad.setIdRegistro(idRegistro);
+        registroActividad.setNombreActividad(nombreActividad);
+        registroActividad.setLugarActividad(lugarActividad);
+        registroActividad.setIdActividad(result.getText());
+        registroActividad.setIdPersona(user.getUid());
+        registroActividad.setHoraRegistro(time.hora());
+        registroActividad.setFechaRegistro(time.fecha());
+        registroActividad.setImagenActividad(imagenUrl);
+        registroActividad.setVisibilidad("1");
+        registroActividad.setIdAct_idPer(actPer);
+        //decision
+        return registroActividad;
     }
 
-    // quito la visibilidad de los registros anteriores
-    private void actualizarVisibilidadNodos(String id) {
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-             DatabaseReference reference = firebaseDatabase.getReference();
-            reference.child("RegistroActividad").orderByChild("idAct_idPer")
-            .equalTo(id).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        for(DataSnapshot d : dataSnapshot.getChildren()) {
-                            Log.d("Keys",String.valueOf(d.getKey())); //returning all the keys
-                            HashMap<String, Object> result = new HashMap<>();
-                            result.put("visibilidad", "0");
-                            reference.child(String.valueOf(d.getKey())).updateChildren(result);  //update according to keys
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-    }
 
     @Override
     protected void onResume() {
@@ -206,16 +242,22 @@ public class QRScanner extends AppCompatActivity {
         mCodeScanner.releaseResources();
 
     }
-    private void inicializarFirebase() {
-        FirebaseApp.initializeApp(this);
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        // firebaseDatabase.setPersistenceEnabled(true);
-        DatabaseReference databaseReference = firebaseDatabase.getReference();
-    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         //codigo adicional
         this.finish();
     }
-}
+    private void inicializarFirebase() {
+        FirebaseApp.initializeApp(this);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        // firebaseDatabase.setPersistenceEnabled(true);
+        databaseReference= firebaseDatabase.getReference();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mSendEventListner != null) {
+            myRef.removeEventListener(mSendEventListner);
+        }
+    }}

@@ -64,7 +64,9 @@ public class FragmentRegistros extends Fragment {
                     for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
                         Log.d("usuarios",objSnapshot.toString());
                         RegistroActividad p = objSnapshot.getValue(RegistroActividad.class);
-                        listRegistroActividads.add(p);
+                        if (p.getVisibilidad().equals("1")){
+                            listRegistroActividads.add(p);
+                        }
                 }
                 if(getActivity()!= null) {
                     rvRegistros.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -115,9 +117,7 @@ public class FragmentRegistros extends Fragment {
 
             public void aceptar() {
                 databaseReference.child("RegistroActividad").child(registroActividad.getIdRegistro()).removeValue();
-                adapterRegistros.notifyDataSetChanged();
                 listRegistroActividads.remove(registroActividad);
-                System.gc();
                 Toast t=Toast.makeText(getActivity(),"Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
                 t.show();
                 dialog.dismiss();
