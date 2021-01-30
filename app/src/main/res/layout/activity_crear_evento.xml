@@ -24,7 +24,7 @@
             android:text="Nombre evento" />
 
         <EditText
-            android:id="@+id/txt_lugarActividad"
+            android:id="@+id/txt_nombreActividad"
             style="@android:style/Widget.AutoCompleteTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
             android:text="Lugar evento" />
 
         <EditText
-            android:id="@+id/txt_nombreActividad"
+            android:id="@+id/txt_lugarActividad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
