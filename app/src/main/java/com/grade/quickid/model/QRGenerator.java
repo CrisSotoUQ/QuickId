@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -43,7 +44,7 @@ ImageView imgQR;
 Button btnSaveQr;
 OutputStream outputStream;
 final int REQUEST_CODE = 1;
-
+private String nombreActividad;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_q_r_generator);
@@ -52,7 +53,7 @@ final int REQUEST_CODE = 1;
         btnSaveQr = (Button) findViewById(R.id.btn_save_qr);
         Intent intent = getIntent();
         final String actividad = intent.getStringExtra("idActividad");
-        final String nombreActividad = intent.getStringExtra("nombre");
+        nombreActividad = intent.getStringExtra("nombre");
         textViewNombreActividad.setText(nombreActividad);
         titulo();
 
@@ -100,16 +101,27 @@ final int REQUEST_CODE = 1;
     }
 
     private void saveToGallery() throws IOException {
-        Context context = getApplicationContext();
-        Intent intent =  new Intent(Intent.ACTION_SEND);
-        intent.setType("image/*");
-        File filelocation = new File(context.getFilesDir(),"imagen.jpg");
-        Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider", filelocation);
-        intent.putExtra(Intent.EXTRA_SUBJECT,"Data");
-        intent.putExtra(Intent.EXTRA_STREAM,uri);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(Intent.createChooser(intent,"Share image"));
+        Drawable drawable = imgQR.getDrawable();
+        Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+
+        try {
+            File file =  new File (getApplicationContext().getFilesDir(),File.separator+"Evento.jpg");
+            FileOutputStream fOut = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,fOut);
+            fOut.flush();
+            fOut.close();
+            file.setReadable(true,false);
+            final Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Uri photoUri = FileProvider.getUriForFile(getApplicationContext(),BuildConfig.APPLICATION_ID+".provider",file);
+            intent.putExtra(Intent.EXTRA_STREAM,photoUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            intent.setType("image/jpg");
+            startActivity(Intent.createChooser(intent,"Share image via "));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     private void titulo() {
         this.setTitle("Generador QR");

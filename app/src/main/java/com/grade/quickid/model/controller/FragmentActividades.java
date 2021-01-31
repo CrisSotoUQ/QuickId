@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,18 +37,13 @@ import com.google.firebase.storage.StorageReference;
 import com.grade.quickid.BuildConfig;
 import com.grade.quickid.R;
 import com.grade.quickid.model.Actividad;
-import com.grade.quickid.model.ConfirmarEvento;
 import com.grade.quickid.model.CrearEventoActivity;
 import com.grade.quickid.model.QRGenerator;
-import com.grade.quickid.model.adaptadores.AdapterActividades;
-import com.grade.quickid.model.adaptadores.GenerateCsv;
 
+import com.grade.quickid.model.adaptadores.AdapterActividades;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class FragmentActividades extends Fragment {
     AdapterActividades adapterActividades;
@@ -58,7 +55,9 @@ public class FragmentActividades extends Fragment {
     private AlertDialog.Builder dialogBuilder;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
+    DatabaseReference myRefDatosRegistroEvento;
     private Button btnEliminar,btnEditar,btnDescargarDatos;
+    ValueEventListener eventListner;
     private Context context;
     public FragmentActividades() {
         // Required empty public constructor
@@ -148,30 +147,61 @@ public class FragmentActividades extends Fragment {
             @Override
             public void onClick(View v) {
         StringBuilder data = new StringBuilder();
-        data.append("TIme,Distance");
-        for (int i=0; i<5; i++){
-            data.append("\n"+String.valueOf(i)+","+ String.valueOf(i*i));
-        }
-        try {
-            FileOutputStream out = getContext().openFileOutput("data.csv",Context.MODE_PRIVATE);
-            out.write((data.toString()).getBytes());
-            out.close();
-            Context context= getContext();
-            File filelocation = new File(context.getFilesDir(),"data.csv");
-            Uri path = FileProvider.getUriForFile(context,BuildConfig.APPLICATION_ID+".provider",filelocation);
+        //data.append("Correo,Nombre,Apellido,Fecha,Hora entrada,Hora salida");
+          //  data.append("\n"+String.valueOf(i)+","+ String.valueOf(i*i));
+            FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+            myRefDatosRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
 
-            Intent fileIntent = new Intent(Intent.ACTION_SEND);
-            fileIntent.setType("text/csv");
-            fileIntent.putExtra(Intent.EXTRA_SUBJECT,"Data");
-            fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            fileIntent.putExtra(Intent.EXTRA_STREAM,path);
-            dialog.dismiss();
-            startActivity(Intent.createChooser(fileIntent,"Send mail"));
+            ValueEventListener valueEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+                        myRefDatosRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
 
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+                        ValueEventListener valueEventListener = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists() ) {
+                                }
+                            }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        };
+                        myRefDatosRegistroEvento.orderByChild("idActividad").equalTo(actividad.getIdActividad()).addValueEventListener(valueEventListener);
+                        eventListner =  valueEventListener;
+
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            };
+            if (data!= null) {
+                try {
+                    FileOutputStream out = getContext().openFileOutput("data.csv", Context.MODE_PRIVATE);
+                    out.write((data.toString()).getBytes());
+                    out.close();
+                    Context context = getContext();
+                    File filelocation = new File(context.getFilesDir(), "data.csv");
+                    Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", filelocation);
+
+                    Intent fileIntent = new Intent(Intent.ACTION_SEND);
+                    fileIntent.setType("text/csv");
+                    fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
+                    fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    fileIntent.putExtra(Intent.EXTRA_STREAM, path);
+                    dialog.dismiss();
+                    startActivity(Intent.createChooser(fileIntent, "Send mail"));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             }
         });
 

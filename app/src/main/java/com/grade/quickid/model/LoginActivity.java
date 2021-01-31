@@ -150,9 +150,10 @@ public class LoginActivity extends AppCompatActivity {
         tipo = prefs.getString("tipo", null);
         imagen= prefs.getString("imagen",null);
         nombre = prefs.getString("nombre", null);
-        if (email!= null && tipo!= null && imagen !=null && nombre != null){
-            this.setVisible(false);
+        if (email!= null && nombre != null){
             ShowMain(email,tipo,imagen,nombre);
+            finish();
+
         }
 
     }
