@@ -261,12 +261,5 @@ public class QRScanner extends AppCompatActivity {
         databaseReference = firebaseDatabase.getReference();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mSendEventListner != null) {
-            myRefEvento.removeEventListener(mSendEventListner2);
-            myRefRegistroEvento.removeEventListener(mSendEventListner);
-        }
-    }
+
 }

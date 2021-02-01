@@ -207,6 +207,7 @@ public class LoginActivity extends AppCompatActivity {
                                                     persona.setNombre(account.getDisplayName());
                                                     persona.setApellido(account.getFamilyName());
                                                     persona.setImagenUri(account.getPhotoUrl().toString());
+                                                    persona.setCorreo(account.getEmail());
                                                     myRef2.setValue(persona);
 
                                                 }

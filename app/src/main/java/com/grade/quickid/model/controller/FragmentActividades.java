@@ -38,8 +38,10 @@ import com.grade.quickid.BuildConfig;
 import com.grade.quickid.R;
 import com.grade.quickid.model.Actividad;
 import com.grade.quickid.model.CrearEventoActivity;
+import com.grade.quickid.model.Persona;
 import com.grade.quickid.model.QRGenerator;
 
+import com.grade.quickid.model.RegistroActividad;
 import com.grade.quickid.model.adaptadores.AdapterActividades;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,8 +58,10 @@ public class FragmentActividades extends Fragment {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
     DatabaseReference myRefDatosRegistroEvento;
+    DatabaseReference myRefDatosPersonaEvento;
     private Button btnEliminar,btnEditar,btnDescargarDatos;
     ValueEventListener eventListner;
+    ValueEventListener eventListner1;
     private Context context;
     public FragmentActividades() {
         // Required empty public constructor
@@ -147,8 +151,7 @@ public class FragmentActividades extends Fragment {
             @Override
             public void onClick(View v) {
         StringBuilder data = new StringBuilder();
-        //data.append("Correo,Nombre,Apellido,Fecha,Hora entrada,Hora salida");
-          //  data.append("\n"+String.valueOf(i)+","+ String.valueOf(i*i));
+
             FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
             myRefDatosRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
 
@@ -156,52 +159,72 @@ public class FragmentActividades extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
-                        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-                        myRefDatosRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
+                        data.append("Nombre Evento: "+actividad.getNombre());
+                        data.append("\n"+"Lugar Evento: "+actividad.getLugar());
+                        data.append("\n");
+                        data.append("\n"+"Correo ,   Apellido  ,   Nombre   , Fecha  ,  Hora entrada ,Hora salida");
+                        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                        myRefDatosPersonaEvento = firebaseDatabase.getInstance().getReference().child("Persona");
 
-                        ValueEventListener valueEventListener = new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists() ) {
-                                }
+                            for (DataSnapshot objSnapshot : snapshot.getChildren()) {
+                                RegistroActividad ra = objSnapshot.getValue(RegistroActividad.class);
+
+                                ValueEventListener valueEventListener1 = new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                        for (DataSnapshot objSnapshot : snapshot1.getChildren()) {
+                                        Persona per = objSnapshot.getValue(Persona.class);
+                                        data.append("\n" + String.valueOf(per.getCorreo()) + "," + String.valueOf(per.getApellido())
+                                                + "," +  String.valueOf(per.getNombre())   + "," +  String.valueOf(ra.getFechaRegistro())
+                                                + "," +  String.valueOf(ra.getHoraRegistro())   + "," +  String.valueOf(ra.getHoraRegistro()));
+                                    }
+                                        try {
+
+                                            if (data!= null) {
+                                                FileOutputStream out = getContext().openFileOutput("data.csv", Context.MODE_PRIVATE);
+                                                out.write((data.toString()).getBytes());
+                                                out.close();
+                                                Context context = getContext();
+                                                File filelocation = new File(context.getFilesDir(), "data.csv");
+                                                Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", filelocation);
+
+                                                Intent fileIntent = new Intent(Intent.ACTION_SEND);
+                                                fileIntent.setType("text/csv");
+                                                fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
+                                                fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                fileIntent.putExtra(Intent.EXTRA_STREAM, path);
+                                                dialog.dismiss();
+                                                startActivity(Intent.createChooser(fileIntent, "Send mail"));
+                                                myRefDatosRegistroEvento.removeEventListener(eventListner);
+                                                myRefDatosRegistroEvento.removeEventListener(eventListner1);
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                };
+                                myRefDatosPersonaEvento.orderByChild("id").equalTo(ra.getIdPersona()).addValueEventListener(valueEventListener1);
+                                eventListner1 =  valueEventListener1;
+
                             }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        };
-                        myRefDatosRegistroEvento.orderByChild("idActividad").equalTo(actividad.getIdActividad()).addValueEventListener(valueEventListener);
-                        eventListner =  valueEventListener;
 
                     }
-                }
+
+                    }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
 
                 }
             };
-            if (data!= null) {
-                try {
-                    FileOutputStream out = getContext().openFileOutput("data.csv", Context.MODE_PRIVATE);
-                    out.write((data.toString()).getBytes());
-                    out.close();
-                    Context context = getContext();
-                    File filelocation = new File(context.getFilesDir(), "data.csv");
-                    Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", filelocation);
+                myRefDatosRegistroEvento.orderByChild("idActividad").equalTo(actividad.getIdActividad()).addValueEventListener(valueEventListener);
+                eventListner =  valueEventListener;
 
-                    Intent fileIntent = new Intent(Intent.ACTION_SEND);
-                    fileIntent.setType("text/csv");
-                    fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
-                    fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    fileIntent.putExtra(Intent.EXTRA_STREAM, path);
-                    dialog.dismiss();
-                    startActivity(Intent.createChooser(fileIntent, "Send mail"));
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
             }
         });
 
@@ -270,4 +293,5 @@ public class FragmentActividades extends Fragment {
         startActivity(act);
         dialog.dismiss();
     }
+
 }
