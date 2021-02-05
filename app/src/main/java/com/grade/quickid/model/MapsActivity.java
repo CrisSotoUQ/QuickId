@@ -55,24 +55,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btn_siguiente = (Button) findViewById(R.id.btn_siguiente_maps);
 
         receiveActividad = (Actividad) getIntent().getSerializableExtra("Actividad");
-        update = getIntent().getIntExtra("Update",0);
+        update = getIntent().getIntExtra("Update", 0);
         imagenOriginal = getIntent().getStringExtra("Original");
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-        if (latitude== 0.0 && longitude == 0.0 ){
-            Toast.makeText(MapsActivity.this, "Es necesario marcar la ubicacion", Toast.LENGTH_SHORT).show();
-        }else{
-              receiveActividad.setLatitud(latitude);
-              receiveActividad.setLongitud(longitude);
-            Intent act = new Intent(MapsActivity.this,ConfirmarEvento.class);
-            act.putExtra("Actividad", receiveActividad);
-            act.putExtra("Original",imagenOriginal);
-            if(update !=0){
-            act.putExtra("Update",1);
-            }
-            startActivity(act);
-        }
+                receiveActividad.setLatitud(latitude);
+                receiveActividad.setLongitud(longitude);
+                if (latitude == 0.0 && longitude == 0.0) {
+                    Toast.makeText(MapsActivity.this, "Es necesario marcar la ubicacion", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (receiveActividad.getCargueArchivoStatus().equals("0")) {
+                        Intent act = new Intent(MapsActivity.this, ConfirmarEvento.class);
+                        act.putExtra("Actividad", receiveActividad);
+                        act.putExtra("Original", imagenOriginal);
+                        if (update != 0) {
+                            act.putExtra("Update", 1);
+                        }
+                        startActivity(act);
+                    } else {
+                        Intent act = new Intent(MapsActivity.this, CargarDatosCsv.class);
+                        act.putExtra("Actividad", receiveActividad);
+                        act.putExtra("Original", imagenOriginal);
+                        if (update != 0) {
+                            act.putExtra("Update", 1);
+                        }
+                        startActivity(act);
+
+                    }
+                }
             }
         });
 
@@ -80,7 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void marcarOnUpdate() {
 
-        LatLng latLng = new LatLng(latitude,longitude);
+        LatLng latLng = new LatLng(latitude, longitude);
         //marcador
         MarkerOptions markerOptions = new MarkerOptions();
         // posicion marcador
@@ -88,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //latitud y longitud
         markerOptions.title("ubicacion del evento");
         //Zoom al marcador
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,18));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
         //agregar el marcador en el mapa
         mMap.addMarker(markerOptions);
     }
@@ -101,53 +112,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION},44);
+                    Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
         Task<Location> task = client.getLastLocation();
 
-        if (flagLocation != 0){
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                //satisfactorio
-                if(location != null ){
-                    //sincronizo
-                    mapFragment.getMapAsync(new OnMapReadyCallback() {
-                        @Override
-                        public void onMapReady(GoogleMap googleMap) {
-
-                            //inicializar lat long
-                            LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-                            // crear marcador
-                            MarkerOptions option = new MarkerOptions().position(latLng)
-                                    .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));;
-                            //Zoom
-                            // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
-                            //agregar marcador en el mapa
-                           googleMap.addMarker(option);
-                        }
-                    });
-
-                }
-            }
-        });
-    }else{
+        if (flagLocation != 0) {
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     //satisfactorio
-                    if(location != null ){
+                    if (location != null) {
                         //sincronizo
                         mapFragment.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(GoogleMap googleMap) {
 
                                 //inicializar lat long
-                                LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 // crear marcador
                                 MarkerOptions option = new MarkerOptions().position(latLng)
-                                        .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));;
+                                        .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                ;
+                                //Zoom
+                                // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                                //agregar marcador en el mapa
+                                googleMap.addMarker(option);
+                            }
+                        });
+
+                    }
+                }
+            });
+        } else {
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    //satisfactorio
+                    if (location != null) {
+                        //sincronizo
+                        mapFragment.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(GoogleMap googleMap) {
+
+                                //inicializar lat long
+                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                // crear marcador
+                                MarkerOptions option = new MarkerOptions().position(latLng)
+                                        .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                ;
                                 // no hace Zoom
                                 //agregar marcador en el mapa
                                 googleMap.addMarker(option);
@@ -172,38 +185,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (update != 0){
+        if (update != 0) {
             latitude = receiveActividad.getLatitud();
             longitude = receiveActividad.getLongitud();
             marcarOnUpdate();
         }
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-    @Override
-    public void onMapClick(LatLng latLng) {
-        getCurrentLocation(0);
-        //marcador
-        MarkerOptions markerOptions = new MarkerOptions();
-        // posicion marcador
-        markerOptions.position(latLng);
-        //latitud y longitud
-        markerOptions.title("ubicacion del evento");
-        latitude= latLng.latitude;
-        longitude= latLng.longitude;
-        //limpiar click anterior
-        mMap.clear();
-        //Zoom al marcador
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,18));
-        //agregar el marcador en el mapa
-        mMap.addMarker(markerOptions);
-    }
-});
+            @Override
+            public void onMapClick(LatLng latLng) {
+                getCurrentLocation(0);
+                //marcador
+                MarkerOptions markerOptions = new MarkerOptions();
+                // posicion marcador
+                markerOptions.position(latLng);
+                //latitud y longitud
+                markerOptions.title("ubicacion del evento");
+                latitude = latLng.latitude;
+                longitude = latLng.longitude;
+                //limpiar click anterior
+                mMap.clear();
+                //Zoom al marcador
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+                //agregar el marcador en el mapa
+                mMap.addMarker(markerOptions);
+            }
+        });
 
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 44){
-            if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == 44) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation(1);
             }
         }
