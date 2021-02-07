@@ -13,8 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,13 +34,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.grade.quickid.BuildConfig;
 import com.grade.quickid.R;
-import com.grade.quickid.model.Actividad;
-import com.grade.quickid.model.CrearEventoActivity;
-import com.grade.quickid.model.Persona;
-import com.grade.quickid.model.QRGenerator;
+import com.grade.quickid.model.actividades.Actividad;
+import com.grade.quickid.model.actividades.CrearEventoActivity;
+import com.grade.quickid.model.personas.domain.Persona;
+import com.grade.quickid.model.actividades.QRGenerator;
 
-import com.grade.quickid.model.RegistroActividad;
-import com.grade.quickid.model.adaptadores.AdapterActividades;
+import com.grade.quickid.model.registroActividad.RegistroActividad;
+import com.grade.quickid.model.actividades.adaptadores.AdapterActividades;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;

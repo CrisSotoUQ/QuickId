@@ -1,4 +1,4 @@
-package com.grade.quickid.model.adaptadores;
+package com.grade.quickid.model.actividades.adaptadores;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.grade.quickid.R;
-import com.grade.quickid.model.Actividad;
+import com.grade.quickid.model.actividades.Actividad;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

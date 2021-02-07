@@ -24,8 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grade.quickid.R;
-import com.grade.quickid.model.RegistroActividad;
-import com.grade.quickid.model.adaptadores.AdapterRegistros;
+import com.grade.quickid.model.registroActividad.RegistroActividad;
+import com.grade.quickid.model.actividades.adaptadores.AdapterRegistros;
 
 import java.util.ArrayList;
 

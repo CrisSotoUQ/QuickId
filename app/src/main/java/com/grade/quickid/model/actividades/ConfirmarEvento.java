@@ -1,4 +1,4 @@
-package com.grade.quickid.model;
+package com.grade.quickid.model.actividades;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,7 +67,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                          actualizarEvento(imagenOriginal);
                          mProgress.dismiss();
                          Toast.makeText(ConfirmarEvento.this, "Evento Actualizado Satisfactoriamente", Toast.LENGTH_LONG).show();
-                         Intent intent = new Intent(getApplicationContext(),ActividadActivity.class);
+                         Intent intent = new Intent(getApplicationContext(), ActividadActivity.class);
                          // Closing all the Activities, clear the back stack.
                          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                          startActivity(intent);

@@ -20,16 +20,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.grade.quickid.model.ActividadActivity;
-import com.grade.quickid.model.CrudActivity;
-import com.grade.quickid.model.LoginActivity;
-import com.grade.quickid.model.MapsActivity;
-import com.grade.quickid.model.QRGenerator;
-import com.grade.quickid.model.QRScanner;
+import com.grade.quickid.model.actividades.ActividadActivity;
+import com.grade.quickid.model.personas.LoginActivity;
+import com.grade.quickid.model.actividades.QRScanner;
 
 
 public class MainActivity extends AppCompatActivity {
-private Button mActivityBtn;
 private Button btnEscanner;
 private Button btnLogOut;
 private Button btnActividades;
@@ -41,7 +37,6 @@ private int CAMERA_PERMISSION_CODE = 1;
         setContentView(R.layout.activity_main);
         emailtxt = (TextView) findViewById(R.id.UsertextView);
         tipotxt = (TextView) findViewById( R.id.TypeOfUsertextView);
-        mActivityBtn = (Button) findViewById(R.id.btnMain);
         btnEscanner = (Button) findViewById(R.id.btnEscanner);
         btnLogOut= (Button) findViewById(R.id.btnCerrarSesion);
         btnActividades = (Button) findViewById(R.id.btnActividades);
@@ -66,13 +61,7 @@ private int CAMERA_PERMISSION_CODE = 1;
             }
         });
 
-        mActivityBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CrudActivity.class);
-                startActivity(intent);
-            }
-        });
+
 
         btnEscanner.setOnClickListener(new View.OnClickListener() {
             @Override

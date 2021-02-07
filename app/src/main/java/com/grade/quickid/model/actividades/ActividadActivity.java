@@ -1,4 +1,4 @@
-package com.grade.quickid.model;
+package com.grade.quickid.model.actividades;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,9 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -33,8 +31,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import com.grade.quickid.MainActivity;
 import com.grade.quickid.R;
+import com.grade.quickid.model.personas.LoginActivity;
 import com.grade.quickid.model.controller.FragmentPagerController;
 import com.squareup.picasso.Picasso;
 

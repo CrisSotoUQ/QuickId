@@ -1,4 +1,4 @@
-package com.grade.quickid.model;
+package com.grade.quickid.model.actividades;
 
 import android.os.Parcelable;
 

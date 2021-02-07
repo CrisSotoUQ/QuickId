@@ -1,4 +1,4 @@
-package com.grade.quickid.model;
+package com.grade.quickid.model.personas.domain;
 
 public class Persona {
     public String id;

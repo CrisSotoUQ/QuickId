@@ -1,4 +1,4 @@
-package com.grade.quickid.model;
+package com.grade.quickid.model.actividades;
 
 import android.Manifest;
 import android.app.TimePickerDialog;
@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +30,7 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.grade.quickid.R;
+import com.grade.quickid.model.Time;
 import com.grade.quickid.model.controller.FragmentPagerController;
 import com.squareup.picasso.Picasso;
 

@@ -1,14 +1,12 @@
-package com.grade.quickid.model;
+package com.grade.quickid.model.actividades;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,9 +24,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.grade.quickid.R;
+import com.grade.quickid.model.registroActividad.RegistroActividad;
+import com.grade.quickid.model.Time;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class QRScanner extends AppCompatActivity {

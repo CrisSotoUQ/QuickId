@@ -1,4 +1,4 @@
-package com.grade.quickid.model;
+package com.grade.quickid.model.registroActividad;
 
 import android.text.format.DateFormat;
 import android.widget.ArrayAdapter;
