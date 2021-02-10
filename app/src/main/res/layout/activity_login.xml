@@ -4,81 +4,71 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D4DDDA"
+    android:background="#FFFFFF"
+    android:hapticFeedbackEnabled="false"
     tools:context=".model.personas.LoginActivity">
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="vertical"
+    <Button
+        android:id="@+id/googlebtn"
+        android:layout_width="275dp"
+        android:layout_height="56dp"
+        android:background="@drawable/user"
+        android:drawableStart="@drawable/shape"
+        android:drawableBottom="@drawable/user"
+        android:drawablePadding="10dp"
+        android:foreground="@drawable/common_google_signin_btn_icon_dark"
+        android:foregroundGravity="left"
+        android:includeFontPadding="false"
+        android:shadowColor="#8F2121"
+        android:text="Ingresar"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        app:backgroundTint="@color/common_google_signin_btn_tint"
+        app:layout_constraintBottom_toTopOf="@+id/textView10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.715"
+        app:rippleColor="#BA0000"
+        app:strokeColor="@color/colorGreen" />
 
-        <EditText
-            android:id="@+id/emailEditTxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Email"
-            android:inputType="textEmailAddress" />
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="172dp"
+        android:layout_height="148dp"
+        android:background="@drawable/qrlogo"
+        android:hapticFeedbackEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.588" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="68dp"
+        android:shadowColor="#404040"
+        android:text="Bienvenido a QuickID"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        app:drawableTint="#0E0E0E"
+        app:layout_constraintBottom_toTopOf="@+id/googlebtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <EditText
-            android:id="@+id/contrasenaEditTxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Contraseña"
-            android:inputType="textPassword" />
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="339dp"
+        android:layout_height="82dp"
+        android:layout_marginBottom="44dp"
+        android:text="Quickid es una app para tomar asistencia automatica mediante codigos QR."
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/singUpBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#039BE5"
-                android:shadowColor="#3F51B5"
-                android:text="Registrar"
-                android:textColor="#F6F0F0" />
-
-            <Button
-                android:id="@+id/loginBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#2C384A"
-                android:text="Acceder"
-                android:textColor="#F8F4F4" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <Button
-            android:id="@+id/googlebtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableStart="@drawable/common_google_signin_btn_icon_dark"
-            android:drawablePadding="10dp"
-            android:includeFontPadding="false"
-            android:text="Google"
-            android:textAlignment="textStart" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

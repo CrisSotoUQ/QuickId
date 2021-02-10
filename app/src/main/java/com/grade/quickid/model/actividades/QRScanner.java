@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +43,7 @@ public class QRScanner extends AppCompatActivity {
     int processDone = 0;
     ValueEventListener mSendEventListner;
     ValueEventListener mSendEventListner2;
+    int contadorMatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,67 +82,25 @@ public class QRScanner extends AppCompatActivity {
                                         for (DataSnapshot objSnapshot : snapshot.getChildren()) {
                                             String claveActPer = idActividad + "" + idUsuario;
                                             String idRegistro = UUID.randomUUID().toString();
-                                            FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-                                            myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
-
-                                            ValueEventListener valueEventListener = new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    if (snapshot.exists() && processDone != 1) {
-                                                        processDone = 1;
-                                                        int contador = 0;
-                                                        int parametro = 0;
-                                                        ArrayList<RegistroActividad> list = new ArrayList<RegistroActividad>();
-                                                        for (DataSnapshot objSnapshot : snapshot.getChildren()) {
-                                                            RegistroActividad ra = objSnapshot.getValue(RegistroActividad.class);
-                                                            list.add(ra);
-                                                            Time time = new Time();
-                                                            if (ra.getFechaRegistro().equals((time.fecha()))) {
-                                                                contador++;
-                                                            }
-                                                        }
-                                                        if (contador > parametro) {
-                                                            resultData.setText("Ya esta registrado en esta fecha");
-                                                            final Handler handler = new Handler(Looper.getMainLooper());
-                                                            handler.postDelayed(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-                                                                    finish();
-                                                                    startActivity(getIntent());
-                                                                }
-                                                            }, 1000);
-
-                                                        } else {
-                                                            myRefRegistroEvento = databaseReference.child("RegistroActividad");
-                                                            for (int i = 0; i < list.size(); i++) {
-                                                                RegistroActividad ra = list.get(i);
-                                                                String key = String.valueOf(ra.getIdRegistro());
-                                                                ra.setVisibilidad("0");
-                                                                myRefRegistroEvento.child(key).setValue(ra);
-                                                            }
-                                                            //creo el nodo Registro actividad
-                                                            crearRegistro(objSnapshot, result, claveActPer, idRegistro);
-                                                        }
-                                                    } else {
-                                                        if (processDone == 0) {
-                                                            processDone++;
-                                                            //creo el nodo Registro actividad
-                                                            crearRegistro(objSnapshot, result, claveActPer, idRegistro);
-                                                        }
+                                            Actividad act = objSnapshot.getValue(Actividad.class);
+                                            String cargaStatus= objSnapshot.child("cargueArchivoStatus").getValue(String.class);
+                                            if (cargaStatus.equals("1")) {
+                                                for(String value : act.getListaPersonas().values()){
+                                                    if (user.getEmail().equals(value)) {
+                                                        Toast.makeText(QRScanner.this,"Se ha encontrado",Toast.LENGTH_SHORT);
+                                                        resultData.setText("Encontrado");
+                                                        contadorMatch++;
+                                                        break;
                                                     }
                                                 }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-
+                                                if(contadorMatch>0){
+                                                    siguienteSnapshot(objSnapshot, result, claveActPer, idRegistro);
+                                                }else{
+                                                    Toast.makeText(QRScanner.this,"Usuario no existe en la lista",Toast.LENGTH_SHORT);
                                                 }
-                                            };
-                                            myRefRegistroEvento.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(valueEventListener);
-                                            mSendEventListner = valueEventListener;
-                                            //vibra el cel
-                                            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                                            vibrator.vibrate(500);
-                                            vibrator.vibrate(500);
+                                            }else{
+                                                   siguienteSnapshot(objSnapshot, result, claveActPer, idRegistro);
+                                            }
 
                                         }
                                     } else {
@@ -188,6 +148,72 @@ public class QRScanner extends AppCompatActivity {
             }
         });
     }
+
+    private void siguienteSnapshot(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
+        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+        myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && processDone != 1) {
+                    processDone = 1;
+                    int contador = 0;
+                    int parametro = 0;
+                    ArrayList<RegistroActividad> list = new ArrayList<RegistroActividad>();
+                    for (DataSnapshot objSnapshot : snapshot.getChildren()) {
+                        RegistroActividad ra = objSnapshot.getValue(RegistroActividad.class);
+                        list.add(ra);
+                        Time time = new Time();
+                        if (ra.getFechaRegistro().equals((time.fecha()))) {
+                            contador++;
+                        }
+                    }
+                    if (contador > parametro) {
+                        resultData.setText("Ya esta registrado en esta fecha");
+                        final Handler handler = new Handler(Looper.getMainLooper());
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                                startActivity(getIntent());
+                            }
+                        }, 1000);
+
+                    } else {
+                        myRefRegistroEvento = databaseReference.child("RegistroActividad");
+                        for (int i = 0; i < list.size(); i++) {
+                            RegistroActividad ra = list.get(i);
+                            String key = String.valueOf(ra.getIdRegistro());
+                            ra.setVisibilidad("0");
+                            myRefRegistroEvento.child(key).setValue(ra);
+                        }
+                        //creo el nodo Registro actividad
+                        crearRegistro(objSnapshot, result, claveActPer, idRegistro);
+                    }
+                } else {
+                    if (processDone == 0) {
+                        processDone++;
+                        //creo el nodo Registro actividad
+                        crearRegistro(objSnapshot, result, claveActPer, idRegistro);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        myRefRegistroEvento.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
+        //vibra el cel
+        Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(500);
+        vibrator.vibrate(500);
+    }
+
+
 
     private void crearRegistro(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
         RegistroActividad registroActividad = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);

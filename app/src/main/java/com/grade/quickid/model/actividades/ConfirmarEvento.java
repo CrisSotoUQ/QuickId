@@ -24,6 +24,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.grade.quickid.R;
+import com.grade.quickid.model.MainActivity;
 
 import java.io.Serializable;
 
@@ -37,6 +38,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
     private StorageReference mStorageRef;
     FirebaseDatabase firebaseDatabase;
     Actividad receive;
+    DatabaseReference myRef2;
     String imagenOriginal;
     private int update;
     @Override
@@ -67,7 +69,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                          actualizarEvento(imagenOriginal);
                          mProgress.dismiss();
                          Toast.makeText(ConfirmarEvento.this, "Evento Actualizado Satisfactoriamente", Toast.LENGTH_LONG).show();
-                         Intent intent = new Intent(getApplicationContext(), ActividadActivity.class);
+                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                          // Closing all the Activities, clear the back stack.
                          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                          startActivity(intent);
@@ -83,7 +85,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                                         crearEvento(uri.toString());
                                         mProgress.dismiss();
                                         Toast.makeText(ConfirmarEvento.this, "Ok", Toast.LENGTH_LONG).show();
-                                        Intent intent = new Intent(getApplicationContext(), ActividadActivity.class);
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                         // Closing all the Activities, clear the back stack.
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
@@ -113,9 +115,11 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
     }
 
     private void actualizarEvento(String Uri) {
+
         myRef = databaseReference.child("Actividad");
         receive.setUrlImagen(Uri);
         myRef.child(receive.getIdActividad()).setValue(receive);
+
         finish();
     }
 
@@ -131,6 +135,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
     private void crearEvento(String Uri) {
+        // inserto el objeto RegistroActividad
         myRef = databaseReference.child("Actividad");
         receive.setUrlImagen(Uri);
         myRef.child(receive.getIdActividad()).setValue(receive);

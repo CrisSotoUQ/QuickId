@@ -15,6 +15,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.grade.quickid.R;
 
 import java.io.BufferedReader;
@@ -23,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 public class CargarDatosCsv extends AppCompatActivity {
 private Button btn_cargarCsv;
@@ -32,6 +36,8 @@ private Button btn_siguiente;
     String imagenOriginal;
     TextView textViewData;
     String line = " ";
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
     private int READ_REQUEST_CODE = 100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +54,18 @@ private Button btn_siguiente;
             @Override
             public void onClick(View v) {
                 Intent act = new Intent(CargarDatosCsv.this, ConfirmarEvento.class);
-                act.putExtra("Actividad", receiveActividad);
-                if(update !=0){
-                    act.putExtra("Update",1);
+
+                if (!receiveActividad.getListaPersonas().equals(null)){
+                    act.putExtra("Actividad", receiveActividad);
+                    act.putExtra("Original",imagenOriginal);
+                    if(update !=0){
+                        act.putExtra("Update",1);
+                    }
+                    startActivity(act);
+
+            }else{
+                    Toast.makeText(CargarDatosCsv.this,"Es necesario cargar el archivo CSV",Toast.LENGTH_LONG);
                 }
-                startActivity(act);
             }
         });
         btn_cargarCsv.setOnClickListener(new View.OnClickListener() {
@@ -63,8 +76,6 @@ private Button btn_siguiente;
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("*/*");
                 startActivityForResult(intent, READ_REQUEST_CODE);
-
-
             }
         });
 
@@ -123,11 +134,14 @@ private Button btn_siguiente;
         }
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
-String concat = " ";
+        String concat = " ";
+        int contador = 0;
+        HashMap<String,String> hash = new HashMap<>();
         while ((line = br.readLine()) != null) {
+            contador++;
             // do something with line from file
-            concat +=line;
-
+            receiveActividad.setListaPersonas(String.valueOf(contador),line);
+            concat += "\r\n" +line;
         }
         textViewData.setText(concat);
         br.close();

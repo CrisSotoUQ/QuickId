@@ -60,7 +60,6 @@ public class FragmentActividades extends Fragment {
     private Button btnEliminar,btnEditar,btnDescargarDatos;
     ValueEventListener eventListner;
     ValueEventListener eventListner1;
-    private Context context;
     public FragmentActividades() {
         // Required empty public constructor
     }

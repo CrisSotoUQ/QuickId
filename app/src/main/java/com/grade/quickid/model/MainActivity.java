@@ -1,4 +1,4 @@
-package com.grade.quickid.model.actividades;
+package com.grade.quickid.model;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,14 +33,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import com.grade.quickid.R;
-import com.grade.quickid.model.personas.LoginActivity;
+import com.grade.quickid.model.actividades.CrearEventoActivity;
+import com.grade.quickid.model.actividades.QRScanner;
 import com.grade.quickid.model.controller.FragmentPagerController;
+import com.grade.quickid.model.personas.LoginActivity;
 import com.squareup.picasso.Picasso;
 
-public class ActividadActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     TabLayout tabLayout;
     ViewPager viewPager;
-    TabItem tab1,tab2;
+    TabItem tab1, tab2;
     private int CAMERA_PERMISSION_CODE = 1;
     ImageView imagemenu;
     FragmentPagerController pagerAdapter;
@@ -49,56 +52,61 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
     DrawerLayout drawerLayout;
     TextView textoCorreoGoogle;
     TextView textoNombregoogle;
+    private String nombre;
+    private String email;
+    private String tipo;
+    private String imagen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actividad);
-        drawerLayout= findViewById(R.id.drawerLayout);
-
-        tabLayout =(TabLayout) findViewById(R.id.tab_layout);
-        viewPager =(ViewPager) findViewById(R.id.view_pager);
+        drawerLayout = findViewById(R.id.drawerLayout);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
         tab1 = (TabItem) findViewById(R.id.tab_actividades);
         tab2 = (TabItem) findViewById(R.id.tab_registros);
         imagemenu = findViewById(R.id.imageMenu);
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
-        View hView =  navigationView.getHeaderView(0);
+        View hView = navigationView.getHeaderView(0);
         imageprofile = (ImageView) hView.findViewById(R.id.imageprofile);
         textoCorreoGoogle = (TextView) hView.findViewById(R.id.textoCorreoGoogle);
         textoNombregoogle = (TextView) hView.findViewById(R.id.textoNombreGoogle);
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
+        //setup
         Intent intent = getIntent();
-        String email = intent.getStringExtra("email");
-        String tipo = intent.getStringExtra("tipo");
-        String imagen= intent.getStringExtra("imagen");
-        String nombre = intent.getStringExtra("nombre");
-        setup(email,tipo,imagen, nombre);
+        email = intent.getStringExtra("email");
+        imagen = intent.getStringExtra("imagen");
+        nombre = intent.getStringExtra("nombre");
+        //Guardar datos
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("email", email);
+        editor.putString("imagen", imagen);
+        editor.putString("nombre", nombre);
+        editor.apply();
+        editor.commit();
 
-        // Guardar datos session
-        SharedPreferences.Editor prefs= (SharedPreferences.Editor) getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit();
-        prefs.putString("email",email);
-        prefs.putString("tipo",tipo);
-        prefs.putString("imagen",imagen);
-        prefs.putString("nombre", nombre);
-        prefs.apply();
+        setup(email, tipo, imagen, nombre);
         imagemenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-        pagerAdapter = new FragmentPagerController(getSupportFragmentManager(),tabLayout.getTabCount());
+        pagerAdapter = new FragmentPagerController(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pagerAdapter);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                if (tab.getPosition()==0){
+                if (tab.getPosition() == 0) {
                     pagerAdapter.notifyDataSetChanged();
                 }
-                if (tab.getPosition()==1){
+                if (tab.getPosition() == 1) {
                     pagerAdapter.notifyDataSetChanged();
                 }
 
@@ -115,10 +123,11 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
             }
         });
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        inicializarFirebase ();
+        inicializarFirebase();
     }
 
-    private void setup( String email, String tipo,String imagen, String nombre) {
+
+    private void setup(String email, String tipo, String imagen, String nombre) {
         Picasso.get().load(imagen).fit().centerInside().into(imageprofile);
         textoCorreoGoogle.setText(email);
         textoNombregoogle.setText(nombre);
@@ -128,7 +137,7 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
     private void inicializarFirebase() {
         FirebaseApp.initializeApp(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference= firebaseDatabase.getReference();
+        databaseReference = firebaseDatabase.getReference();
     }
 
     @Override
@@ -138,28 +147,31 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
 
             case R.id.Salir: {
                 FirebaseAuth.getInstance().signOut();
-                SharedPreferences.Editor prefs= (SharedPreferences.Editor) getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit();
+                SharedPreferences.Editor prefs = (SharedPreferences.Editor) getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit();
                 prefs.clear();
                 prefs.apply();
-                Intent intent = new Intent(ActividadActivity.this, LoginActivity.class);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
                 break;
-            } case R.id.menuScanQr:{
-                if (ContextCompat.checkSelfPermission(ActividadActivity.this,
-                        Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(ActividadActivity.this,"Permiso Aceptado",Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(ActividadActivity.this, QRScanner.class);
+            }
+            case R.id.menuScanQr: {
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(MainActivity.this, "Permiso Aceptado", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, QRScanner.class);
                     startActivity(intent);
                     break;
-                }else{
+                } else {
                     requestCameraPermission();
                 }
 
-            } case R.id.menuEventos:{
-                Intent intent = new Intent(ActividadActivity.this, CrearEventoActivity.class);
-                intent.putExtra("Update",0);
+            }
+            case R.id.menuEventos: {
+                Intent intent = new Intent(MainActivity.this, CrearEventoActivity.class);
+                intent.putExtra("Update", 0);
                 startActivity(intent);
+                finish();
                 break;
             }
         }
@@ -169,14 +181,14 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
     }
 
     private void requestCameraPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.CAMERA)){
-            new  AlertDialog.Builder(this)
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+            new AlertDialog.Builder(this)
                     .setTitle("Permiso requerido")
                     .setMessage("Este permiso es requerido")
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(ActividadActivity.this,new String[]{ Manifest.permission.CAMERA},CAMERA_PERMISSION_CODE);
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
                         }
                     }).setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                 @Override
@@ -184,8 +196,8 @@ public class ActividadActivity extends AppCompatActivity  implements NavigationV
                     dialog.dismiss();
                 }
             }).create().show();
-        }else{
-            ActivityCompat.requestPermissions(this,new String[]{ Manifest.permission.CAMERA},CAMERA_PERMISSION_CODE);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
         }
 
     }

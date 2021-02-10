@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class Actividad implements Serializable  {
@@ -21,13 +22,14 @@ public class Actividad implements Serializable  {
     public String id_persona;
     public String horaIni;
     public String urlImagen;
-
+    public HashMap<String,String> listaPersonas = new HashMap<>();
     public Actividad() {
     }
 
-    public Actividad(String idActividad, String nombre, String fIni, String fFin, String lugar, double latitud, double longitud,
-                     String estadoActividad, String geolocStatus, String cargueArchivoStatus, String id_persona, String horaIni,
-                     String urlImagen) {
+    public Actividad(String idActividad, String nombre, String fIni, String fFin, String lugar,
+                     double latitud, double longitud, String estadoActividad, String geolocStatus,
+                     String cargueArchivoStatus, String id_persona, String horaIni, String urlImagen,
+                     HashMap<String, String> listaPersonas) {
         this.idActividad = idActividad;
         this.nombre = nombre;
         this.fIni = fIni;
@@ -41,6 +43,15 @@ public class Actividad implements Serializable  {
         this.id_persona = id_persona;
         this.horaIni = horaIni;
         this.urlImagen = urlImagen;
+        this.listaPersonas = listaPersonas;
+    }
+
+    public HashMap<String, String> getListaPersonas() {
+        return listaPersonas;
+    }
+
+    public void setListaPersonas(String a,String b) {
+        listaPersonas.put("correo:"+a,b);
     }
 
     public String getUrlImagen() {
@@ -145,4 +156,5 @@ public class Actividad implements Serializable  {
     public void setId_persona(String id_persona) {
         this.id_persona = id_persona;
     }
+
 }
