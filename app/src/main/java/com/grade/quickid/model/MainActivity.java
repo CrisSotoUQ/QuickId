@@ -81,14 +81,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imagen = intent.getStringExtra("imagen");
         nombre = intent.getStringExtra("nombre");
         //Guardar datos
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("email", email);
-        editor.putString("imagen", imagen);
-        editor.putString("nombre", nombre);
-        editor.apply();
-        editor.commit();
-
+        if (email!= null){
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("email", email);
+            editor.putString("imagen", imagen);
+            editor.putString("nombre", nombre);
+            editor.apply();
+            editor.commit();
+        }else{
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            email = prefs.getString("email", null);
+            nombre = prefs.getString("nombre", null);
+            imagen = prefs.getString("imagen", null);
+        }
         setup(email, tipo, imagen, nombre);
         imagemenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Toast.makeText(MainActivity.this, "Permiso Aceptado", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, QRScanner.class);
                     startActivity(intent);
+                    finish();
                     break;
                 } else {
                     requestCameraPermission();

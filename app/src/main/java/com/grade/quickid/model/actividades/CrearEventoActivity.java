@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.grade.quickid.R;
+import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.Time;
 import com.grade.quickid.model.controller.FragmentPagerController;
 import com.squareup.picasso.Picasso;
@@ -412,6 +413,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         super.onBackPressed();
         //codigo adicional
         this.finish();
+        Intent intent = new Intent(CrearEventoActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

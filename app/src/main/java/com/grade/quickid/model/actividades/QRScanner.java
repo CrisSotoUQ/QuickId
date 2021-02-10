@@ -1,6 +1,7 @@
 package com.grade.quickid.model.actividades;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.grade.quickid.R;
+import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.registroActividad.RegistroActividad;
 import com.grade.quickid.model.Time;
 
@@ -275,7 +277,8 @@ public class QRScanner extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        //codigo adicional
+        Intent intent = new Intent(QRScanner.this, MainActivity.class);
+        startActivity(intent);
         this.finish();
     }
 
