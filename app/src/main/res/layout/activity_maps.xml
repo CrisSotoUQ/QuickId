@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="left"
-            android:text="Ubicacion del evento :"
+            android:text="Marcar Ubicacion evento :"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@+id/map"
             app:layout_constraintEnd_toEndOf="parent"

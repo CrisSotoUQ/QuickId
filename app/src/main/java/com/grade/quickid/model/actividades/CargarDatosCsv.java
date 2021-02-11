@@ -29,15 +29,13 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class CargarDatosCsv extends AppCompatActivity {
-private Button btn_cargarCsv;
-private Button btn_siguiente;
+    private Button btn_cargarCsv;
+    private Button btn_siguiente;
     Actividad receiveActividad;
     private int update;
     String imagenOriginal;
     TextView textViewData;
     String line = " ";
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
     private int READ_REQUEST_CODE = 100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,51 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".model.actividades.QRGenerator"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".model.actividades.QRGenerator">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <ImageView
+        android:id="@+id/imageView_qr"
+        android:layout_width="395dp"
+        android:layout_height="389dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="77dp"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+    <Button
+        android:id="@+id/btn_save_qr"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"/>
+        android:text="Descargar Imagen QR"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_qr"
+        app:layout_constraintVertical_bias="0.182" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:orientation="horizontal">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textViewNombreAct"
-            android:layout_width="225dp"
-            android:layout_height="match_parent"
+            android:layout_width="92dp"
+            android:layout_height="54dp"
             android:text="Nombre :"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/textViewNombreActividad"
-            android:layout_width="201dp"
+            android:layout_width="270dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:textSize="18sp" />
     </LinearLayout>
 
-
-    <ImageView
-        android:id="@+id/imageView_qr"
-        android:layout_width="match_parent"
-        android:layout_height="545dp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="27dp"
-        tools:layout_editor_absoluteY="180dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-    <Button
-        android:id="@+id/btn_save_qr"
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:text="Descargar Imagen QR" />
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

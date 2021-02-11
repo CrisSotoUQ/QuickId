@@ -30,6 +30,7 @@ import java.io.Serializable;
 
 public class ConfirmarEvento extends AppCompatActivity implements Serializable {
     private Button btn_CrearEvento;
+    private Button btn_CancelarEvento;
     TextView titulo;
     DatabaseReference databaseReference;
     DatabaseReference myRef;
@@ -38,7 +39,6 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
     private StorageReference mStorageRef;
     FirebaseDatabase firebaseDatabase;
     Actividad receive;
-    DatabaseReference myRef2;
     String imagenOriginal;
     private int update;
     @Override
@@ -49,6 +49,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         mProgress = new ProgressDialog(this);
         btn_CrearEvento = (Button) findViewById(R.id.btn_crearEvento);
+        btn_CancelarEvento = (Button) findViewById(R.id.btn_cancelarEvento);
         inicializarFirebase();
         receive = (Actividad) getIntent().getSerializableExtra("Actividad");
         mImageUri = Uri.parse(receive.getUrlImagen());
@@ -58,6 +59,16 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
             titulo.setText("Actualizacion evento terminada!");
             btn_CrearEvento.setText("Actualizar");
         }
+        btn_CancelarEvento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ConfirmarEvento.this, "Se ha cancelado la configuracion del evento", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                // Closing all the Activities, clear the back stack.
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
         btn_CrearEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

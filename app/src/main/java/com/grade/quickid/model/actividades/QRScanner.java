@@ -98,7 +98,15 @@ public class QRScanner extends AppCompatActivity {
                                                 if(contadorMatch>0){
                                                     siguienteSnapshot(objSnapshot, result, claveActPer, idRegistro);
                                                 }else{
-                                                    Toast.makeText(QRScanner.this,"Usuario no existe en la lista",Toast.LENGTH_SHORT);
+
+                                                    resultData.setText("no estas en la lista");
+                                                    //vibra el cel
+                                                    Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                                    vibrator.vibrate(500);
+                                                    vibrator.vibrate(500);
+                                                    reloadActivity();
+                                                    break;
+
                                                 }
                                             }else{
                                                    siguienteSnapshot(objSnapshot, result, claveActPer, idRegistro);
@@ -110,14 +118,7 @@ public class QRScanner extends AppCompatActivity {
                                         Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                                         vibrator.vibrate(500);
                                         vibrator.vibrate(500);
-                                        final Handler handler = new Handler(Looper.getMainLooper());
-                                        handler.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                finish();
-                                                startActivity(getIntent());
-                                            }
-                                        }, 1500);
+                                       reloadActivity();
                                     }
 
                                 }
@@ -135,20 +136,25 @@ public class QRScanner extends AppCompatActivity {
                             Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(500);
                             vibrator.vibrate(500);
-                            final Handler handler = new Handler(Looper.getMainLooper());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                    startActivity(getIntent());
-                                }
-                            }, 1500);
+                          reloadActivity();
                         }
 
                     }
                 });
             }
         });
+    }
+
+    private void reloadActivity() {
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+                startActivity(getIntent());
+            }
+        }, 1500);
+
     }
 
     private void siguienteSnapshot(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
@@ -172,15 +178,9 @@ public class QRScanner extends AppCompatActivity {
                         }
                     }
                     if (contador > parametro) {
-                        resultData.setText("Ya esta registrado en esta fecha");
-                        final Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                finish();
-                                startActivity(getIntent());
-                            }
-                        }, 1000);
+                        resultData.setText("Ya se registro en esta fecha");
+
+                     reloadActivity();
 
                     } else {
                         myRefRegistroEvento = databaseReference.child("RegistroActividad");
@@ -221,15 +221,8 @@ public class QRScanner extends AppCompatActivity {
         RegistroActividad registroActividad = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
         final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
         myRef2.getRef().child(idRegistro).setValue(registroActividad);
-        final Handler handler = new Handler(Looper.getMainLooper());
         resultData.setText("Registro Exitoso");
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                finish();
-            }
-        }, 1500);
+     reloadActivity();
     }
 
 
@@ -243,7 +236,6 @@ public class QRScanner extends AppCompatActivity {
         // y se crea un nuevo registro
         // tengo que validar que en la misma fecha no se registre mas de una vez
         // o llevar por parametro las veces que se necesita tomar asistencia
-        // el registro ajuste que se realizara mas adelante
 
         RegistroActividad registroActividad = new RegistroActividad();
         registroActividad.setIdRegistro(idRegistro);
