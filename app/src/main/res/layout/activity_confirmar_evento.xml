@@ -12,22 +12,20 @@
         android:layout_width="371dp"
         android:layout_height="85dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="104dp"
         android:text="Configuracion evento terminada!"
         android:textColor="#000000"
         android:textSize="36sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.303"></TextView>
+        app:layout_constraintTop_toTopOf="parent"></TextView>
 
     <TextView
         android:id="@+id/textView8"
-        android:layout_width="367dp"
-        android:layout_height="108dp"
+        android:layout_width="363dp"
+        android:layout_height="117dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="152dp"
+        android:layout_marginTop="76dp"
         android:gravity="center_horizontal|fill_horizontal"
         android:shadowColor="#FFFFFF"
         android:text="Una vez creado podras descargar la imagen QR presionando en el nuevo elemento de la lista."
@@ -35,33 +33,33 @@
         android:textAllCaps="false"
         android:textColor="#000000"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/btn_crearEvento"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></TextView>
+        app:layout_constraintEnd_toEndOf="@+id/txt_tituloConfirmarEvento"
+        app:layout_constraintStart_toStartOf="@+id/txt_tituloConfirmarEvento"
+        app:layout_constraintTop_toBottomOf="@+id/txt_tituloConfirmarEvento"></TextView>
 
     <Button
         android:id="@+id/btn_crearEvento"
         android:layout_width="141dp"
         android:layout_height="47dp"
-        android:layout_marginBottom="36dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="112dp"
         android:background="#FFFFFF"
         android:text="Crear"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/btn_cancelarEvento"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.251"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/textView8"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <Button
         android:id="@+id/btn_cancelarEvento"
         android:layout_width="141dp"
         android:layout_height="53dp"
-        android:layout_marginBottom="92dp"
         android:background="@drawable/shape"
         android:text="Cancelar"
         android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.251"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/btn_crearEvento"
+        app:layout_constraintTop_toBottomOf="@+id/btn_crearEvento"
+        app:layout_constraintVertical_bias="0.146" />
 </androidx.constraintlayout.widget.ConstraintLayout>

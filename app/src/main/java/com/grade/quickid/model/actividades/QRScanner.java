@@ -1,7 +1,10 @@
 package com.grade.quickid.model.actividades;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,10 +15,21 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +52,7 @@ public class QRScanner extends AppCompatActivity {
     CodeScannerView scannView;
     TextView resultData;
     static int OnScannerElse;
+    FusedLocationProviderClient client;
     DatabaseReference databaseReference;
     DatabaseReference myRefRegistroEvento;
     DatabaseReference myRefEvento;
@@ -45,7 +60,18 @@ public class QRScanner extends AppCompatActivity {
     int processDone = 0;
     ValueEventListener mSendEventListner;
     ValueEventListener mSendEventListner2;
+    public static  LatLng latLng;
+
+    public static LatLng getLatLng() {
+        return latLng;
+    }
+
+    public static void setLatLng(LatLng latLng) {
+        QRScanner.latLng = latLng;
+    }
+
     int contadorMatch;
+    boolean isWithin10km;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +82,7 @@ public class QRScanner extends AppCompatActivity {
         mCodeScanner = new CodeScanner(this, scannView);
         resultData = findViewById(R.id.txtResult);
         resultData.setText("");
+        client = LocationServices.getFusedLocationProviderClient(this);
         scannView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,19 +112,24 @@ public class QRScanner extends AppCompatActivity {
                                             String claveActPer = idActividad + "" + idUsuario;
                                             String idRegistro = UUID.randomUUID().toString();
                                             Actividad act = objSnapshot.getValue(Actividad.class);
-                                            String cargaStatus= objSnapshot.child("cargueArchivoStatus").getValue(String.class);
+                                            String cargaStatus = objSnapshot.child("cargueArchivoStatus").getValue(String.class);
+                                            String geoStatus = objSnapshot.child("geolocStatus").getValue(String.class);
+                                            if (geoStatus.equals("1")) {
+                                                getCurrentLocation(1);
+
+                                            }
                                             if (cargaStatus.equals("1")) {
-                                                for(String value : act.getListaPersonas().values()){
+                                                for (String value : act.getListaPersonas().values()) {
                                                     if (user.getEmail().equals(value)) {
-                                                        Toast.makeText(QRScanner.this,"Se ha encontrado",Toast.LENGTH_SHORT);
+                                                        Toast.makeText(QRScanner.this, "Se ha encontrado", Toast.LENGTH_SHORT);
                                                         resultData.setText("Encontrado");
                                                         contadorMatch++;
                                                         break;
                                                     }
                                                 }
-                                                if(contadorMatch>0){
+                                                if (contadorMatch > 0) {
                                                     siguienteSnapshot(objSnapshot, result, claveActPer, idRegistro);
-                                                }else{
+                                                } else {
 
                                                     resultData.setText("no estas en la lista");
                                                     //vibra el cel
@@ -108,8 +140,8 @@ public class QRScanner extends AppCompatActivity {
                                                     break;
 
                                                 }
-                                            }else{
-                                                   siguienteSnapshot(objSnapshot, result, claveActPer, idRegistro);
+                                            } else {
+                                                siguienteSnapshot(objSnapshot, result, claveActPer, idRegistro);
                                             }
 
                                         }
@@ -118,7 +150,7 @@ public class QRScanner extends AppCompatActivity {
                                         Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                                         vibrator.vibrate(500);
                                         vibrator.vibrate(500);
-                                       reloadActivity();
+                                        reloadActivity();
                                     }
 
                                 }
@@ -136,13 +168,41 @@ public class QRScanner extends AppCompatActivity {
                             Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(500);
                             vibrator.vibrate(500);
-                          reloadActivity();
+                            reloadActivity();
                         }
 
                     }
                 });
             }
         });
+    }
+
+    private void getCurrentLocation(int flagLocation) {
+        //Initialize task location
+        //  Task<>
+        final int flaglocation = flagLocation;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(QRScanner.this, new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+        }
+        Task<Location> task = client.getLastLocation();
+
+        if (flagLocation != 0) {
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    //satisfactorio
+                    if (location != null) {
+                        //sincronizoLatLng
+                        latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        QRScanner.setLatLng(latLng);
+
+                    }
+                }
+            });
+        }
     }
 
     private void reloadActivity() {
@@ -160,6 +220,14 @@ public class QRScanner extends AppCompatActivity {
     private void siguienteSnapshot(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
         FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
         myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
+        if (latLng != null) {
+            double latActividad = objSnapshot.child("latitud").getValue(double.class);
+            double longActividad = objSnapshot.child("longitud").getValue(double.class);
+            float[] results = new float[1];
+            Location.distanceBetween(latActividad, longActividad, latLng.latitude, latLng.longitude, results);
+            float distanceInMeters = results[0];
+            isWithin10km = distanceInMeters < 50;
+        }
 
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
@@ -180,7 +248,7 @@ public class QRScanner extends AppCompatActivity {
                     if (contador > parametro) {
                         resultData.setText("Ya se registro en esta fecha");
 
-                     reloadActivity();
+                        reloadActivity();
 
                     } else {
                         myRefRegistroEvento = databaseReference.child("RegistroActividad");
@@ -216,15 +284,26 @@ public class QRScanner extends AppCompatActivity {
     }
 
 
-
     private void crearRegistro(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
-        RegistroActividad registroActividad = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
-        final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
-        myRef2.getRef().child(idRegistro).setValue(registroActividad);
-        resultData.setText("Registro Exitoso");
-     reloadActivity();
+        if (latLng != null && isWithin10km == false) {
+            resultData.setText("Fuera de rango del evento");
+            reloadActivity();
+        }
+        if (latLng != null && isWithin10km == true) {
+            RegistroActividad registroActividad = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
+            final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
+            myRef2.getRef().child(idRegistro).setValue(registroActividad);
+            resultData.setText("Registro Exitoso");
+            reloadActivity();
+        }
+        if (latLng == null) {
+            RegistroActividad registroActividad2 = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
+            final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
+            myRef3.getRef().child(idRegistro).setValue(registroActividad2);
+            resultData.setText("Registro Exitoso null");
+            reloadActivity();
+        }
     }
-
 
     private Object CrearObjetoRegistro(DataSnapshot objSnapshot, Result result, String actPer, String idRegistro) {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

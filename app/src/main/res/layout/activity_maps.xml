@@ -49,10 +49,10 @@
             android:text="Siguiente"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/map"
-            app:layout_constraintHorizontal_bias="0.949"
+            app:layout_constraintHorizontal_bias="0.94"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/map"
-            app:layout_constraintVertical_bias="0.751" />
+            app:layout_constraintVertical_bias="0.487" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </RelativeLayout>
