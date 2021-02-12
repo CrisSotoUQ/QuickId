@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView textoNombregoogle;
     private String nombre;
     private String email;
-    private String tipo;
+    private Button mainQrScanner;
     private String imagen;
 
     @Override
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tab1 = (TabItem) findViewById(R.id.tab_actividades);
         tab2 = (TabItem) findViewById(R.id.tab_registros);
         imagemenu = findViewById(R.id.imageMenu);
+        mainQrScanner = findViewById(R.id.mainQrScannner);
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         View hView = navigationView.getHeaderView(0);
         imageprofile = (ImageView) hView.findViewById(R.id.imageprofile);
@@ -95,7 +97,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             nombre = prefs.getString("nombre", null);
             imagen = prefs.getString("imagen", null);
         }
-        setup(email, tipo, imagen, nombre);
+        setup(email, imagen, nombre);
+        mainQrScanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(MainActivity.this, "Permiso Aceptado", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, QRScanner.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    requestCameraPermission();
+                }
+            }
+        });
         imagemenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    private void setup(String email, String tipo, String imagen, String nombre) {
+    private void setup(String email, String imagen, String nombre) {
         Picasso.get().load(imagen).fit().centerInside().into(imageprofile);
         textoCorreoGoogle.setText(email);
         textoNombregoogle.setText(nombre);
