@@ -256,7 +256,6 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                 }
                 //Muestro la hora con el formato deseado
                 etHora.setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
-//                receiveActividad.setHoraIni(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
             }
             //Estos valores deben ir en ese orden
             //Al colocar en false se muestra en formato 12 horas y true en formato 24 horas
@@ -272,6 +271,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         receiveActividad.setNombre(txt_nombreActividad.getText().toString());
         receiveActividad.setLugar(txt_nombreLugar.getText().toString());
         receiveActividad.setUrlImagen(mImageUri.toString());
+        receiveActividad.setHoraIni(etHora.getText().toString());
     }
 
     private Object retornoObjetoActividad() {

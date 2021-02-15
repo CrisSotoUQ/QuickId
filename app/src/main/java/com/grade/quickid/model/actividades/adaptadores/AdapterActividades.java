@@ -64,6 +64,7 @@ public class AdapterActividades extends RecyclerView.Adapter<AdapterActividades.
         View view = layoutInflater.inflate(R.layout.item_list,parent,false);
         view.setOnLongClickListener(this);
         view.setOnClickListener(this);
+
         return new ViewHolder(view);
     }
 
@@ -86,8 +87,9 @@ public class AdapterActividades extends RecyclerView.Adapter<AdapterActividades.
         return 0;
 
     }
-    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener){
+   public void setOnLongClickListener(View.OnLongClickListener onLongClickListener){
         this.onLongClickListener = onLongClickListener;
+        
 
     }
     public  void setOnClickListener(View.OnClickListener onClickListener){

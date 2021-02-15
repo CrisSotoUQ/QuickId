@@ -3,11 +3,13 @@ package com.grade.quickid.model.controller;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -60,6 +62,8 @@ public class FragmentActividades extends Fragment {
     private Button btnEliminar,btnEditar,btnDescargarDatos;
     ValueEventListener eventListner;
     ValueEventListener eventListner1;
+    CardView cardView;
+
     public FragmentActividades() {
         // Required empty public constructor
     }
@@ -81,6 +85,7 @@ public class FragmentActividades extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_actividades, container, false);
         rvActividades = (RecyclerView) view.findViewById(R.id.Recycler_actividades);
+        cardView = (CardView) view.findViewById(R.id.id_cardview);
         listarDatos();
         // Inflate the layout for this fragment
 
@@ -118,6 +123,7 @@ public class FragmentActividades extends Fragment {
                         adapterActividades.setOnLongClickListener(new View.OnLongClickListener() {
                             public boolean onLongClick(View v) {
                                 mostrarDialog(listActividades.get(rvActividades.getChildAdapterPosition(v)));
+                                v.setBackgroundColor(getResources().getColor(R.color.colorGreen));
                                 return false;
                             }
                         });
@@ -138,6 +144,12 @@ public class FragmentActividades extends Fragment {
 
     private void mostrarDialog(Actividad actividad) {
         dialogBuilder = new AlertDialog.Builder(getActivity());
+        dialogBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+            }
+        });
         final View popActividadFragment = getLayoutInflater().inflate(R.layout.popup_dialog_actividades,null);
         btnEliminar = (Button) popActividadFragment.findViewById(R.id.btn_eliminar_actividad);
         btnEditar = (Button)   popActividadFragment.findViewById(R.id.btn_editar_actividad);
@@ -159,7 +171,7 @@ public class FragmentActividades extends Fragment {
                         data.append("Nombre Evento: "+actividad.getNombre());
                         data.append("\n"+"Lugar Evento: "+actividad.getLugar());
                         data.append("\n");
-                        data.append("\n"+"Correo ,   Apellido  ,   Nombre   , Fecha  ,  Hora entrada ,Hora salida");
+                        data.append("\n"+"Correo ,   Apellido  ,   Nombre   , Fecha  ,  Hora entrada");
                         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
                         myRefDatosPersonaEvento = firebaseDatabase.getInstance().getReference().child("Persona");
 
@@ -191,6 +203,7 @@ public class FragmentActividades extends Fragment {
                                                 fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                                 fileIntent.putExtra(Intent.EXTRA_STREAM, path);
                                                 dialog.dismiss();
+
                                                 startActivity(Intent.createChooser(fileIntent, "Send mail"));
                                                 myRefDatosRegistroEvento.removeEventListener(eventListner);
                                                 myRefDatosRegistroEvento.removeEventListener(eventListner1);

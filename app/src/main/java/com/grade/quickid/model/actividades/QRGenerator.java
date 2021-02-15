@@ -9,6 +9,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -20,6 +21,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.grade.quickid.BuildConfig;
 import com.grade.quickid.R;
 
@@ -27,6 +37,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -46,6 +57,8 @@ private String nombreActividad;
         textViewNombreActividad = (TextView) findViewById(R.id.textViewNombreActividad);
         btnSaveQr = (Button) findViewById(R.id.btn_save_qr);
         Intent intent = getIntent();
+        createBarchart();
+        createPieChart();
         final String actividad = intent.getStringExtra("idActividad");
         nombreActividad = intent.getStringExtra("nombre");
         textViewNombreActividad.setText(nombreActividad);
@@ -69,6 +82,50 @@ private String nombreActividad;
 
             }
         });
+    }
+
+    private void createPieChart() {
+        PieChart pieChart = findViewById(R.id.pieChart);
+        ArrayList <PieEntry> visitantes = new ArrayList<>();
+        visitantes.add(new PieEntry(508,"2019"));
+        visitantes.add(new PieEntry(700,"2020"));
+        visitantes.add(new PieEntry(800,"2021"));
+        PieDataSet pieDataSet = new PieDataSet( visitantes,"Visitantes");
+        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        pieDataSet.setValueTextColor(Color.BLACK);
+        pieDataSet.setValueTextSize(16f);
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.setData(pieData);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setCenterText("Visitantes");
+        pieChart.animate();
+
+
+    }
+
+    private void createBarchart() {
+        BarChart barChart = findViewById(R.id.barChart);
+        ArrayList<BarEntry> visitorsByDate = new ArrayList<>();
+        visitorsByDate.add(new BarEntry(2014,300));
+        visitorsByDate.add(new BarEntry(2015,500));
+        visitorsByDate.add(new BarEntry(2016,600));
+        visitorsByDate.add(new BarEntry(2017,620));
+        visitorsByDate.add(new BarEntry(2018,500));
+        visitorsByDate.add(new BarEntry(2019,300));
+        visitorsByDate.add(new BarEntry(2020,200));
+        visitorsByDate.add(new BarEntry(2021,600));
+        visitorsByDate.add(new BarEntry(2022,700));
+        BarDataSet barDataSet = new BarDataSet(visitorsByDate, "Visitors By Date ");
+        barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        barDataSet.setValueTextColor(Color.BLACK);
+        barDataSet.setValueTextSize(16f);
+        BarData barData= new BarData(barDataSet);
+        barChart.setFitBars(true);
+        barChart.setData(barData);
+        barChart.getDescription().setText("Bar Chart Example");
+        barChart.animateY(2000);
+
+
     }
 
     private void pedirPermisos() {
