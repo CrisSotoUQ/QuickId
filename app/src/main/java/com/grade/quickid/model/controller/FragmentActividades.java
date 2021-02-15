@@ -123,7 +123,6 @@ public class FragmentActividades extends Fragment {
                         adapterActividades.setOnLongClickListener(new View.OnLongClickListener() {
                             public boolean onLongClick(View v) {
                                 mostrarDialog(listActividades.get(rvActividades.getChildAdapterPosition(v)));
-                                v.setBackgroundColor(getResources().getColor(R.color.colorGreen));
                                 return false;
                             }
                         });

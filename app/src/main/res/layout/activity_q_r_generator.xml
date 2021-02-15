@@ -34,7 +34,7 @@
         android:layout_width="69dp"
         android:layout_height="35dp"
         android:layout_marginEnd="10dp"
-        android:text="TextView"
+        android:text="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView15" />
 
@@ -43,7 +43,7 @@
         android:layout_width="69dp"
         android:layout_height="35dp"
         android:layout_marginEnd="10dp"
-        android:text="TextView"
+        android:text="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView11" />
 
@@ -62,14 +62,13 @@
 
     <ImageView
         android:id="@+id/imageView_qr"
-        android:layout_width="395dp"
-        android:layout_height="389dp"
+        android:layout_width="586dp"
+        android:layout_height="392dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.096"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        app:layout_constraintVertical_bias="0.014"
         tools:ignore="MissingConstraints"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
@@ -87,9 +86,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:layout_marginBottom="29dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/imageView_qr"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -113,7 +111,7 @@
         android:layout_width="246dp"
         android:layout_height="38dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="10dp"
         android:text="Contador de registros fecha actual"
         app:layout_constraintEnd_toStartOf="@+id/contadorRegistrosFechaActual"
@@ -126,33 +124,22 @@
         android:layout_width="69dp"
         android:layout_height="35dp"
         android:layout_marginEnd="10dp"
-        android:text="TextView"
+        android:text="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView2" />
 
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pieChart"
-        android:layout_width="341dp"
-        android:layout_height="507dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barChart"
-        android:layout_width="335dp"
-        android:layout_height="488dp"
+        android:layout_width="426dp"
+        android:layout_height="373dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/textView12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView11"
-        app:layout_constraintVertical_bias="0.0" >
+        app:layout_constraintTop_toBottomOf="@+id/textView16">
 
     </com.github.mikephil.charting.charts.BarChart>
 
@@ -161,25 +148,36 @@
         android:layout_width="290dp"
         android:layout_height="47dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:text="Diagrama de Barras"
+        android:gravity="center_horizontal"
+        android:text="Asistentes por dia"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/barChart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView11"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
     <TextView
+        android:id="@+id/textView12"
         android:layout_width="241dp"
         android:layout_height="50dp"
-        android:text="Diagrama de pastel"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="Asistentes por mes"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/pieChart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barChart" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChart"
+        android:layout_width="431dp"
+        android:layout_height="344dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView12"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
    </ScrollView>

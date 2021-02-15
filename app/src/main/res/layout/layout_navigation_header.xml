@@ -8,9 +8,9 @@
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imageprofile"
-        android:layout_width="110dp"
-        android:layout_height="95dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="5dp"
         android:scaleType="centerCrop"
         android:src="@drawable/profile"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,8 +35,8 @@
 
     <TextView
         android:id="@+id/textoCorreoGoogle"
-        android:layout_width="198dp"
-        android:layout_height="45dp"
+        android:layout_width="200dp"
+        android:layout_height="39dp"
         android:layout_marginTop="156dp"
         android:text="Correo"
         app:layout_constraintEnd_toEndOf="parent"

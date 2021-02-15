@@ -22,12 +22,7 @@ import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -48,6 +43,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class QRScanner extends AppCompatActivity {
+    private static LatLng latLng;
     CodeScanner mCodeScanner;
     CodeScannerView scannView;
     TextView resultData;
@@ -60,15 +56,6 @@ public class QRScanner extends AppCompatActivity {
     int processDone = 0;
     ValueEventListener mSendEventListner;
     ValueEventListener mSendEventListner2;
-    public static  LatLng latLng;
-
-    public static LatLng getLatLng() {
-        return latLng;
-    }
-
-    public static void setLatLng(LatLng latLng) {
-        QRScanner.latLng = latLng;
-    }
 
     int contadorMatch;
     boolean isWithin10km;
@@ -196,9 +183,9 @@ public class QRScanner extends AppCompatActivity {
                     //satisfactorio
                     if (location != null) {
                         //sincronizoLatLng
-                        latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        QRScanner.setLatLng(latLng);
-
+                        LatLng latLong;
+                        latLong = new LatLng(location.getLatitude(), location.getLongitude());
+                        latLng = latLong;
                     }
                 }
             });
@@ -226,7 +213,7 @@ public class QRScanner extends AppCompatActivity {
             float[] results = new float[1];
             Location.distanceBetween(latActividad, longActividad, latLng.latitude, latLng.longitude, results);
             float distanceInMeters = results[0];
-            isWithin10km = distanceInMeters < 50;
+            isWithin10km = distanceInMeters < 20;
         }
 
         ValueEventListener valueEventListener = new ValueEventListener() {
