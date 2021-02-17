@@ -108,16 +108,20 @@ public class QRScanner extends AppCompatActivity {
                                             if (cargaStatus.equals("1")) {
                                                 for (String value : act.getListaPersonas().values()) {
                                                     if (user.getEmail().equals(value)) {
-                                                        Toast.makeText(QRScanner.this, "Se ha encontrado", Toast.LENGTH_SHORT);
                                                         resultData.setText("Encontrado");
                                                         contadorMatch++;
+                                                        final Handler handler = new Handler(Looper.getMainLooper());
+                                                        handler.postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                            }
+                                                        }, 500);
                                                         break;
                                                     }
                                                 }
                                                 if (contadorMatch > 0) {
                                                     siguienteSnapshot(objSnapshot, result, claveActPer, idRegistro);
                                                 } else {
-
                                                     resultData.setText("no estas en la lista");
                                                     //vibra el cel
                                                     Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -213,7 +217,7 @@ public class QRScanner extends AppCompatActivity {
             float[] results = new float[1];
             Location.distanceBetween(latActividad, longActividad, latLng.latitude, latLng.longitude, results);
             float distanceInMeters = results[0];
-            isWithin10km = distanceInMeters < 20;
+            isWithin10km = distanceInMeters < 50;
         }
 
         ValueEventListener valueEventListener = new ValueEventListener() {
@@ -272,22 +276,24 @@ public class QRScanner extends AppCompatActivity {
 
 
     private void crearRegistro(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
-        if (latLng != null && isWithin10km == false) {
-            resultData.setText("Fuera de rango del evento");
-            reloadActivity();
-        }
-        if (latLng != null && isWithin10km == true) {
-            RegistroActividad registroActividad = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
-            final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
-            myRef2.getRef().child(idRegistro).setValue(registroActividad);
-            resultData.setText("Registro Exitoso");
-            reloadActivity();
-        }
-        if (latLng == null) {
+        String geoLocStatus = objSnapshot.child("geolocStatus").getValue(String.class);
+        if (geoLocStatus.equals("1")) {
+            if (latLng != null && isWithin10km == false) {
+                resultData.setText("Fuera de rango del evento");
+                reloadActivity();
+            }
+            if (latLng != null && isWithin10km == true) {
+                RegistroActividad registroActividad = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
+                final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
+                myRef2.getRef().child(idRegistro).setValue(registroActividad);
+                resultData.setText("Registro Exitoso");
+                reloadActivity();
+            }
+        }else{
             RegistroActividad registroActividad2 = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
             final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
             myRef3.getRef().child(idRegistro).setValue(registroActividad2);
-            resultData.setText("Registro Exitoso null");
+            resultData.setText("Registro Exitoso");
             reloadActivity();
         }
     }

@@ -24,12 +24,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ImageView imagemenu;
     FragmentPagerController pagerAdapter;
     DatabaseReference databaseReference;
+    SharedPreferences settings;
     FirebaseDatabase firebaseDatabase;
     ImageView imageprofile;
     DrawerLayout drawerLayout;
@@ -84,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nombre = intent.getStringExtra("nombre");
         //Guardar datos
         if (email!= null){
-            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            settings = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("email", email);
             editor.putString("imagen", imagen);
@@ -168,10 +173,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case R.id.Salir: {
-                FirebaseAuth.getInstance().signOut();
-                SharedPreferences.Editor prefs = (SharedPreferences.Editor) getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit();
-                prefs.clear();
-                prefs.apply();
+
+            //    SharedPreferences.Editor prefs = (SharedPreferences.Editor) getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit();
+            //    prefs.clear();
+             //   prefs.apply();
+                settings.edit().clear().apply();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();

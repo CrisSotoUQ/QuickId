@@ -9,7 +9,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.OpenableColumns;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -44,9 +47,17 @@ public class CargarDatosCsv extends AppCompatActivity {
         textViewData = findViewById(R.id.textView_csvResult);
         btn_cargarCsv = (Button) findViewById(R.id.buttonCsv);
         btn_siguiente = (Button) findViewById(R.id.btn_csvSiguiente);
-
+        textViewData.setMovementMethod(new ScrollingMovementMethod());
         receiveActividad = (Actividad) getIntent().getSerializableExtra("Actividad");
         update = getIntent().getIntExtra("Update",0);
+        String concat = " ";
+        if (update==1&&receiveActividad.getCargueArchivoStatus().equals("1")){
+
+            for (String value : receiveActividad.getListaPersonas().values()) {
+                concat += "\r\n" +value;
+            }
+            textViewData.setText(concat);
+        }
         imagenOriginal = getIntent().getStringExtra("Original");
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
             @Override

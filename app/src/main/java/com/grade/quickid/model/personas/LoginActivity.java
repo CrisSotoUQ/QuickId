@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,8 +38,7 @@ import com.grade.quickid.model.actividades.CrearEventoActivity;
 import com.grade.quickid.model.personas.domain.Persona;
 
 public class LoginActivity extends AppCompatActivity {
-    private Button mAccederBtn, mRegistrarBtn, mGoogleBtn;
-    private EditText txt_emailLogin, txt_contrasenaLogin;
+    private Button  mGoogleBtn;
     private int GOOGLE_SIGN_IN = 100;
     GoogleSignInAccount account;
     private String email;
@@ -76,8 +76,11 @@ public class LoginActivity extends AppCompatActivity {
         email = prefs.getString("email", null);
         nombre = prefs.getString("nombre", null);
         imagen = prefs.getString("imagen", null);
+        if (email!= null){
+        Log.d("MAIL",email);}
         if (email != null) {
             this.setVisible(false);
+            finish();
             ShowMain();
         }
     }

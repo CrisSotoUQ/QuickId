@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -85,6 +86,7 @@ private String nombreActividad;
     }
 
     private void createPieChart() {
+
         PieChart pieChart = findViewById(R.id.pieChart);
         ArrayList <PieEntry> visitantes = new ArrayList<>();
         visitantes.add(new PieEntry(508,"2019"));
