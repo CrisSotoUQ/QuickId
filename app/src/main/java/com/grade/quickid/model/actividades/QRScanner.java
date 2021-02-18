@@ -51,11 +51,11 @@ public class QRScanner extends AppCompatActivity {
     FusedLocationProviderClient client;
     DatabaseReference databaseReference;
     DatabaseReference myRefRegistroEvento;
-    DatabaseReference myRefEvento;
+    DatabaseReference myRefActividad;
     FirebaseDatabase firebaseDatabase;
     int processDone = 0;
-    ValueEventListener mSendEventListner;
-    ValueEventListener mSendEventListner2;
+    ValueEventListener mEventListenerRegistroEvento;
+    ValueEventListener mEventListnerActividad;
 
     int contadorMatch;
     boolean isWithin10km;
@@ -84,14 +84,12 @@ public class QRScanner extends AppCompatActivity {
                     @Override
                     public void run() {
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
-                        DatabaseReference databaseReference2 = firebaseDatabase2.getReference();
                         String idActividad = result.getText();
                         String idUsuario = user.getUid();
-                        // valido el identificador de los codigos QR por ahora un numero por default para separarlos del resto de QRS
+                        // valido el identificador de los codigos QR por ahora un numero
+                        // por default para separarlos del resto de QRS en el mundo
                         if (idActividad.substring(0, 2).equals("23")) {
-                            myRefEvento = firebaseDatabase2.getInstance().getReference().child("Actividad");
-                            ValueEventListener valueEventListener2 = new ValueEventListener() {
+                            ValueEventListener valueEventListenerActividad= new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if (snapshot.exists()) {
@@ -152,8 +150,10 @@ public class QRScanner extends AppCompatActivity {
 
                                 }
                             };
-                            myRefEvento.orderByChild("idActividad").equalTo(idActividad).addValueEventListener(valueEventListener2);
-                            mSendEventListner2 = valueEventListener2;
+                            FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
+                            myRefActividad = firebaseDatabase2.getInstance().getReference().child("Actividad");
+                            myRefActividad.orderByChild("idActividad").equalTo(idActividad).addValueEventListener(valueEventListenerActividad);
+                            mEventListnerActividad = valueEventListenerActividad;
                         } else {
                             resultData.setText("Codigo QR invalido");
                             Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -209,8 +209,7 @@ public class QRScanner extends AppCompatActivity {
     }
 
     private void siguienteSnapshot(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
-        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-        myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
+
         if (latLng != null) {
             double latActividad = objSnapshot.child("latitud").getValue(double.class);
             double longActividad = objSnapshot.child("longitud").getValue(double.class);
@@ -220,7 +219,7 @@ public class QRScanner extends AppCompatActivity {
             isWithin10km = distanceInMeters < 50;
         }
 
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        ValueEventListener valueEventListenerRegistroEvento = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists() && processDone != 1) {
@@ -266,8 +265,10 @@ public class QRScanner extends AppCompatActivity {
 
             }
         };
-        myRefRegistroEvento.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(valueEventListener);
-        mSendEventListner = valueEventListener;
+        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+        myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
+        myRefRegistroEvento.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(valueEventListenerRegistroEvento);
+        mEventListenerRegistroEvento = valueEventListenerRegistroEvento;
         //vibra el cel
         Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(500);
@@ -342,6 +343,8 @@ public class QRScanner extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(QRScanner.this, MainActivity.class);
+        myRefRegistroEvento.removeEventListener(mEventListenerRegistroEvento);
+        myRefActividad.removeEventListener(mEventListnerActividad);
         startActivity(intent);
         this.finish();
     }

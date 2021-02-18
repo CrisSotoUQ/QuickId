@@ -37,6 +37,8 @@ import com.grade.quickid.model.actividades.ConfirmarEvento;
 import com.grade.quickid.model.actividades.CrearEventoActivity;
 import com.grade.quickid.model.personas.domain.Persona;
 
+import java.util.EventListener;
+
 public class LoginActivity extends AppCompatActivity {
     private Button  mGoogleBtn;
     private int GOOGLE_SIGN_IN = 100;
@@ -44,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
     private String email;
     private String imagen;
     private String nombre;
+    DatabaseReference myRefPersona;
+    ValueEventListener mEventListenerPersona;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -79,9 +83,9 @@ public class LoginActivity extends AppCompatActivity {
         if (email!= null){
         Log.d("MAIL",email);}
         if (email != null) {
-            this.setVisible(false);
-            finish();
             ShowMain();
+            finish();
+
         }
     }
 
@@ -106,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         intent.putExtra("nombre", nombre);
         intent.putExtra("imagen", imagen);
         startActivity(intent);
+
         finish();
     }
 
@@ -124,25 +129,31 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                        final DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Persona/" + user.getUid());
-                                        final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Persona").child(user.getUid());
-                                        myRef.addValueEventListener(new ValueEventListener() {
+
+                                       // final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Persona");
+
+                                        ValueEventListener valueEventListenerPersona = new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
                                                 if (dataSnapshot.exists()) {
                                                     email = account.getEmail();
                                                     nombre = account.getDisplayName();
                                                     imagen = account.getPhotoUrl().toString();
+                                                    myRefPersona.removeEventListener(mEventListenerPersona);
                                                     ShowMain();
                                                 } else {
+                                                    email = account.getEmail();
+                                                    nombre = account.getDisplayName();
+                                                    imagen = account.getPhotoUrl().toString();
                                                     Persona persona = new Persona();
                                                     persona.setId(user.getUid());
                                                     persona.setNombre(account.getDisplayName());
                                                     persona.setApellido(account.getFamilyName());
                                                     persona.setImagenUri(account.getPhotoUrl().toString());
                                                     persona.setCorreo(account.getEmail());
-                                                    myRef2.setValue(persona);
-
+                                                    myRefPersona.getDatabase().getReference().child("Persona").child(user.getUid()).setValue(persona);
+                                                    myRefPersona.removeEventListener(mEventListenerPersona);
+                                                    ShowMain();
                                                 }
                                             }
 
@@ -150,7 +161,11 @@ public class LoginActivity extends AppCompatActivity {
                                             public void onCancelled(@NonNull DatabaseError databaseError) {
                                                 System.out.println("Fallo la lectura: " + databaseError.getCode());
                                             }
-                                        });
+                                        };
+                                        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+                                        myRefPersona = firebaseDatabase3.getInstance().getReference().child("Persona");
+                                        myRefPersona.child(user.getUid()).addValueEventListener(valueEventListenerPersona);
+                                        mEventListenerPersona = valueEventListenerPersona;
                                     } else {
                                         ShowAlert();
                                     }

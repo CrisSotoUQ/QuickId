@@ -43,6 +43,7 @@ import com.grade.quickid.model.actividades.QRGenerator;
 
 import com.grade.quickid.model.registroActividad.RegistroActividad;
 import com.grade.quickid.model.actividades.adaptadores.AdapterActividades;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -55,13 +56,14 @@ public class FragmentActividades extends Fragment {
     private StorageReference mStorageRef;
     private AlertDialog dialog;
     private AlertDialog.Builder dialogBuilder;
+    private AlertDialog.Builder dialogBuilder2;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
     DatabaseReference myRefDatosRegistroEvento;
     DatabaseReference myRefDatosPersonaEvento;
-    private Button btnEliminar,btnEditar,btnDescargarDatos;
+    private Button btnEliminar, btnEditar, btnDescargarDatos;
     ValueEventListener eventListner;
-    ValueEventListener eventListner1;
+    ValueEventListener mEventListnerPersonaEvento;
     CardView cardView;
 
     public FragmentActividades() {
@@ -73,10 +75,11 @@ public class FragmentActividades extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        this.menu=menu;
+        this.menu = menu;
 
     }
 
@@ -92,52 +95,53 @@ public class FragmentActividades extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
+
     private void listarDatos() {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null){
-        databaseReference.child("Actividad").orderByChild("id_persona").equalTo(user.getUid())
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listActividades.clear();
-                for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
-                    Actividad p = objSnapshot.getValue(Actividad.class);
-                    listActividades.add(p);
-                    if(getActivity()!= null) {
-                        rvActividades.setLayoutManager(new LinearLayoutManager(getActivity()));
-                        adapterActividades = new AdapterActividades(getActivity(), listActividades);
-                        adapterActividades.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                String idActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
-                                String nombreActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getNombre();
-                                String lugarActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
-                                Intent intent = new Intent(getActivity(), QRGenerator.class);
-                                intent.putExtra("idActividad",idActividad);
-                                intent.putExtra("nombre",nombreActividad);
-                                intent.putExtra("lugar",lugarActividad);
-                                startActivity(intent);
+        if (user != null) {
+            databaseReference.child("Actividad").orderByChild("id_persona").equalTo(user.getUid())
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            listActividades.clear();
+                            for (DataSnapshot objSnapshot : dataSnapshot.getChildren()) {
+                                Actividad p = objSnapshot.getValue(Actividad.class);
+                                listActividades.add(p);
+                                if (getActivity() != null) {
+                                    rvActividades.setLayoutManager(new LinearLayoutManager(getActivity()));
+                                    adapterActividades = new AdapterActividades(getActivity(), listActividades);
+                                    adapterActividades.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            String idActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
+                                            String nombreActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getNombre();
+                                            String lugarActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
+                                            Intent intent = new Intent(getActivity(), QRGenerator.class);
+                                            intent.putExtra("idActividad", idActividad);
+                                            intent.putExtra("nombre", nombreActividad);
+                                            intent.putExtra("lugar", lugarActividad);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                    adapterActividades.setOnLongClickListener(new View.OnLongClickListener() {
+                                        public boolean onLongClick(View v) {
+                                            mostrarDialog(listActividades.get(rvActividades.getChildAdapterPosition(v)));
+                                            return false;
+                                        }
+                                    });
+                                    rvActividades.setAdapter(adapterActividades);
+                                }
                             }
-                        });
-                        adapterActividades.setOnLongClickListener(new View.OnLongClickListener() {
-                            public boolean onLongClick(View v) {
-                                mostrarDialog(listActividades.get(rvActividades.getChildAdapterPosition(v)));
-                                return false;
-                            }
-                        });
-                        rvActividades.setAdapter(adapterActividades);
-                    }
-                }
-            }
+                        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-    }else{
-            Toast.makeText(getActivity(),"usuario no encontrado",Toast.LENGTH_LONG).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(getActivity(), "usuario no encontrado", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -149,46 +153,44 @@ public class FragmentActividades extends Fragment {
 
             }
         });
-        final View popActividadFragment = getLayoutInflater().inflate(R.layout.popup_dialog_actividades,null);
+        final View popActividadFragment = getLayoutInflater().inflate(R.layout.popup_dialog_actividades, null);
         btnEliminar = (Button) popActividadFragment.findViewById(R.id.btn_eliminar_actividad);
-        btnEditar = (Button)   popActividadFragment.findViewById(R.id.btn_editar_actividad);
-        btnDescargarDatos = (Button)   popActividadFragment.findViewById(R.id.btn_descargar_datos);
+        btnEditar = (Button) popActividadFragment.findViewById(R.id.btn_editar_actividad);
+        btnDescargarDatos = (Button) popActividadFragment.findViewById(R.id.btn_descargar_datos);
 
         btnDescargarDatos.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-        StringBuilder data = new StringBuilder();
+                StringBuilder data = new StringBuilder();
 
-            FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-            myRefDatosRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
+                FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+                myRefDatosRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
 
-            ValueEventListener valueEventListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        data.append("Nombre Evento: "+actividad.getNombre());
-                        data.append("\n"+"Lugar Evento: "+actividad.getLugar());
-                        data.append("\n");
-                        data.append("\n"+"Correo ,   Apellido  ,   Nombre   , Fecha  ,  Hora entrada");
-                        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                        myRefDatosPersonaEvento = firebaseDatabase.getInstance().getReference().child("Persona");
+                ValueEventListener valueEventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            data.append("Nombre Evento: " + actividad.getNombre());
+                            data.append("\n" + "Lugar Evento: " + actividad.getLugar());
+                            data.append("\n");
+                            data.append("\n" + "Correo ,   Apellido  ,   Nombre   , Fecha  ,  Hora entrada");
 
                             for (DataSnapshot objSnapshot : snapshot.getChildren()) {
                                 RegistroActividad ra = objSnapshot.getValue(RegistroActividad.class);
 
-                                ValueEventListener valueEventListener1 = new ValueEventListener() {
+                                ValueEventListener valueEventListenerPersonaEvento = new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot1) {
                                         for (DataSnapshot objSnapshot : snapshot1.getChildren()) {
-                                        Persona per = objSnapshot.getValue(Persona.class);
-                                        data.append("\n" + String.valueOf(per.getCorreo()) + "," + String.valueOf(per.getApellido())
-                                                + "," +  String.valueOf(per.getNombre())   + "," +  String.valueOf(ra.getFechaRegistro())
-                                                + "," +  String.valueOf(ra.getHoraRegistro())   + "," +  String.valueOf(ra.getHoraRegistro()));
-                                    }
+                                            Persona per = objSnapshot.getValue(Persona.class);
+                                            data.append("\n" + String.valueOf(per.getCorreo()) + "," + String.valueOf(per.getApellido())
+                                                    + "," + String.valueOf(per.getNombre()) + "," + String.valueOf(ra.getFechaRegistro())
+                                                    + "," + String.valueOf(ra.getHoraRegistro()) + "," + String.valueOf(ra.getHoraRegistro()));
+                                        }
                                         try {
 
-                                            if (data!= null) {
+                                            if (data != null) {
                                                 FileOutputStream out = getContext().openFileOutput("data.csv", Context.MODE_PRIVATE);
                                                 out.write((data.toString()).getBytes());
                                                 out.close();
@@ -205,7 +207,7 @@ public class FragmentActividades extends Fragment {
 
                                                 startActivity(Intent.createChooser(fileIntent, "Send mail"));
                                                 myRefDatosRegistroEvento.removeEventListener(eventListner);
-                                                myRefDatosRegistroEvento.removeEventListener(eventListner1);
+                                                myRefDatosPersonaEvento.removeEventListener(mEventListnerPersonaEvento);
                                             }
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -217,22 +219,35 @@ public class FragmentActividades extends Fragment {
 
                                     }
                                 };
-                                myRefDatosPersonaEvento.orderByChild("id").equalTo(ra.getIdPersona()).addValueEventListener(valueEventListener1);
-                                eventListner1 =  valueEventListener1;
-
+                                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                                myRefDatosPersonaEvento = firebaseDatabase.getInstance().getReference().child("Persona");
+                                myRefDatosPersonaEvento.orderByChild("id").equalTo(ra.getIdPersona()).addValueEventListener(valueEventListenerPersonaEvento);
+                                mEventListnerPersonaEvento = valueEventListenerPersonaEvento;
                             }
 
-                    }
+                        }else{
+                            AlertDialog.Builder dialogo2 = new AlertDialog.Builder(getActivity());
+                            dialogo2.setTitle("No se han encontrado datos");
+                            dialogo2.setMessage("Este evento no posee registros "+ actividad.getNombre());
+                            dialogo2.setCancelable(false);
+                            dialogo2.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialogo2, int id) {
+                                    dialogo2.dismiss();
+                                }
+                            });
+                            dialogo2.show();
+
+                        }
 
                     }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-            };
+                    }
+                };
                 myRefDatosRegistroEvento.orderByChild("idActividad").equalTo(actividad.getIdActividad()).addValueEventListener(valueEventListener);
-                eventListner =  valueEventListener;
+                eventListner = valueEventListener;
 
             }
         });
@@ -248,7 +263,7 @@ public class FragmentActividades extends Fragment {
             public void onClick(View v) {
                 AlertDialog.Builder dialogo1 = new AlertDialog.Builder(getActivity());
                 dialogo1.setTitle("Importante");
-                dialogo1.setMessage("¿Quieres eliminar la Actividad "+ actividad.getNombre()+" ? ");
+                dialogo1.setMessage("¿Quieres eliminar la Actividad " + actividad.getNombre() + " ? ");
                 dialogo1.setCancelable(false);
                 dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogo1, int id) {
@@ -282,7 +297,7 @@ public class FragmentActividades extends Fragment {
                 });
                 adapterActividades.notifyDataSetChanged();
                 listActividades.remove(actividad);
-                Toast t=Toast.makeText(getActivity(),"Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
+                Toast t = Toast.makeText(getActivity(), "Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
                 t.show();
                 dialog.dismiss();
             }
@@ -298,7 +313,7 @@ public class FragmentActividades extends Fragment {
         // envio en el intent
         Intent act = new Intent(getActivity(), CrearEventoActivity.class);
         act.putExtra("Actividad", actividad);
-        act.putExtra("Update",1);
+        act.putExtra("Update", 1);
         startActivity(act);
         dialog.dismiss();
     }
