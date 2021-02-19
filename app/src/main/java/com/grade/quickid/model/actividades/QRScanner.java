@@ -281,6 +281,7 @@ public class QRScanner extends AppCompatActivity {
         if (geoLocStatus.equals("1")) {
             if (latLng != null && isWithin10km == false) {
                 resultData.setText("Fuera de rango del evento");
+                closeEventListeners();
                 reloadActivity();
             }
             if (latLng != null && isWithin10km == true) {
@@ -288,6 +289,7 @@ public class QRScanner extends AppCompatActivity {
                 final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
                 myRef2.getRef().child(idRegistro).setValue(registroActividad);
                 resultData.setText("Registro Exitoso");
+                closeEventListeners();
                 reloadActivity();
             }
         }else{
@@ -295,8 +297,15 @@ public class QRScanner extends AppCompatActivity {
             final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
             myRef3.getRef().child(idRegistro).setValue(registroActividad2);
             resultData.setText("Registro Exitoso");
+            closeEventListeners();
             reloadActivity();
+
         }
+    }
+
+    private void closeEventListeners() {
+        myRefRegistroEvento.removeEventListener(mEventListenerRegistroEvento);
+        myRefActividad.removeEventListener(mEventListnerActividad);
     }
 
     private Object CrearObjetoRegistro(DataSnapshot objSnapshot, Result result, String actPer, String idRegistro) {
@@ -343,8 +352,7 @@ public class QRScanner extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(QRScanner.this, MainActivity.class);
-        myRefRegistroEvento.removeEventListener(mEventListenerRegistroEvento);
-        myRefActividad.removeEventListener(mEventListnerActividad);
+
         startActivity(intent);
         this.finish();
     }
