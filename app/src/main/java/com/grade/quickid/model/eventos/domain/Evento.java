@@ -1,14 +1,9 @@
-package com.grade.quickid.model.actividades;
-
-import android.os.Parcelable;
+package com.grade.quickid.model.eventos.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
-public class Actividad implements Serializable  {
+public class Evento implements Serializable  {
     public String idActividad;
     public String nombre;
     public String fIni;
@@ -23,13 +18,13 @@ public class Actividad implements Serializable  {
     public String horaIni;
     public String urlImagen;
     public HashMap<String,String> listaPersonas = new HashMap<>();
-    public Actividad() {
+    public Evento() {
     }
 
-    public Actividad(String idActividad, String nombre, String fIni, String fFin, String lugar,
-                     double latitud, double longitud, String estadoActividad, String geolocStatus,
-                     String cargueArchivoStatus, String id_persona, String horaIni, String urlImagen,
-                     HashMap<String, String> listaPersonas) {
+    public Evento(String idActividad, String nombre, String fIni, String fFin, String lugar,
+                  double latitud, double longitud, String estadoActividad, String geolocStatus,
+                  String cargueArchivoStatus, String id_persona, String horaIni, String urlImagen,
+                  HashMap<String, String> listaPersonas) {
         this.idActividad = idActividad;
         this.nombre = nombre;
         this.fIni = fIni;

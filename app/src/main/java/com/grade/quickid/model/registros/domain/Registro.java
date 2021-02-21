@@ -1,25 +1,6 @@
-package com.grade.quickid.model.registroActividad;
+package com.grade.quickid.model.registros.domain;
 
-import android.text.format.DateFormat;
-import android.widget.ArrayAdapter;
-
-import androidx.annotation.NonNull;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-public class RegistroActividad {
+public class Registro {
     String idRegistro;
     String fechaRegistro;
     String idActividad;
@@ -34,12 +15,12 @@ public class RegistroActividad {
     //campo para poder filtrar actividadPersona en un mismo query
     String idAct_idPer;
 
-    public RegistroActividad() {
+    public Registro() {
     }
-    public RegistroActividad(String idRegistro, String fechaRegistro, String idActividad,
-                             String horaRegistro, String idPersona, String nombreActividad,
-                             String lugarActividad, String imagenActividad, String idAct_idPer,
-                             String visibilidad) {
+    public Registro(String idRegistro, String fechaRegistro, String idActividad,
+                    String horaRegistro, String idPersona, String nombreActividad,
+                    String lugarActividad, String imagenActividad, String idAct_idPer,
+                    String visibilidad) {
         this.idRegistro = idRegistro;
         this.fechaRegistro = fechaRegistro;
         this.idActividad = idActividad;

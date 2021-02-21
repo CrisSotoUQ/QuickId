@@ -1,4 +1,4 @@
-package com.grade.quickid.model.actividades;
+package com.grade.quickid.model.eventos.aplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,8 +6,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
-import android.content.ClipData;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,9 +14,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,9 +37,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grade.quickid.BuildConfig;
 import com.grade.quickid.R;
-import com.grade.quickid.model.Time;
-import com.grade.quickid.model.personas.domain.Persona;
-import com.grade.quickid.model.registroActividad.RegistroActividad;
+import com.grade.quickid.model.eventos.domain.Evento;
+import com.grade.quickid.model.registros.domain.Registro;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,9 +47,6 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.EventListener;
-import java.util.UUID;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -79,7 +70,7 @@ public class QRGenerator extends AppCompatActivity {
     DatabaseReference myRefPersona;
     private int v_RegistrosFechaActual = 0;
     private int v_registrosHistorico = 0;
-    private int contadorAsistentes= 0;
+    private int contadorAsistentes = 0;
     private String nombreActividad;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,16 +117,14 @@ public class QRGenerator extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot objSnapshot1 : snapshot.getChildren()) {
-                    Actividad act = objSnapshot1.getValue(Actividad.class);
-                    Time time = new Time();
+                    Evento act = objSnapshot1.getValue(Evento.class);
 
                     ValueEventListener valueEventListenerRegistroActividad = new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
-                                int v_inasistentes = 0;
                                 for (DataSnapshot objSnapshot2 : snapshot.getChildren()) {
-                                    RegistroActividad RAct = objSnapshot2.getValue(RegistroActividad.class);
+                                    Registro RAct = objSnapshot2.getValue(Registro.class);
                                     v_registrosHistorico++;
                                     Calendar calendar = Calendar.getInstance();
                                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -144,38 +133,15 @@ public class QRGenerator extends AppCompatActivity {
                                     if (date.equals(fecha)) {
                                         v_RegistrosFechaActual++;
                                     }
-                                    ValueEventListener valueEventListenerPersona = new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            for (DataSnapshot objSnapshot3: snapshot.getChildren()) {
-                                                Persona per = objSnapshot3.getValue(Persona.class);
-                                            for (String value : act.getListaPersonas().values()) {
-                                                if (RAct.getIdPersona().equals(per.getId())) {
-                                                    contadorAsistentes++;
-                                                }
-                                            }
-                                            // obtengo la cantidad de inasistentes
-                                            int auxContAsistentes = contadorAsistentes;
-                                                contadorAsistentes=      act.getListaPersonas().size() - auxContAsistentes;
-                                                contadorInasistentes.setText(String.valueOf(contadorAsistentes));
-                                        }}
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    };
-                                    FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
-                                    myRefPersona = firebaseDatabase2.getInstance().getReference().child("Persona");
-                                    myRefPersona.orderByChild("id").equalTo(RAct.getIdPersona()).addValueEventListener(valueEventListenerPersona);
-                                    mEventListenerPersona = valueEventListenerPersona;
-
                                 }
                                 contadorRegistrosHistorico.setText(String.valueOf(v_registrosHistorico));
                                 contadorRegistrosFechaActual.setText(String.valueOf(v_RegistrosFechaActual));
+                                // obtengo la cantidad de inasistentes
+                                contadorAsistentes = act.getListaPersonas().size() - v_RegistrosFechaActual;
+                                contadorInasistentes.setText(String.valueOf(contadorAsistentes));
                             }
 
-                        }
+                            }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
@@ -184,8 +150,8 @@ public class QRGenerator extends AppCompatActivity {
                     };
 
                     FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
-                    myRefestadisticaRegistros = firebaseDatabase2.getInstance().getReference().child("RegistroActividad");
-                    myRefestadisticaRegistros.orderByChild("idActividad").equalTo(idActividad).addValueEventListener(valueEventListenerRegistroActividad);
+                    myRefestadisticaRegistros = firebaseDatabase2.getInstance().getReference().child("Registro");
+                    myRefestadisticaRegistros.orderByChild("idActividad").equalTo(act.getIdActividad()).addValueEventListener(valueEventListenerRegistroActividad);
                     mEventListEstadisticasRegistros = valueEventListenerRegistroActividad;
                 }
             }
@@ -195,14 +161,11 @@ public class QRGenerator extends AppCompatActivity {
 
             }
         };
-        FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
-        myRefActividad = firebaseDatabase2.getInstance().getReference().child("Actividad");
+        FirebaseDatabase firebaseDatabase1 = FirebaseDatabase.getInstance();
+        myRefActividad = firebaseDatabase1.getInstance().getReference().child("Evento");
         myRefActividad.orderByChild("idActividad").equalTo(idActividad).addValueEventListener(valueEventListenerActividad);
         mEventListnerActividad = valueEventListenerActividad;
-
-
     }
-
     private void createBarchart() {
         BarChart barChart = findViewById(R.id.barChart);
         ArrayList<BarEntry> visitorsByDate = new ArrayList<>();

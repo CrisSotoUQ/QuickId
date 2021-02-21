@@ -38,7 +38,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txt_descripcion"
-            tools:context=".model.actividades.MapsActivity" />
+            tools:context=".model.eventos.aplication.MapsEventoActivity" />
 
         <Button
             android:id="@+id/btn_siguiente_maps"

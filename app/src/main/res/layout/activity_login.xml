@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:hapticFeedbackEnabled="false"
-    tools:context=".model.personas.LoginActivity">
+    tools:context=".model.personas.infrastructure.LoginActivity">
 
     <Button
         android:id="@+id/googlebtn"

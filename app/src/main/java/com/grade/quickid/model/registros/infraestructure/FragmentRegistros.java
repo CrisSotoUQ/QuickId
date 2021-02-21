@@ -1,4 +1,4 @@
-package com.grade.quickid.model.controller;
+package com.grade.quickid.model.registros.infraestructure;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -24,8 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grade.quickid.R;
-import com.grade.quickid.model.registroActividad.RegistroActividad;
-import com.grade.quickid.model.actividades.adaptadores.AdapterRegistros;
+import com.grade.quickid.model.registros.domain.Registro;
+import com.grade.quickid.model.registros.infraestructure.AdapterRegistros;
 
 import java.util.ArrayList;
 
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 public class FragmentRegistros extends Fragment {
     AdapterRegistros adapterRegistros;
     RecyclerView rvRegistros;
-    ArrayList<RegistroActividad> listRegistroActividads = new ArrayList<RegistroActividad>();
+    ArrayList<Registro> listRegistros = new ArrayList<Registro>();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     final DatabaseReference databaseReference = firebaseDatabase.getReference();
     private AlertDialog dialog;
@@ -56,25 +56,25 @@ public class FragmentRegistros extends Fragment {
    private void listarDatos() {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user !=null){
-        databaseReference.child("RegistroActividad").orderByChild("idPersona").equalTo(user.getUid()).
+        databaseReference.child("Registro").orderByChild("idPersona").equalTo(user.getUid()).
                 addValueEventListener(new ValueEventListener() {
             @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                  listRegistroActividads.clear();
+                  listRegistros.clear();
                     for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
                         Log.d("usuarios",objSnapshot.toString());
-                        RegistroActividad p = objSnapshot.getValue(RegistroActividad.class);
+                        Registro p = objSnapshot.getValue(Registro.class);
                         if (p.getVisibilidad().equals("1")){
-                            listRegistroActividads.add(p);
+                            listRegistros.add(p);
                         }
                 }
                 if(getActivity()!= null) {
                     rvRegistros.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    adapterRegistros = new AdapterRegistros(getActivity(), listRegistroActividads);
+                    adapterRegistros = new AdapterRegistros(getActivity(), listRegistros);
                     adapterRegistros.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            mostrarDialog(listRegistroActividads.get(rvRegistros.getChildAdapterPosition(v)));
+                            mostrarDialog(listRegistros.get(rvRegistros.getChildAdapterPosition(v)));
                             return false;
                         }
                     });
@@ -91,7 +91,7 @@ public class FragmentRegistros extends Fragment {
         }
    }
 
-    private void mostrarDialog(RegistroActividad registroActividad) {
+    private void mostrarDialog(Registro registro) {
         dialogBuilder = new AlertDialog.Builder(getActivity());
         final View popRegistroFragment = getLayoutInflater().inflate(R.layout.popup_dialog_registros,null);
         btnEliminar = (Button) popRegistroFragment.findViewById(R.id.btn_eliminar_registros);
@@ -100,7 +100,7 @@ public class FragmentRegistros extends Fragment {
             public void onClick(View v) {
                 AlertDialog.Builder dialogo1 = new AlertDialog.Builder(getActivity());
                 dialogo1.setTitle("Importante");
-                dialogo1.setMessage("¿Quieres eliminar el RegistroActividad "+ registroActividad.getNombreActividad() +" ? ");
+                dialogo1.setMessage("¿Quieres eliminar el Registro "+ registro.getNombreActividad() +" ? ");
                 dialogo1.setCancelable(false);
                 dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogo1, int id) {
@@ -116,8 +116,8 @@ public class FragmentRegistros extends Fragment {
             }
 
             public void aceptar() {
-                databaseReference.child("RegistroActividad").child(registroActividad.getIdRegistro()).removeValue();
-                listRegistroActividads.remove(registroActividad);
+                databaseReference.child("Registro").child(registro.getIdRegistro()).removeValue();
+                listRegistros.remove(registro);
                 Toast t=Toast.makeText(getActivity(),"Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
                 t.show();
                 dialog.dismiss();

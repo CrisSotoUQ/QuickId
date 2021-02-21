@@ -1,4 +1,4 @@
-package com.grade.quickid.model.actividades;
+package com.grade.quickid.model.eventos.aplication;
 
 import android.Manifest;
 import android.app.TimePickerDialog;
@@ -32,7 +32,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.grade.quickid.R;
 import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.Time;
-import com.grade.quickid.model.controller.FragmentPagerController;
+import com.grade.quickid.model.FragmentPagerController;
+import com.grade.quickid.model.eventos.domain.Evento;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -66,7 +67,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     private int CAMERA_PERMISSION_CODE = 1;
     private String nombreActividad = null;
     private String nombreLugar = null;
-    private Actividad receiveActividad;
+    private Evento receiveEvento;
     private String imagenOriginal;
     private int update;
     private static final String CERO = "0";
@@ -97,27 +98,27 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         setup();
         Intent intent = getIntent();
         update = intent.getIntExtra("Update", 0);
-        receiveActividad = (Actividad) getIntent().getSerializableExtra("Actividad");
+        receiveEvento = (Evento) getIntent().getSerializableExtra("Evento");
         String imagen = intent.getStringExtra("imagen");
         if (update != 0) {
-            txt_nombreActividad.setText(receiveActividad.getNombre().toString());
-            txt_nombreLugar.setText(receiveActividad.getLugar().toString());
-            Uri myUri = Uri.parse(receiveActividad.getUrlImagen());
+            txt_nombreActividad.setText(receiveEvento.getNombre().toString());
+            txt_nombreLugar.setText(receiveEvento.getLugar().toString());
+            Uri myUri = Uri.parse(receiveEvento.getUrlImagen());
             imageview_photo.setImageURI(myUri);
             imageview_photo.setVisibility(View.VISIBLE);
             mImageUri = myUri;
 
-            Picasso.get().load(receiveActividad.getUrlImagen()).fit().centerInside().into(imageview_photo);
-            imagenOriginal = receiveActividad.getUrlImagen();
+            Picasso.get().load(receiveEvento.getUrlImagen()).fit().centerInside().into(imageview_photo);
+            imagenOriginal = receiveEvento.getUrlImagen();
 
-            if (receiveActividad.getGeolocStatus().equals("0")) {
+            if (receiveEvento.getGeolocStatus().equals("0")) {
                 mapSwitch.setChecked(false);
                 activarGeolocalizacion = "0";
             } else {
                 mapSwitch.setChecked(true);
                 activarGeolocalizacion = "1";
             }
-            if (receiveActividad.getCargueArchivoStatus().equals("0")) {
+            if (receiveEvento.getCargueArchivoStatus().equals("0")) {
                 switchCargueCsv.setChecked(false);
                 activarCargueCsv = "0";
             } else {
@@ -157,15 +158,15 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         if (update != 0) {
                             Intent act = new Intent(CrearEventoActivity.this, ConfirmarEvento.class);
                             retornoObjetoActividadUpdate();
-                            act.putExtra("Actividad", receiveActividad);
+                            act.putExtra("Evento", receiveEvento);
                             act.putExtra("Update", 1);
                             act.putExtra("Original", imagenOriginal);
                             startActivity(act);
                         } else {
-                            Actividad actividad = (Actividad) retornoObjetoActividad();
+                            Evento evento = (Evento) retornoObjetoActividad();
                             // envio en el intent a la ventana de confirmacion
                             Intent act = new Intent(CrearEventoActivity.this, ConfirmarEvento.class);
-                            act.putExtra("Actividad", actividad);
+                            act.putExtra("Evento", evento);
                             startActivity(act);
                         }
                     }
@@ -178,16 +179,16 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         if (update != 0) {
                             Intent act = new Intent(CrearEventoActivity.this, CargarDatosCsv.class);
                             retornoObjetoActividadUpdate();
-                            act.putExtra("Actividad", receiveActividad);
+                            act.putExtra("Evento", receiveEvento);
                             act.putExtra("Update", 1);
                             act.putExtra("Original", imagenOriginal);
                             startActivity(act);
                             // si estamos creando
                         } else {
-                            Actividad actividad = (Actividad) retornoObjetoActividad();
+                            Evento evento = (Evento) retornoObjetoActividad();
                             // envio en el intent al maps
                             Intent act = new Intent(CrearEventoActivity.this, CargarDatosCsv.class);
-                            act.putExtra("Actividad", actividad);
+                            act.putExtra("Evento", evento);
                             startActivity(act);
                         }
                     }
@@ -200,18 +201,18 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                 } else {
                     //si estamos en un update
                     if (update != 0) {
-                        Intent act = new Intent(CrearEventoActivity.this, MapsActivity.class);
+                        Intent act = new Intent(CrearEventoActivity.this, MapsEventoActivity.class);
                         retornoObjetoActividadUpdate();
-                        act.putExtra("Actividad", receiveActividad);
+                        act.putExtra("Evento", receiveEvento);
                         act.putExtra("Update", 1);
                         act.putExtra("Original", imagenOriginal);
                         startActivity(act);
                         // si estamos creando
                     } else {
-                        Actividad actividad = (Actividad) retornoObjetoActividad();
+                        Evento evento = (Evento) retornoObjetoActividad();
                         // envio en el intent al maps
-                        Intent act = new Intent(CrearEventoActivity.this, MapsActivity.class);
-                        act.putExtra("Actividad", actividad);
+                        Intent act = new Intent(CrearEventoActivity.this, MapsEventoActivity.class);
+                        act.putExtra("Evento", evento);
                         startActivity(act);
                     }
                 }
@@ -266,29 +267,29 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     }
 
     private void retornoObjetoActividadUpdate() {
-        receiveActividad.setGeolocStatus(activarGeolocalizacion);
-        receiveActividad.setCargueArchivoStatus(activarCargueCsv);
-        receiveActividad.setNombre(txt_nombreActividad.getText().toString());
-        receiveActividad.setLugar(txt_nombreLugar.getText().toString());
-        receiveActividad.setUrlImagen(mImageUri.toString());
-        receiveActividad.setHoraIni(etHora.getText().toString());
+        receiveEvento.setGeolocStatus(activarGeolocalizacion);
+        receiveEvento.setCargueArchivoStatus(activarCargueCsv);
+        receiveEvento.setNombre(txt_nombreActividad.getText().toString());
+        receiveEvento.setLugar(txt_nombreLugar.getText().toString());
+        receiveEvento.setUrlImagen(mImageUri.toString());
+        receiveEvento.setHoraIni(etHora.getText().toString());
     }
 
     private Object retornoObjetoActividad() {
         Time time = new Time();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String id = claveQR + UUID.randomUUID().toString();
-        Actividad actividad = new Actividad();
-        actividad.setIdActividad(id);
-        actividad.setNombre(txt_nombreActividad.getText().toString());
-        actividad.setLugar(txt_nombreLugar.getText().toString());
-        actividad.setfIni(time.fecha());
-        actividad.setId_persona(user.getUid());
-        actividad.setEstadoActividad(null);
-        actividad.setUrlImagen(mImageUri.toString());
-        actividad.setGeolocStatus(activarGeolocalizacion);
-        actividad.setCargueArchivoStatus(activarCargueCsv);
-        return actividad;
+        Evento evento = new Evento();
+        evento.setIdActividad(id);
+        evento.setNombre(txt_nombreActividad.getText().toString());
+        evento.setLugar(txt_nombreLugar.getText().toString());
+        evento.setfIni(time.fecha());
+        evento.setId_persona(user.getUid());
+        evento.setEstadoActividad(null);
+        evento.setUrlImagen(mImageUri.toString());
+        evento.setGeolocStatus(activarGeolocalizacion);
+        evento.setCargueArchivoStatus(activarCargueCsv);
+        return evento;
     }
 
     private void mostrarDialog(View v) {

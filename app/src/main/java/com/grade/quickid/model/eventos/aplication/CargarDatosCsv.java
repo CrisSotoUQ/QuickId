@@ -1,4 +1,4 @@
-package com.grade.quickid.model.actividades;
+package com.grade.quickid.model.eventos.aplication;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,8 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.OpenableColumns;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
@@ -18,10 +16,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.grade.quickid.R;
+import com.grade.quickid.model.eventos.domain.Evento;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,7 +30,7 @@ import java.util.HashMap;
 public class CargarDatosCsv extends AppCompatActivity {
     private Button btn_cargarCsv;
     private Button btn_siguiente;
-    Actividad receiveActividad;
+    Evento receiveEvento;
     private int update;
     String imagenOriginal;
     TextView textViewData;
@@ -48,12 +44,12 @@ public class CargarDatosCsv extends AppCompatActivity {
         btn_cargarCsv = (Button) findViewById(R.id.buttonCsv);
         btn_siguiente = (Button) findViewById(R.id.btn_csvSiguiente);
         textViewData.setMovementMethod(new ScrollingMovementMethod());
-        receiveActividad = (Actividad) getIntent().getSerializableExtra("Actividad");
+        receiveEvento = (Evento) getIntent().getSerializableExtra("Evento");
         update = getIntent().getIntExtra("Update",0);
         String concat = " ";
-        if (update==1&&receiveActividad.getCargueArchivoStatus().equals("1")){
+        if (update==1&& receiveEvento.getCargueArchivoStatus().equals("1")){
 
-            for (String value : receiveActividad.getListaPersonas().values()) {
+            for (String value : receiveEvento.getListaPersonas().values()) {
                 concat += "\r\n" +value;
             }
             textViewData.setText(concat);
@@ -64,8 +60,8 @@ public class CargarDatosCsv extends AppCompatActivity {
             public void onClick(View v) {
                 Intent act = new Intent(CargarDatosCsv.this, ConfirmarEvento.class);
 
-                if (!receiveActividad.getListaPersonas().equals(null)){
-                    act.putExtra("Actividad", receiveActividad);
+                if (!receiveEvento.getListaPersonas().equals(null)){
+                    act.putExtra("Evento", receiveEvento);
                     act.putExtra("Original",imagenOriginal);
                     if(update !=0){
                         act.putExtra("Update",1);
@@ -149,7 +145,7 @@ public class CargarDatosCsv extends AppCompatActivity {
         while ((line = br.readLine()) != null) {
             contador++;
             // do something with line from file
-            receiveActividad.setListaPersonas(String.valueOf(contador),line);
+            receiveEvento.setListaPersonas(String.valueOf(contador),line);
             concat += "\r\n" +line;
         }
         textViewData.setText(concat);

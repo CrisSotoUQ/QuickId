@@ -1,4 +1,4 @@
-package com.grade.quickid.model.actividades;
+package com.grade.quickid.model.eventos.aplication;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -25,15 +25,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.grade.quickid.R;
+import com.grade.quickid.model.eventos.domain.Evento;
 
 import java.io.Serializable;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, Serializable {
+public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCallback, Serializable {
 
     private GoogleMap mMap;
     FusedLocationProviderClient client;
     SupportMapFragment mapFragment;
-    Actividad receiveActividad;
+    Evento receiveEvento;
     private double latitude;
     private double longitude;
     private Button btn_siguiente;
@@ -54,28 +55,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getCurrentLocation(1);
         btn_siguiente = (Button) findViewById(R.id.btn_siguiente_maps);
 
-        receiveActividad = (Actividad) getIntent().getSerializableExtra("Actividad");
+        receiveEvento = (Evento) getIntent().getSerializableExtra("Evento");
         update = getIntent().getIntExtra("Update", 0);
         imagenOriginal = getIntent().getStringExtra("Original");
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                receiveActividad.setLatitud(latitude);
-                receiveActividad.setLongitud(longitude);
+                receiveEvento.setLatitud(latitude);
+                receiveEvento.setLongitud(longitude);
                 if (latitude == 0.0 && longitude == 0.0) {
-                    Toast.makeText(MapsActivity.this, "Es necesario marcar la ubicacion", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsEventoActivity.this, "Es necesario marcar la ubicacion", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (receiveActividad.getCargueArchivoStatus().equals("0")) {
-                        Intent act = new Intent(MapsActivity.this, ConfirmarEvento.class);
-                        act.putExtra("Actividad", receiveActividad);
+                    if (receiveEvento.getCargueArchivoStatus().equals("0")) {
+                        Intent act = new Intent(MapsEventoActivity.this, ConfirmarEvento.class);
+                        act.putExtra("Evento", receiveEvento);
                         act.putExtra("Original", imagenOriginal);
                         if (update != 0) {
                             act.putExtra("Update", 1);
                         }
                         startActivity(act);
                     } else {
-                        Intent act = new Intent(MapsActivity.this, CargarDatosCsv.class);
-                        act.putExtra("Actividad", receiveActividad);
+                        Intent act = new Intent(MapsEventoActivity.this, CargarDatosCsv.class);
+                        act.putExtra("Evento", receiveEvento);
                         act.putExtra("Original", imagenOriginal);
                         if (update != 0) {
                             act.putExtra("Update", 1);
@@ -111,7 +112,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{
+            ActivityCompat.requestPermissions(MapsEventoActivity.this, new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
         Task<Location> task = client.getLastLocation();
@@ -186,8 +187,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         if (update != 0) {
-            latitude = receiveActividad.getLatitud();
-            longitude = receiveActividad.getLongitud();
+            latitude = receiveEvento.getLatitud();
+            longitude = receiveEvento.getLongitud();
             marcarOnUpdate();
         }
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {

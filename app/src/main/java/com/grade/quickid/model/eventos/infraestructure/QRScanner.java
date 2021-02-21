@@ -1,4 +1,4 @@
-package com.grade.quickid.model.actividades;
+package com.grade.quickid.model.eventos.infraestructure;
 
 import android.Manifest;
 import android.content.Context;
@@ -11,7 +11,6 @@ import android.os.Looper;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +35,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.grade.quickid.R;
 import com.grade.quickid.model.MainActivity;
-import com.grade.quickid.model.registroActividad.RegistroActividad;
+import com.grade.quickid.model.eventos.domain.Evento;
+import com.grade.quickid.model.registros.domain.Registro;
 import com.grade.quickid.model.Time;
 
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class QRScanner extends AppCompatActivity {
                                         for (DataSnapshot objSnapshot : snapshot.getChildren()) {
                                             String claveActPer = idActividad + "" + idUsuario;
                                             String idRegistro = UUID.randomUUID().toString();
-                                            Actividad act = objSnapshot.getValue(Actividad.class);
+                                            Evento act = objSnapshot.getValue(Evento.class);
                                             String cargaStatus = objSnapshot.child("cargueArchivoStatus").getValue(String.class);
                                             String geoStatus = objSnapshot.child("geolocStatus").getValue(String.class);
                                             if (geoStatus.equals("1")) {
@@ -151,7 +151,7 @@ public class QRScanner extends AppCompatActivity {
                                 }
                             };
                             FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
-                            myRefActividad = firebaseDatabase2.getInstance().getReference().child("Actividad");
+                            myRefActividad = firebaseDatabase2.getInstance().getReference().child("Evento");
                             myRefActividad.orderByChild("idActividad").equalTo(idActividad).addValueEventListener(valueEventListenerActividad);
                             mEventListnerActividad = valueEventListenerActividad;
                         } else {
@@ -226,9 +226,9 @@ public class QRScanner extends AppCompatActivity {
                     processDone = 1;
                     int contador = 0;
                     int parametro = 0;
-                    ArrayList<RegistroActividad> list = new ArrayList<RegistroActividad>();
+                    ArrayList<Registro> list = new ArrayList<Registro>();
                     for (DataSnapshot objSnapshot : snapshot.getChildren()) {
-                        RegistroActividad ra = objSnapshot.getValue(RegistroActividad.class);
+                        Registro ra = objSnapshot.getValue(Registro.class);
                         list.add(ra);
                         Time time = new Time();
                         if (ra.getFechaRegistro().equals((time.fecha()))) {
@@ -241,9 +241,9 @@ public class QRScanner extends AppCompatActivity {
                         reloadActivity();
 
                     } else {
-                        myRefRegistroEvento = databaseReference.child("RegistroActividad");
+                        myRefRegistroEvento = databaseReference.child("Registro");
                         for (int i = 0; i < list.size(); i++) {
-                            RegistroActividad ra = list.get(i);
+                            Registro ra = list.get(i);
                             String key = String.valueOf(ra.getIdRegistro());
                             ra.setVisibilidad("0");
                             myRefRegistroEvento.child(key).setValue(ra);
@@ -266,7 +266,7 @@ public class QRScanner extends AppCompatActivity {
             }
         };
         FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-        myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
+        myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("Registro");
         myRefRegistroEvento.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(valueEventListenerRegistroEvento);
         mEventListenerRegistroEvento = valueEventListenerRegistroEvento;
         //vibra el cel
@@ -285,17 +285,17 @@ public class QRScanner extends AppCompatActivity {
                 reloadActivity();
             }
             if (latLng != null && isWithin10km == true) {
-                RegistroActividad registroActividad = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
-                final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
-                myRef2.getRef().child(idRegistro).setValue(registroActividad);
+                Registro registro = (Registro) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
+                final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Registro");
+                myRef2.getRef().child(idRegistro).setValue(registro);
                 resultData.setText("Registro Exitoso");
                 closeEventListeners();
                 reloadActivity();
             }
         }else{
-            RegistroActividad registroActividad2 = (RegistroActividad) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
-            final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("RegistroActividad");
-            myRef3.getRef().child(idRegistro).setValue(registroActividad2);
+            Registro registro2 = (Registro) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
+            final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Registro");
+            myRef3.getRef().child(idRegistro).setValue(registro2);
             resultData.setText("Registro Exitoso");
             closeEventListeners();
             reloadActivity();
@@ -319,19 +319,19 @@ public class QRScanner extends AppCompatActivity {
         // tengo que validar que en la misma fecha no se registre mas de una vez
         // o llevar por parametro las veces que se necesita tomar asistencia
 
-        RegistroActividad registroActividad = new RegistroActividad();
-        registroActividad.setIdRegistro(idRegistro);
-        registroActividad.setNombreActividad(nombreActividad);
-        registroActividad.setLugarActividad(lugarActividad);
-        registroActividad.setIdActividad(result.getText());
-        registroActividad.setIdPersona(user.getUid());
-        registroActividad.setHoraRegistro(time.hora());
-        registroActividad.setFechaRegistro(time.fecha());
-        registroActividad.setImagenActividad(imagenUrl);
-        registroActividad.setVisibilidad("1");
-        registroActividad.setIdAct_idPer(actPer);
+        Registro registro = new Registro();
+        registro.setIdRegistro(idRegistro);
+        registro.setNombreActividad(nombreActividad);
+        registro.setLugarActividad(lugarActividad);
+        registro.setIdActividad(result.getText());
+        registro.setIdPersona(user.getUid());
+        registro.setHoraRegistro(time.hora());
+        registro.setFechaRegistro(time.fecha());
+        registro.setImagenActividad(imagenUrl);
+        registro.setVisibilidad("1");
+        registro.setIdAct_idPer(actPer);
         //decision
-        return registroActividad;
+        return registro;
     }
 
 

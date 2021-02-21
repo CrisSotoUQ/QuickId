@@ -1,4 +1,4 @@
-package com.grade.quickid.model.actividades.adaptadores;
+package com.grade.quickid.model.eventos.infraestructure;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,22 +11,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.grade.quickid.R;
-import com.grade.quickid.model.actividades.Actividad;
+import com.grade.quickid.model.eventos.domain.Evento;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AdapterActividades extends RecyclerView.Adapter<AdapterActividades.ViewHolder> implements  View.OnLongClickListener,View.OnClickListener {
-    ArrayList<Actividad> modelActividad;
+public class AdapterEventos extends RecyclerView.Adapter<AdapterEventos.ViewHolder> implements  View.OnLongClickListener,View.OnClickListener {
+    ArrayList<Evento> modelEvento;
     LayoutInflater layoutInflater;
     //listener
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
         Context context;
-    public AdapterActividades(Context context, ArrayList<Actividad> modelActividad){
+    public AdapterEventos(Context context, ArrayList<Evento> modelEvento){
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
-        this.modelActividad = modelActividad;
+        this.modelEvento = modelEvento;
     }
 
     @Override
@@ -70,20 +70,20 @@ public class AdapterActividades extends RecyclerView.Adapter<AdapterActividades.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String nombreActividad = modelActividad.get(position).getNombre();
-        String fechaActividad = modelActividad.get(position).getfIni();
-        String lugarActividad= modelActividad.get(position).getLugar();
+        String nombreActividad = modelEvento.get(position).getNombre();
+        String fechaActividad = modelEvento.get(position).getfIni();
+        String lugarActividad= modelEvento.get(position).getLugar();
         holder.txt_nombre.setText(nombreActividad);
         holder.txt_fecha.setText((CharSequence) fechaActividad);
         holder.txt_lugar.setText(lugarActividad);
-        Picasso.get().load(modelActividad.get(position).getUrlImagen()).fit().centerInside().into(holder.imageview);
+        Picasso.get().load(modelEvento.get(position).getUrlImagen()).fit().centerInside().into(holder.imageview);
     }
 
     @Override
     public int getItemCount() {
-        if (modelActividad != null)
-            return modelActividad.size();
-        System.out.println(modelActividad.size());
+        if (modelEvento != null)
+            return modelEvento.size();
+        System.out.println(modelEvento.size());
         return 0;
 
     }

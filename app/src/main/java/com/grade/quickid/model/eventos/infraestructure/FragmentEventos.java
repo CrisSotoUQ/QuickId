@@ -1,9 +1,9 @@
-package com.grade.quickid.model.controller;
+package com.grade.quickid.model.eventos.infraestructure;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -36,37 +36,35 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.grade.quickid.BuildConfig;
 import com.grade.quickid.R;
-import com.grade.quickid.model.actividades.Actividad;
-import com.grade.quickid.model.actividades.CrearEventoActivity;
+import com.grade.quickid.model.eventos.aplication.CargarDatosCsv;
+import com.grade.quickid.model.eventos.aplication.CrearDatosCsv;
+import com.grade.quickid.model.eventos.domain.Evento;
+import com.grade.quickid.model.eventos.aplication.CrearEventoActivity;
 import com.grade.quickid.model.personas.domain.Persona;
-import com.grade.quickid.model.actividades.QRGenerator;
+import com.grade.quickid.model.eventos.aplication.QRGenerator;
 
-import com.grade.quickid.model.registroActividad.RegistroActividad;
-import com.grade.quickid.model.actividades.adaptadores.AdapterActividades;
+import com.grade.quickid.model.registros.domain.Registro;
+import com.grade.quickid.model.eventos.infraestructure.AdapterEventos;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-public class FragmentActividades extends Fragment {
-    AdapterActividades adapterActividades;
+public class FragmentEventos extends Fragment {
+    private static android.app.AlertDialog.Builder dialogo2;
+    AdapterEventos adapterEventos;
     RecyclerView rvActividades;
-    ArrayList<Actividad> listActividades = new ArrayList<Actividad>();
+    ArrayList<Evento> listActividades = new ArrayList<Evento>();
     Menu menu;
     private StorageReference mStorageRef;
     private AlertDialog dialog;
     private AlertDialog.Builder dialogBuilder;
-    private AlertDialog.Builder dialogBuilder2;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
-    DatabaseReference myRefDatosRegistroEvento;
-    DatabaseReference myRefDatosPersonaEvento;
     private Button btnEliminar, btnEditar, btnDescargarDatos;
-    ValueEventListener eventListner;
-    ValueEventListener mEventListnerPersonaEvento;
     CardView cardView;
 
-    public FragmentActividades() {
+    public FragmentEventos() {
         // Required empty public constructor
     }
 
@@ -89,10 +87,7 @@ public class FragmentActividades extends Fragment {
         View view = inflater.inflate(R.layout.fragment_actividades, container, false);
         rvActividades = (RecyclerView) view.findViewById(R.id.Recycler_actividades);
         cardView = (CardView) view.findViewById(R.id.id_cardview);
-        listarDatos();
-        // Inflate the layout for this fragment
 
-        // Inflate the layout for this fragment
         return view;
     }
 
@@ -100,18 +95,18 @@ public class FragmentActividades extends Fragment {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            databaseReference.child("Actividad").orderByChild("id_persona").equalTo(user.getUid())
+            databaseReference.child("Evento").orderByChild("id_persona").equalTo(user.getUid())
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             listActividades.clear();
                             for (DataSnapshot objSnapshot : dataSnapshot.getChildren()) {
-                                Actividad p = objSnapshot.getValue(Actividad.class);
+                                Evento p = objSnapshot.getValue(Evento.class);
                                 listActividades.add(p);
                                 if (getActivity() != null) {
                                     rvActividades.setLayoutManager(new LinearLayoutManager(getActivity()));
-                                    adapterActividades = new AdapterActividades(getActivity(), listActividades);
-                                    adapterActividades.setOnClickListener(new View.OnClickListener() {
+                                    adapterEventos = new AdapterEventos(getActivity(), listActividades);
+                                    adapterEventos.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
                                             String idActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
@@ -124,13 +119,13 @@ public class FragmentActividades extends Fragment {
                                             startActivity(intent);
                                         }
                                     });
-                                    adapterActividades.setOnLongClickListener(new View.OnLongClickListener() {
+                                    adapterEventos.setOnLongClickListener(new View.OnLongClickListener() {
                                         public boolean onLongClick(View v) {
                                             mostrarDialog(listActividades.get(rvActividades.getChildAdapterPosition(v)));
                                             return false;
                                         }
                                     });
-                                    rvActividades.setAdapter(adapterActividades);
+                                    rvActividades.setAdapter(adapterEventos);
                                 }
                             }
                         }
@@ -145,7 +140,7 @@ public class FragmentActividades extends Fragment {
         }
     }
 
-    private void mostrarDialog(Actividad actividad) {
+    private void mostrarDialog(Evento evento) {
         dialogBuilder = new AlertDialog.Builder(getActivity());
         dialogBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -162,92 +157,10 @@ public class FragmentActividades extends Fragment {
 
             @Override
             public void onClick(View v) {
-                StringBuilder data = new StringBuilder();
-
-                FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-                myRefDatosRegistroEvento = firebaseDatabase3.getInstance().getReference().child("RegistroActividad");
-
-                ValueEventListener valueEventListener = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            data.append("Nombre Evento: " + actividad.getNombre());
-                            data.append("\n" + "Lugar Evento: " + actividad.getLugar());
-                            data.append("\n");
-                            data.append("\n" + "Correo ,   Apellido  ,   Nombre   , Fecha  ,  Hora entrada");
-
-                            for (DataSnapshot objSnapshot : snapshot.getChildren()) {
-                                RegistroActividad ra = objSnapshot.getValue(RegistroActividad.class);
-
-                                ValueEventListener valueEventListenerPersonaEvento = new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot1) {
-                                        for (DataSnapshot objSnapshot : snapshot1.getChildren()) {
-                                            Persona per = objSnapshot.getValue(Persona.class);
-                                            data.append("\n" + String.valueOf(per.getCorreo()) + "," + String.valueOf(per.getApellido())
-                                                    + "," + String.valueOf(per.getNombre()) + "," + String.valueOf(ra.getFechaRegistro())
-                                                    + "," + String.valueOf(ra.getHoraRegistro()) + "," + String.valueOf(ra.getHoraRegistro()));
-                                        }
-                                        try {
-
-                                            if (data != null) {
-                                                FileOutputStream out = getContext().openFileOutput("data.csv", Context.MODE_PRIVATE);
-                                                out.write((data.toString()).getBytes());
-                                                out.close();
-                                                Context context = getContext();
-                                                File filelocation = new File(context.getFilesDir(), "data.csv");
-                                                Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", filelocation);
-
-                                                Intent fileIntent = new Intent(Intent.ACTION_SEND);
-                                                fileIntent.setType("text/csv");
-                                                fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
-                                                fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                                fileIntent.putExtra(Intent.EXTRA_STREAM, path);
-                                                dialog.dismiss();
-
-                                                startActivity(Intent.createChooser(fileIntent, "Send mail"));
-                                                myRefDatosRegistroEvento.removeEventListener(eventListner);
-                                                myRefDatosPersonaEvento.removeEventListener(mEventListnerPersonaEvento);
-                                            }
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                };
-                                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                                myRefDatosPersonaEvento = firebaseDatabase.getInstance().getReference().child("Persona");
-                                myRefDatosPersonaEvento.orderByChild("id").equalTo(ra.getIdPersona()).addValueEventListener(valueEventListenerPersonaEvento);
-                                mEventListnerPersonaEvento = valueEventListenerPersonaEvento;
-                            }
-
-                        }else{
-                            AlertDialog.Builder dialogo2 = new AlertDialog.Builder(getActivity());
-                            dialogo2.setTitle("No se han encontrado datos");
-                            dialogo2.setMessage("Este evento no posee registros "+ actividad.getNombre());
-                            dialogo2.setCancelable(false);
-                            dialogo2.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialogo2, int id) {
-                                    dialogo2.dismiss();
-                                }
-                            });
-                            dialogo2.show();
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                };
-                myRefDatosRegistroEvento.orderByChild("idActividad").equalTo(actividad.getIdActividad()).addValueEventListener(valueEventListener);
-                eventListner = valueEventListener;
+                CrearDatosCsv crearDatosCsv = new CrearDatosCsv();
+                crearDatosCsv.CrearDatosCsv(evento,getContext());
+                dialogo2 = new android.app.AlertDialog.Builder(getActivity());
+                dialog.dismiss();
 
             }
         });
@@ -255,7 +168,7 @@ public class FragmentActividades extends Fragment {
         btnEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                actualizarDatos(actividad);
+                actualizarDatos(evento);
             }
         });
         btnEliminar.setOnClickListener(new View.OnClickListener() {
@@ -263,7 +176,7 @@ public class FragmentActividades extends Fragment {
             public void onClick(View v) {
                 AlertDialog.Builder dialogo1 = new AlertDialog.Builder(getActivity());
                 dialogo1.setTitle("Importante");
-                dialogo1.setMessage("¿Quieres eliminar la Actividad " + actividad.getNombre() + " ? ");
+                dialogo1.setMessage("¿Quieres eliminar la Evento " + evento.getNombre() + " ? ");
                 dialogo1.setCancelable(false);
                 dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogo1, int id) {
@@ -279,8 +192,8 @@ public class FragmentActividades extends Fragment {
             }
 
             public void aceptar() {
-                databaseReference.child("Actividad").child(actividad.getIdActividad()).removeValue();
-                mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl(actividad.getUrlImagen());
+                databaseReference.child("Evento").child(evento.getIdActividad()).removeValue();
+                mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl(evento.getUrlImagen());
                 mStorageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -295,8 +208,8 @@ public class FragmentActividades extends Fragment {
                         Log.d("TAG", "onFailure: did not delete file");
                     }
                 });
-                adapterActividades.notifyDataSetChanged();
-                listActividades.remove(actividad);
+                adapterEventos.notifyDataSetChanged();
+                listActividades.remove(evento);
                 Toast t = Toast.makeText(getActivity(), "Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
                 t.show();
                 dialog.dismiss();
@@ -309,10 +222,23 @@ public class FragmentActividades extends Fragment {
         dialog.show();
     }
 
-    private void actualizarDatos(Actividad actividad) {
+    public static void showAlertDialog(Evento evento) {
+
+        dialogo2.setTitle("No se han encontrado datos");
+        dialogo2.setMessage("Este evento no posee registros "+ evento.getNombre());
+        dialogo2.setCancelable(false);
+        dialogo2.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogo2, int id) {
+                dialogo2.dismiss();
+            }
+        });
+        dialogo2.show();
+    }
+
+    private void actualizarDatos(Evento evento) {
         // envio en el intent
         Intent act = new Intent(getActivity(), CrearEventoActivity.class);
-        act.putExtra("Actividad", actividad);
+        act.putExtra("Evento", evento);
         act.putExtra("Update", 1);
         startActivity(act);
         dialog.dismiss();

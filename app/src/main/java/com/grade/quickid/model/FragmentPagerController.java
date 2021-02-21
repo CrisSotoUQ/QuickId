@@ -1,4 +1,4 @@
-package com.grade.quickid.model.controller;
+package com.grade.quickid.model;
 
 import android.view.View;
 
@@ -6,6 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+
+import com.grade.quickid.model.registros.infraestructure.FragmentRegistros;
+import com.grade.quickid.model.eventos.infraestructure.FragmentEventos;
 
 public class FragmentPagerController extends FragmentPagerAdapter {
 int numoftabs;
@@ -21,7 +24,7 @@ int numoftabs;
 
         switch (position){
             case 0 :
-                return new FragmentActividades();
+                return new FragmentEventos();
             case 1 :
                 return new FragmentRegistros();
             default:

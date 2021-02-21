@@ -1,4 +1,4 @@
-package com.grade.quickid.model.actividades;
+package com.grade.quickid.model.eventos.aplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +25,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.grade.quickid.R;
 import com.grade.quickid.model.MainActivity;
+import com.grade.quickid.model.eventos.domain.Evento;
 
 import java.io.Serializable;
 
@@ -38,7 +39,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
     private ProgressDialog mProgress;
     private StorageReference mStorageRef;
     FirebaseDatabase firebaseDatabase;
-    Actividad receive;
+    Evento receive;
     String imagenOriginal;
     private int update;
     @Override
@@ -51,7 +52,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
         btn_CrearEvento = (Button) findViewById(R.id.btn_crearEvento);
         btn_CancelarEvento = (Button) findViewById(R.id.btn_cancelarEvento);
         inicializarFirebase();
-        receive = (Actividad) getIntent().getSerializableExtra("Actividad");
+        receive = (Evento) getIntent().getSerializableExtra("Evento");
         mImageUri = Uri.parse(receive.getUrlImagen());
         imagenOriginal = getIntent().getStringExtra("Original");
         update = getIntent().getIntExtra("Update",0);
@@ -127,7 +128,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
 
     private void actualizarEvento(String Uri) {
 
-        myRef = databaseReference.child("Actividad");
+        myRef = databaseReference.child("Evento");
         receive.setUrlImagen(Uri);
         myRef.child(receive.getIdActividad()).setValue(receive);
 
@@ -146,8 +147,8 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
     private void crearEvento(String Uri) {
-        // inserto el objeto RegistroActividad
-        myRef = databaseReference.child("Actividad");
+        // inserto el objeto Registro
+        myRef = databaseReference.child("Evento");
         receive.setUrlImagen(Uri);
         myRef.child(receive.getIdActividad()).setValue(receive);
         finish();
