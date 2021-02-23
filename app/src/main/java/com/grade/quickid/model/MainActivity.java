@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,25 +33,29 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import com.grade.quickid.R;
-import com.grade.quickid.model.eventos.aplication.CrearEventoActivity;
-import com.grade.quickid.model.eventos.infraestructure.QRScanner;
+import com.grade.quickid.model.eventos.infraestructure.CrearEventoActivity;
+import com.grade.quickid.model.eventos.infraestructure.QRScannerActivity;
 import com.grade.quickid.model.personas.infrastructure.LoginActivity;
 import com.squareup.picasso.Picasso;
 
+/**
+ * Clase Main de la app controla todos los componentes principales
+ * @author  Cristian Camilo Soto
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    TabLayout tabLayout;
-    ViewPager viewPager;
-    TabItem tab1, tab2;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private TabItem tabEventos, tabRegistros;
     private int CAMERA_PERMISSION_CODE = 1;
-    ImageView imagemenu;
-    FragmentPagerController pagerAdapter;
-    DatabaseReference databaseReference;
-    SharedPreferences settings;
-    FirebaseDatabase firebaseDatabase;
-    ImageView imageprofile;
-    DrawerLayout drawerLayout;
-    TextView textoCorreoGoogle;
-    TextView textoNombregoogle;
+    private ImageView imageMenu;
+    private FragmentPagerController pagerAdapter;
+    private DatabaseReference databaseReference;
+    private SharedPreferences settings;
+    private FirebaseDatabase firebaseDatabase;
+    private ImageView imageprofile;
+    private DrawerLayout drawerLayout;
+    private TextView textoCorreoGoogle;
+    private TextView textoNombreGoogle;
     private String nombre;
     private String email;
     private Button mainQrScanner;
@@ -58,20 +63,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actividad);
         drawerLayout = findViewById(R.id.drawerLayout);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        tab1 = (TabItem) findViewById(R.id.tab_actividades);
-        tab2 = (TabItem) findViewById(R.id.tab_registros);
-        imagemenu = findViewById(R.id.imageMenu);
+        tabEventos = (TabItem) findViewById(R.id.tab_actividades);
+        tabRegistros = (TabItem) findViewById(R.id.tab_registros);
+        imageMenu = findViewById(R.id.imageMenu);
         mainQrScanner = findViewById(R.id.mainQrScannner);
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         View hView = navigationView.getHeaderView(0);
         imageprofile = (ImageView) hView.findViewById(R.id.imageprofile);
         textoCorreoGoogle = (TextView) hView.findViewById(R.id.textoCorreoGoogle);
-        textoNombregoogle = (TextView) hView.findViewById(R.id.textoNombreGoogle);
+        textoNombreGoogle = (TextView) hView.findViewById(R.id.textoNombreGoogle);
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
@@ -81,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imagen = intent.getStringExtra("imagen");
         nombre = intent.getStringExtra("nombre");
         //Guardar datos
-        if (email!= null){
+        if (email != null) {
             settings = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("email", email);
@@ -89,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             editor.putString("nombre", nombre);
             editor.apply();
             editor.commit();
-        }else{
+        } else {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             email = prefs.getString("email", null);
             nombre = prefs.getString("nombre", null);
@@ -99,18 +105,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainQrScanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(MainActivity.this, "Permiso Aceptado", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(MainActivity.this, QRScanner.class);
+                if(yaTienePermisos()){
+                    Intent intent = new Intent(MainActivity.this, QRScannerActivity.class);
                     startActivity(intent);
                     finish();
-                } else {
+                }else{
                     requestCameraPermission();
                 }
             }
         });
-        imagemenu.setOnClickListener(new View.OnClickListener() {
+        imageMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -150,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setup(String email, String imagen, String nombre) {
         Picasso.get().load(imagen).fit().centerInside().into(imageprofile);
         textoCorreoGoogle.setText(email);
-        textoNombregoogle.setText(nombre);
+        textoNombreGoogle.setText(nombre);
 
     }
 
@@ -166,10 +170,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case R.id.Salir: {
-
-            //    SharedPreferences.Editor prefs = (SharedPreferences.Editor) getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit();
-            //    prefs.clear();
-             //   prefs.apply();
                 settings.edit().clear().apply();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
@@ -177,17 +177,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             }
             case R.id.menuScanQr: {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(MainActivity.this, "Permiso Aceptado", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(MainActivity.this, QRScanner.class);
+                if (yaTienePermisos()) {
+                    Intent intent = new Intent(MainActivity.this, QRScannerActivity.class);
                     startActivity(intent);
                     finish();
-                    break;
                 } else {
                     requestCameraPermission();
                 }
-
             }
             case R.id.menuEventos: {
                 Intent intent = new Intent(MainActivity.this, CrearEventoActivity.class);
@@ -203,25 +199,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void requestCameraPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Permiso requerido")
-                    .setMessage("Este permiso es requerido")
-                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-                        }
-                    }).setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            }).create().show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-        }
-
+        new AlertDialog.Builder(this)
+                .setTitle("Permiso requerido Scanner QR")
+                .setMessage("Este permiso es requerido")
+                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+                    }
+                }).setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).create().show();
     }
 
+    private boolean yaTienePermisos() {
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+
+
+    }
 }

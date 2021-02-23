@@ -53,54 +53,55 @@ public class FragmentRegistros extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
-   private void listarDatos() {
+
+    private void listarDatos() {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user !=null){
-        databaseReference.child("Registro").orderByChild("idPersona").equalTo(user.getUid()).
-                addValueEventListener(new ValueEventListener() {
-            @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                  listRegistros.clear();
-                    for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
-                        Log.d("usuarios",objSnapshot.toString());
-                        Registro p = objSnapshot.getValue(Registro.class);
-                        if (p.getVisibilidad().equals("1")){
-                            listRegistros.add(p);
-                        }
-                }
-                if(getActivity()!= null) {
-                    rvRegistros.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    adapterRegistros = new AdapterRegistros(getActivity(), listRegistros);
-                    adapterRegistros.setOnLongClickListener(new View.OnLongClickListener() {
+        if (user != null) {
+            databaseReference.child("Registro").orderByChild("idPersona").equalTo(user.getUid()).
+                    addValueEventListener(new ValueEventListener() {
                         @Override
-                        public boolean onLongClick(View v) {
-                            mostrarDialog(listRegistros.get(rvRegistros.getChildAdapterPosition(v)));
-                            return false;
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            listRegistros.clear();
+                            for (DataSnapshot objSnapshot : dataSnapshot.getChildren()) {
+                                Log.d("usuarios", objSnapshot.toString());
+                                Registro p = objSnapshot.getValue(Registro.class);
+                                if (p.getVisibilidad().equals("1")) {
+                                    listRegistros.add(p);
+                                }
+                            }
+                            if (getActivity() != null) {
+                                rvRegistros.setLayoutManager(new LinearLayoutManager(getActivity()));
+                                adapterRegistros = new AdapterRegistros(getActivity(), listRegistros);
+                                adapterRegistros.setOnLongClickListener(new View.OnLongClickListener() {
+                                    @Override
+                                    public boolean onLongClick(View v) {
+                                        mostrarDialog(listRegistros.get(rvRegistros.getChildAdapterPosition(v)));
+                                        return false;
+                                    }
+                                });
+                                rvRegistros.setAdapter(adapterRegistros);
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
                         }
                     });
-                    rvRegistros.setAdapter(adapterRegistros);
-                }
-                }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });}else{
-            Toast.makeText(getActivity(),"Usuario no encontrado",Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getActivity(), "Usuario no encontrado", Toast.LENGTH_LONG).show();
         }
-   }
+    }
 
     private void mostrarDialog(Registro registro) {
         dialogBuilder = new AlertDialog.Builder(getActivity());
-        final View popRegistroFragment = getLayoutInflater().inflate(R.layout.popup_dialog_registros,null);
+        final View popRegistroFragment = getLayoutInflater().inflate(R.layout.popup_dialog_registros, null);
         btnEliminar = (Button) popRegistroFragment.findViewById(R.id.btn_eliminar_registros);
         btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder dialogo1 = new AlertDialog.Builder(getActivity());
                 dialogo1.setTitle("Importante");
-                dialogo1.setMessage("¿Quieres eliminar el Registro "+ registro.getNombreActividad() +" ? ");
+                dialogo1.setMessage("¿Quieres eliminar el Registro " + registro.getNombreActividad() + " ? ");
                 dialogo1.setCancelable(false);
                 dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogo1, int id) {
@@ -118,7 +119,7 @@ public class FragmentRegistros extends Fragment {
             public void aceptar() {
                 databaseReference.child("Registro").child(registro.getIdRegistro()).removeValue();
                 listRegistros.remove(registro);
-                Toast t=Toast.makeText(getActivity(),"Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
+                Toast t = Toast.makeText(getActivity(), "Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
                 t.show();
                 dialog.dismiss();
             }
@@ -128,7 +129,6 @@ public class FragmentRegistros extends Fragment {
         dialog = dialogBuilder.create();
         dialog.show();
     }
-
 
 
 }

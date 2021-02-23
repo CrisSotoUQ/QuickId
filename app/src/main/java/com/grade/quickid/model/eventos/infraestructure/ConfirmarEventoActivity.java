@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.aplication;
+package com.grade.quickid.model.eventos.infraestructure;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +29,7 @@ import com.grade.quickid.model.eventos.domain.Evento;
 
 import java.io.Serializable;
 
-public class ConfirmarEvento extends AppCompatActivity implements Serializable {
+public class ConfirmarEventoActivity extends AppCompatActivity implements Serializable {
     private Button btn_CrearEvento;
     private Button btn_CancelarEvento;
     TextView titulo;
@@ -63,7 +63,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
         btn_CancelarEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ConfirmarEvento.this, "Se ha cancelado la configuracion del evento", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ConfirmarEventoActivity.this, "Se ha cancelado la configuracion del evento", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 // Closing all the Activities, clear the back stack.
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -80,7 +80,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                      if(mImageUri.toString().equals(imagenOriginal)){
                          actualizarEvento(imagenOriginal);
                          mProgress.dismiss();
-                         Toast.makeText(ConfirmarEvento.this, "Evento Actualizado Satisfactoriamente", Toast.LENGTH_LONG).show();
+                         Toast.makeText(ConfirmarEventoActivity.this, "Evento Actualizado Satisfactoriamente", Toast.LENGTH_LONG).show();
                          Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                          // Closing all the Activities, clear the back stack.
                          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -96,7 +96,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                                     public void onSuccess(Uri uri) {
                                         crearEvento(uri.toString());
                                         mProgress.dismiss();
-                                        Toast.makeText(ConfirmarEvento.this, "Ok", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(ConfirmarEventoActivity.this, "Ok", Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                         // Closing all the Activities, clear the back stack.
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -109,7 +109,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(ConfirmarEvento.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ConfirmarEventoActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                             @Override
@@ -119,7 +119,7 @@ public class ConfirmarEvento extends AppCompatActivity implements Serializable {
                         });
                     }
                 } else {
-                    Toast.makeText(ConfirmarEvento.this, "Debe seleccionar una imagen", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConfirmarEventoActivity.this, "Debe seleccionar una imagen", Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -1,16 +1,12 @@
-package com.grade.quickid.model.eventos.infraestructure;
+package com.grade.quickid.model.eventos.infraestructure.fragments;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,25 +30,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.grade.quickid.BuildConfig;
 import com.grade.quickid.R;
-import com.grade.quickid.model.eventos.aplication.CargarDatosCsv;
 import com.grade.quickid.model.eventos.aplication.CrearDatosCsv;
 import com.grade.quickid.model.eventos.domain.Evento;
-import com.grade.quickid.model.eventos.aplication.CrearEventoActivity;
-import com.grade.quickid.model.personas.domain.Persona;
-import com.grade.quickid.model.eventos.aplication.QRGenerator;
+import com.grade.quickid.model.eventos.infraestructure.CrearEventoActivity;
+import com.grade.quickid.model.eventos.infraestructure.QRGeneratorActivity;
 
-import com.grade.quickid.model.registros.domain.Registro;
-import com.grade.quickid.model.eventos.infraestructure.AdapterEventos;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class FragmentEventos extends Fragment {
     private static android.app.AlertDialog.Builder dialogo2;
-    AdapterEventos adapterEventos;
+    AdapterFragmentEvento adapterFragmentEvento;
     RecyclerView rvActividades;
     ArrayList<Evento> listActividades = new ArrayList<Evento>();
     Menu menu;
@@ -87,7 +75,7 @@ public class FragmentEventos extends Fragment {
         View view = inflater.inflate(R.layout.fragment_actividades, container, false);
         rvActividades = (RecyclerView) view.findViewById(R.id.Recycler_actividades);
         cardView = (CardView) view.findViewById(R.id.id_cardview);
-
+        listarDatos();
         return view;
     }
 
@@ -105,27 +93,27 @@ public class FragmentEventos extends Fragment {
                                 listActividades.add(p);
                                 if (getActivity() != null) {
                                     rvActividades.setLayoutManager(new LinearLayoutManager(getActivity()));
-                                    adapterEventos = new AdapterEventos(getActivity(), listActividades);
-                                    adapterEventos.setOnClickListener(new View.OnClickListener() {
+                                    adapterFragmentEvento = new AdapterFragmentEvento(getActivity(), listActividades);
+                                    adapterFragmentEvento.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
                                             String idActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
                                             String nombreActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getNombre();
                                             String lugarActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
-                                            Intent intent = new Intent(getActivity(), QRGenerator.class);
+                                            Intent intent = new Intent(getActivity(), QRGeneratorActivity.class);
                                             intent.putExtra("idActividad", idActividad);
                                             intent.putExtra("nombre", nombreActividad);
                                             intent.putExtra("lugar", lugarActividad);
                                             startActivity(intent);
                                         }
                                     });
-                                    adapterEventos.setOnLongClickListener(new View.OnLongClickListener() {
+                                    adapterFragmentEvento.setOnLongClickListener(new View.OnLongClickListener() {
                                         public boolean onLongClick(View v) {
                                             mostrarDialog(listActividades.get(rvActividades.getChildAdapterPosition(v)));
                                             return false;
                                         }
                                     });
-                                    rvActividades.setAdapter(adapterEventos);
+                                    rvActividades.setAdapter(adapterFragmentEvento);
                                 }
                             }
                         }
@@ -158,7 +146,7 @@ public class FragmentEventos extends Fragment {
             @Override
             public void onClick(View v) {
                 CrearDatosCsv crearDatosCsv = new CrearDatosCsv();
-                crearDatosCsv.CrearDatosCsv(evento,getContext());
+                crearDatosCsv.CrearDatosCsv(evento, getContext());
                 dialogo2 = new android.app.AlertDialog.Builder(getActivity());
                 dialog.dismiss();
 
@@ -208,7 +196,7 @@ public class FragmentEventos extends Fragment {
                         Log.d("TAG", "onFailure: did not delete file");
                     }
                 });
-                adapterEventos.notifyDataSetChanged();
+                adapterFragmentEvento.notifyDataSetChanged();
                 listActividades.remove(evento);
                 Toast t = Toast.makeText(getActivity(), "Se ha eliminado satisfactoriamente", Toast.LENGTH_LONG);
                 t.show();
@@ -223,9 +211,8 @@ public class FragmentEventos extends Fragment {
     }
 
     public static void showAlertDialog(Evento evento) {
-
         dialogo2.setTitle("No se han encontrado datos");
-        dialogo2.setMessage("Este evento no posee registros "+ evento.getNombre());
+        dialogo2.setMessage("Este evento no posee registros " + evento.getNombre());
         dialogo2.setCancelable(false);
         dialogo2.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialogo2, int id) {

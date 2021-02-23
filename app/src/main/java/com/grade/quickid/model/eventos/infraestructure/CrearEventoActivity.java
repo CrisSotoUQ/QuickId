@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.aplication;
+package com.grade.quickid.model.eventos.infraestructure;
 
 import android.Manifest;
 import android.app.TimePickerDialog;
@@ -156,7 +156,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                     } else {
                         //si estamos en un update
                         if (update != 0) {
-                            Intent act = new Intent(CrearEventoActivity.this, ConfirmarEvento.class);
+                            Intent act = new Intent(CrearEventoActivity.this, ConfirmarEventoActivity.class);
                             retornoObjetoActividadUpdate();
                             act.putExtra("Evento", receiveEvento);
                             act.putExtra("Update", 1);
@@ -165,7 +165,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         } else {
                             Evento evento = (Evento) retornoObjetoActividad();
                             // envio en el intent a la ventana de confirmacion
-                            Intent act = new Intent(CrearEventoActivity.this, ConfirmarEvento.class);
+                            Intent act = new Intent(CrearEventoActivity.this, ConfirmarEventoActivity.class);
                             act.putExtra("Evento", evento);
                             startActivity(act);
                         }
@@ -177,7 +177,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                     } else {
                         //si estamos en un update
                         if (update != 0) {
-                            Intent act = new Intent(CrearEventoActivity.this, CargarDatosCsv.class);
+                            Intent act = new Intent(CrearEventoActivity.this, CargarDatosCsvActivity.class);
                             retornoObjetoActividadUpdate();
                             act.putExtra("Evento", receiveEvento);
                             act.putExtra("Update", 1);
@@ -187,7 +187,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         } else {
                             Evento evento = (Evento) retornoObjetoActividad();
                             // envio en el intent al maps
-                            Intent act = new Intent(CrearEventoActivity.this, CargarDatosCsv.class);
+                            Intent act = new Intent(CrearEventoActivity.this, CargarDatosCsvActivity.class);
                             act.putExtra("Evento", evento);
                             startActivity(act);
                         }

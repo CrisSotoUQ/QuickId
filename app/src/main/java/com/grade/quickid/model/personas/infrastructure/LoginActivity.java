@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -24,28 +25,35 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grade.quickid.R;
 import com.grade.quickid.model.MainActivity;
+import com.grade.quickid.model.personas.application.PersonaController;
 import com.grade.quickid.model.personas.domain.Persona;
 
+/**
+ * Clase que realiza el Login de la aplicacion mediante Google Sign in
+ *
+ * @author Cristian Camilo Soto
+ */
 public class LoginActivity extends AppCompatActivity {
-    private Button  mGoogleBtn;
+    private Button mGoogleBtn;
     private int GOOGLE_SIGN_IN = 100;
-    GoogleSignInAccount account;
+    private GoogleSignInAccount account;
     private String email;
     private String imagen;
     private String nombre;
-    DatabaseReference myRefPersona;
-    ValueEventListener mEventListenerPersona;
 
+    PersonaController personaController = new PersonaController();
+
+    /**
+     * Se cargan los componentes del layout
+     */
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_login);
         mGoogleBtn = (Button) findViewById(R.id.googlebtn);
         session();
@@ -59,7 +67,6 @@ public class LoginActivity extends AppCompatActivity {
                             .build();
                     GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(LoginActivity.this, googleSignInOptions);
                     googleSignInClient.signOut();
-
                     startActivityForResult(googleSignInClient.getSignInIntent(), GOOGLE_SIGN_IN);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -69,13 +76,17 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * se asegura la persistencia de la session al momento de cerrar y volver a abrir la app
+     */
     private void session() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         email = prefs.getString("email", null);
         nombre = prefs.getString("nombre", null);
         imagen = prefs.getString("imagen", null);
-        if (email!= null){
-        Log.d("MAIL",email);}
+        if (email != null) {
+            Log.d("MAIL", email);
+        }
         if (email != null) {
             ShowMain();
             finish();
@@ -83,13 +94,18 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * al iniciar la app sea visible
+     */
     @Override
     protected void onStart() {
         super.onStart();
         this.setVisible(true);
     }
 
-
+    /**
+     * por si sucede error
+     */
     private void ShowAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Proceso cancelado");
@@ -98,16 +114,25 @@ public class LoginActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * vamos a la clase main
+     */
     private void ShowMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.putExtra("email", email);
         intent.putExtra("nombre", nombre);
         intent.putExtra("imagen", imagen);
         startActivity(intent);
-
         finish();
     }
 
+    /**
+     * se controla el login de Google
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -122,44 +147,11 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                                       // final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Persona");
-
-                                        ValueEventListener valueEventListenerPersona = new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                if (dataSnapshot.exists()) {
-                                                    email = account.getEmail();
-                                                    nombre = account.getDisplayName();
-                                                    imagen = account.getPhotoUrl().toString();
-                                                    myRefPersona.removeEventListener(mEventListenerPersona);
-                                                    ShowMain();
-                                                } else {
-                                                    email = account.getEmail();
-                                                    nombre = account.getDisplayName();
-                                                    imagen = account.getPhotoUrl().toString();
-                                                    Persona persona = new Persona();
-                                                    persona.setId(user.getUid());
-                                                    persona.setNombre(account.getDisplayName());
-                                                    persona.setApellido(account.getFamilyName());
-                                                    persona.setImagenUri(account.getPhotoUrl().toString());
-                                                    persona.setCorreo(account.getEmail());
-                                                    myRefPersona.getDatabase().getReference().child("Persona").child(user.getUid()).setValue(persona);
-                                                    myRefPersona.removeEventListener(mEventListenerPersona);
-                                                    ShowMain();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                System.out.println("Fallo la lectura: " + databaseError.getCode());
-                                            }
-                                        };
-                                        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-                                        myRefPersona = firebaseDatabase3.getInstance().getReference().child("Persona");
-                                        myRefPersona.child(user.getUid()).addValueEventListener(valueEventListenerPersona);
-                                        mEventListenerPersona = valueEventListenerPersona;
+                                        email = account.getEmail().toString();
+                                        imagen = account.getPhotoUrl().toString();
+                                        nombre = account.getDisplayName();
+                                        personaController.crearPersona(account);
+                                        ShowMain();
                                     } else {
                                         ShowAlert();
                                     }
@@ -170,79 +162,11 @@ public class LoginActivity extends AppCompatActivity {
             } catch (ApiException e) {
                 e.printStackTrace();
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("S");
-                builder.setMessage("Se ha producido un error autenticando al usuario2" + e.getMessage());
+                builder.setTitle("Errror");
+                builder.setMessage("Se ha producido un error autenticando al usuario" + e.getMessage());
                 AlertDialog dialog = builder.create();
                 // dialog.show();
             }
         }
     }
 }
-  /*
-        mRegistrarBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (txt_emailLogin.getText().equals("") || txt_contrasenaLogin.getText().equals("")) {
-                    Toast.makeText(LoginActivity.this, "Validar los campos", Toast.LENGTH_SHORT).show();
-                } else {
-                    FirebaseAuth.getInstance().createUserWithEmailAndPassword(txt_emailLogin.getText().toString(),
-                            txt_contrasenaLogin.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull final Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                final DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference("Persona/"+user.getUid());
-                                final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Persona").child(user.getUid());
-                                myRef.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.exists()){
-                                            ShowMain(task.getResult().getUser().getEmail(),"Normal",null
-                                                    ,task.getResult().getUser().getDisplayName());
-                                        }else{
-                                            Persona persona= new Persona();
-                                            persona.setId(user.getUid());
-                                            persona.setCorreo(task.getResult().getUser().getEmail());
-                                            persona.setNombre(task.getResult().getUser().getDisplayName());
-                                            myRef2.setValue(persona);
-                                            //m,
-
-                                        }                       }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        System.out.println("Fallo la lectura: " + databaseError.getCode());
-                                    }
-                                });
-                            } else {
-                                ShowAlert();
-                            }
-
-                        }
-                    });
-
-                }
-            }
-        });*/
-
-   /*     mAccederBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (txt_emailLogin.getText().equals("") || txt_contrasenaLogin.getText().equals("")) {
-                    Toast.makeText(LoginActivity.this, "Validar los campos", Toast.LENGTH_SHORT).show();
-                } else {
-                    FirebaseAuth.getInstance().signInWithEmailAndPassword(txt_emailLogin.getText().toString(),
-                            txt_contrasenaLogin.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                ShowMain(task.getResult().getUser().getEmail(), "Invitado",null,task.getResult().getUser().getDisplayName());
-                            } else {
-                                ShowAlert();
-                            }
-
-                        }
-                    });
-
-                }
-            }
-        });*/

@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.infraestructure;
+package com.grade.quickid.model.eventos.infraestructure.fragments;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,14 +16,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AdapterEventos extends RecyclerView.Adapter<AdapterEventos.ViewHolder> implements  View.OnLongClickListener,View.OnClickListener {
+public class AdapterFragmentEvento extends RecyclerView.Adapter<AdapterFragmentEvento.ViewHolder> implements  View.OnLongClickListener,View.OnClickListener {
     ArrayList<Evento> modelEvento;
     LayoutInflater layoutInflater;
     //listener
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
         Context context;
-    public AdapterEventos(Context context, ArrayList<Evento> modelEvento){
+    public AdapterFragmentEvento(Context context, ArrayList<Evento> modelEvento){
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
         this.modelEvento = modelEvento;

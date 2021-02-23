@@ -23,8 +23,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".model.eventos.aplication.CargarDatosCsv"></activity>
-        <activity android:name=".model.eventos.aplication.ConfirmarEvento" />
+        <activity android:name=".model.eventos.infraestructure.CargarDatosCsvActivity"></activity>
+        <activity android:name=".model.eventos.infraestructure.ConfirmarEventoActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -37,11 +37,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".model.eventos.aplication.MapsEventoActivity" />
+        <activity android:name=".model.eventos.infraestructure.MapsEventoActivity" />
         <activity android:name=".model.MainActivity" />
-        <activity android:name=".model.eventos.infraestructure.QRScanner" />
-        <activity android:name=".model.eventos.aplication.QRGenerator" />
-        <activity android:name=".model.eventos.aplication.CrearEventoActivity" />
+        <activity android:name=".model.eventos.infraestructure.QRScannerActivity" />
+        <activity android:name=".model.eventos.infraestructure.QRGeneratorActivity" />
+        <activity android:name=".model.eventos.infraestructure.CrearEventoActivity" />
         <activity android:name=".model.personas.infrastructure.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

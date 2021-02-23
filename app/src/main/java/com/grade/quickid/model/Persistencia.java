@@ -9,4 +9,6 @@ public class Persistencia extends android.app.Application {
         super.onCreate();
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
+
+
 }

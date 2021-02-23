@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.aplication;
+package com.grade.quickid.model.eventos.infraestructure;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -67,7 +67,7 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                     Toast.makeText(MapsEventoActivity.this, "Es necesario marcar la ubicacion", Toast.LENGTH_SHORT).show();
                 } else {
                     if (receiveEvento.getCargueArchivoStatus().equals("0")) {
-                        Intent act = new Intent(MapsEventoActivity.this, ConfirmarEvento.class);
+                        Intent act = new Intent(MapsEventoActivity.this, ConfirmarEventoActivity.class);
                         act.putExtra("Evento", receiveEvento);
                         act.putExtra("Original", imagenOriginal);
                         if (update != 0) {
@@ -75,7 +75,7 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                         }
                         startActivity(act);
                     } else {
-                        Intent act = new Intent(MapsEventoActivity.this, CargarDatosCsv.class);
+                        Intent act = new Intent(MapsEventoActivity.this, CargarDatosCsvActivity.class);
                         act.putExtra("Evento", receiveEvento);
                         act.putExtra("Original", imagenOriginal);
                         if (update != 0) {

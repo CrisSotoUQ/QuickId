@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.aplication;
+package com.grade.quickid.model.eventos.infraestructure;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
-public class CargarDatosCsv extends AppCompatActivity {
+public class CargarDatosCsvActivity extends AppCompatActivity {
     private Button btn_cargarCsv;
     private Button btn_siguiente;
     Evento receiveEvento;
@@ -58,7 +58,7 @@ public class CargarDatosCsv extends AppCompatActivity {
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent act = new Intent(CargarDatosCsv.this, ConfirmarEvento.class);
+                Intent act = new Intent(CargarDatosCsvActivity.this, ConfirmarEventoActivity.class);
 
                 if (!receiveEvento.getListaPersonas().equals(null)){
                     act.putExtra("Evento", receiveEvento);
@@ -69,7 +69,7 @@ public class CargarDatosCsv extends AppCompatActivity {
                     startActivity(act);
 
             }else{
-                    Toast.makeText(CargarDatosCsv.this,"Es necesario cargar el archivo CSV",Toast.LENGTH_LONG);
+                    Toast.makeText(CargarDatosCsvActivity.this,"Es necesario cargar el archivo CSV",Toast.LENGTH_LONG);
                 }
             }
         });
@@ -116,7 +116,7 @@ public class CargarDatosCsv extends AppCompatActivity {
                     int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                     returnCursor.moveToFirst();
                     String nombre = returnCursor.getString(nameIndex) + " has been selected!";
-                    Toast.makeText(CargarDatosCsv.this,"nombre",Toast.LENGTH_LONG);
+                    Toast.makeText(CargarDatosCsvActivity.this,"nombre",Toast.LENGTH_LONG);
 
                     ProcesarData(uri);
                   //  textViewData.setText(returnCursor.getString(nameIndex) + " has been selected!");

@@ -1,9 +1,7 @@
 package com.grade.quickid.model.eventos.infraestructure;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,16 +12,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.grade.quickid.R;
 import com.grade.quickid.model.MainActivity;
+import com.grade.quickid.model.eventos.aplication.GetCurrentLocation;
 import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.registros.domain.Registro;
 import com.grade.quickid.model.Time;
@@ -42,24 +36,31 @@ import com.grade.quickid.model.Time;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class QRScanner extends AppCompatActivity {
+/**
+ * Clase que controla el scanner QR de la aplicación
+ * @author  Cristian Camilo Soto
+ */
+public class QRScannerActivity extends AppCompatActivity {
     private static LatLng latLng;
-    CodeScanner mCodeScanner;
-    CodeScannerView scannView;
-    TextView resultData;
-    static int OnScannerElse;
-    FusedLocationProviderClient client;
-    DatabaseReference databaseReference;
-    DatabaseReference myRefRegistroEvento;
-    DatabaseReference myRefActividad;
-    FirebaseDatabase firebaseDatabase;
-    int processDone = 0;
-    ValueEventListener mEventListenerRegistroEvento;
-    ValueEventListener mEventListnerActividad;
-
-    int contadorMatch;
+    private CodeScanner mCodeScanner;
+    private CodeScannerView scannView;
+    private TextView resultData;
+    private static int OnScannerElse;
+    private DatabaseReference databaseReference;
+    private DatabaseReference myRefRegistroEvento;
+    private DatabaseReference myRefActividad;
+    private FirebaseDatabase firebaseDatabase;
+    private int processDone = 0;
+    private ValueEventListener mEventListenerRegistroEvento;
+    private ValueEventListener mEventListnerActividad;
+    private int contadorMatch;
     boolean isWithin10km;
+    GetCurrentLocation getCurrentLocation = new GetCurrentLocation();
 
+    /**
+     * se cargan todos los componentes
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +70,6 @@ public class QRScanner extends AppCompatActivity {
         mCodeScanner = new CodeScanner(this, scannView);
         resultData = findViewById(R.id.txtResult);
         resultData.setText("");
-        client = LocationServices.getFusedLocationProviderClient(this);
         scannView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,9 +87,9 @@ public class QRScanner extends AppCompatActivity {
                         String idActividad = result.getText();
                         String idUsuario = user.getUid();
                         // valido el identificador de los codigos QR por ahora un numero
-                        // por default para separarlos del resto de QRS en el mundo
+                        // default 23 para separarlos del resto de QRS en el mundo
                         if (idActividad.substring(0, 2).equals("23")) {
-                            ValueEventListener valueEventListenerActividad= new ValueEventListener() {
+                            ValueEventListener valueEventListenerActividad = new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if (snapshot.exists()) {
@@ -100,8 +100,7 @@ public class QRScanner extends AppCompatActivity {
                                             String cargaStatus = objSnapshot.child("cargueArchivoStatus").getValue(String.class);
                                             String geoStatus = objSnapshot.child("geolocStatus").getValue(String.class);
                                             if (geoStatus.equals("1")) {
-                                                getCurrentLocation(1);
-
+                                                getCurrentLocation.obtenerGeoLocalizacion(1);
                                             }
                                             if (cargaStatus.equals("1")) {
                                                 for (String value : act.getListaPersonas().values()) {
@@ -167,35 +166,6 @@ public class QRScanner extends AppCompatActivity {
             }
         });
     }
-
-    private void getCurrentLocation(int flagLocation) {
-        //Initialize task location
-        //  Task<>
-        final int flaglocation = flagLocation;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(QRScanner.this, new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-        }
-        Task<Location> task = client.getLastLocation();
-
-        if (flagLocation != 0) {
-            task.addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    //satisfactorio
-                    if (location != null) {
-                        //sincronizoLatLng
-                        LatLng latLong;
-                        latLong = new LatLng(location.getLatitude(), location.getLongitude());
-                        latLng = latLong;
-                    }
-                }
-            });
-        }
-    }
-
     private void reloadActivity() {
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
@@ -292,7 +262,7 @@ public class QRScanner extends AppCompatActivity {
                 closeEventListeners();
                 reloadActivity();
             }
-        }else{
+        } else {
             Registro registro2 = (Registro) CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
             final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Registro");
             myRef3.getRef().child(idRegistro).setValue(registro2);
@@ -351,7 +321,7 @@ public class QRScanner extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(QRScanner.this, MainActivity.class);
+        Intent intent = new Intent(QRScannerActivity.this, MainActivity.class);
 
         startActivity(intent);
         this.finish();

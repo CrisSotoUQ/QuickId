@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.aplication;
+package com.grade.quickid.model.eventos.infraestructure;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,7 +51,7 @@ import java.util.Calendar;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
-public class QRGenerator extends AppCompatActivity {
+public class QRGeneratorActivity extends AppCompatActivity {
     private EditText txt_textoqr;
     private TextView textViewNombreActividad;
     private TextView contadorRegistrosFechaActual;
@@ -98,7 +98,7 @@ public class QRGenerator extends AppCompatActivity {
         btnSaveQr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ActivityCompat.checkSelfPermission(QRGenerator.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(QRGeneratorActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     try {
                         saveToGallery();
                     } catch (IOException e) {
@@ -208,7 +208,7 @@ public class QRGenerator extends AppCompatActivity {
     }
 
     private void pedirPermisos() {
-        ActivityCompat.requestPermissions(QRGenerator.this, new String[]{
+        ActivityCompat.requestPermissions(QRGeneratorActivity.this, new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, 1);
     }

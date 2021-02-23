@@ -14,13 +14,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grade.quickid.BuildConfig;
 import com.grade.quickid.model.eventos.domain.Evento;
-import com.grade.quickid.model.eventos.infraestructure.FragmentEventos;
+import com.grade.quickid.model.eventos.infraestructure.fragments.FragmentEventos;
 import com.grade.quickid.model.personas.domain.Persona;
 import com.grade.quickid.model.registros.domain.Registro;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
+/**
+ * Clase que se encarga de generar los datos csv correspondientes a cada evento
+ */
 public class CrearDatosCsv {
     DatabaseReference myRefDatosPersonaEvento ;
     DatabaseReference myRefDatosRegistroEvento ;
@@ -47,7 +50,7 @@ public class CrearDatosCsv {
                                     Persona per = objSnapshot.getValue(Persona.class);
                                     data.append("\n" + String.valueOf(per.getCorreo()) + "," + String.valueOf(per.getApellido())
                                             + "," + String.valueOf(per.getNombre()) + "," + String.valueOf(ra.getFechaRegistro())
-                                            + "," + String.valueOf(ra.getHoraRegistro()) + "," + String.valueOf(ra.getHoraRegistro()));
+                                            + "," + String.valueOf(ra.getHoraRegistro()));
                                 }
                                 try {
 

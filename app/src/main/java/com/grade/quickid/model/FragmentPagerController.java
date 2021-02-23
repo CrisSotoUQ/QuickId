@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.grade.quickid.model.registros.infraestructure.FragmentRegistros;
-import com.grade.quickid.model.eventos.infraestructure.FragmentEventos;
+import com.grade.quickid.model.eventos.infraestructure.fragments.FragmentEventos;
 
 public class FragmentPagerController extends FragmentPagerAdapter {
 int numoftabs;
