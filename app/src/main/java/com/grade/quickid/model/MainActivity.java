@@ -39,7 +39,7 @@ import com.grade.quickid.model.personas.infrastructure.LoginActivity;
 import com.squareup.picasso.Picasso;
 
 /**
- * Clase Main de la app controla todos los componentes principales
+ * Clase Main de la app, controla todos los componentes principales
  * @author  Cristian Camilo Soto
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         email = intent.getStringExtra("email");
         imagen = intent.getStringExtra("imagen");
         nombre = intent.getStringExtra("nombre");
-        //Guardar datos
+        //Guardar datos persistentes de session
         if (email != null) {
             settings = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = settings.edit();
@@ -106,8 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 if(yaTienePermisos()){
-                    Intent intent = new Intent(MainActivity.this, QRScannerActivity.class);
-                    startActivity(intent);
+                    lanzarIntent();
                     finish();
                 }else{
                     requestCameraPermission();
@@ -178,11 +177,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             case R.id.menuScanQr: {
                 if (yaTienePermisos()) {
-                    Intent intent = new Intent(MainActivity.this, QRScannerActivity.class);
-                    startActivity(intent);
+                    lanzarIntent();
                     finish();
+                    break;
                 } else {
                     requestCameraPermission();
+                    break;
                 }
             }
             case R.id.menuEventos: {
@@ -198,23 +198,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void requestCameraPermission() {
-        new AlertDialog.Builder(this)
-                .setTitle("Permiso requerido Scanner QR")
-                .setMessage("Este permiso es requerido")
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-                    }
-                }).setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        }).create().show();
+    private void lanzarIntent() {
+        Intent intent = new Intent(MainActivity.this, QRScannerActivity.class);
+        startActivity(intent);
+        finish();
     }
 
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+    }
     private boolean yaTienePermisos() {
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
