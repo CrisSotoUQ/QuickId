@@ -24,6 +24,8 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.grade.quickid.R;
+import com.grade.quickid.model.Estadisticas.aplication.CrearEstadistica;
+import com.grade.quickid.model.Estadisticas.domain.Estadistica;
 import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.eventos.domain.Evento;
 
@@ -35,12 +37,14 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
     TextView titulo;
     DatabaseReference databaseReference;
     DatabaseReference myRef;
+    DatabaseReference myRef2;
     Uri mImageUri;
     private ProgressDialog mProgress;
     private StorageReference mStorageRef;
     FirebaseDatabase firebaseDatabase;
     Evento receive;
     String imagenOriginal;
+    CrearEstadistica crearEstadistica = new CrearEstadistica();
     private int update;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +134,7 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
 
         myRef = databaseReference.child("Evento");
         receive.setUrlImagen(Uri);
-        myRef.child(receive.getIdActividad()).setValue(receive);
+        myRef.child(receive.getIdEvento()).setValue(receive);
 
         finish();
     }
@@ -149,8 +153,11 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
     private void crearEvento(String Uri) {
         // inserto el objeto Registro
         myRef = databaseReference.child("Evento");
+        myRef2 = databaseReference.child("Estadistica");
         receive.setUrlImagen(Uri);
-        myRef.child(receive.getIdActividad()).setValue(receive);
+        Estadistica estadistica = (Estadistica) crearEstadistica.CrearObjetoEstadistica(receive.getIdEvento());
+        myRef2.child(estadistica.getIdEstadistica()).setValue(estadistica);
+        myRef.child(receive.getIdEvento()).setValue(receive);
         finish();
     }
 }

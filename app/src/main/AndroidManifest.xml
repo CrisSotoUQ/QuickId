@@ -40,7 +40,7 @@
         <activity android:name=".model.eventos.infraestructure.MapsEventoActivity" />
         <activity android:name=".model.MainActivity" />
         <activity android:name=".model.eventos.infraestructure.QRScannerActivity" />
-        <activity android:name=".model.eventos.infraestructure.QRGeneratorActivity" />
+        <activity android:name=".model.Estadisticas.infraestructure.QRGenAndStatisticsActivity" />
         <activity android:name=".model.eventos.infraestructure.CrearEventoActivity" />
         <activity android:name=".model.personas.infrastructure.LoginActivity">
             <intent-filter>

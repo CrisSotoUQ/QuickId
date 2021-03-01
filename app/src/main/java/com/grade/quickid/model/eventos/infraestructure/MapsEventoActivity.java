@@ -133,7 +133,6 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                                 // crear marcador
                                 MarkerOptions option = new MarkerOptions().position(latLng)
                                         .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                ;
                                 //Zoom
                                 // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
                                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));

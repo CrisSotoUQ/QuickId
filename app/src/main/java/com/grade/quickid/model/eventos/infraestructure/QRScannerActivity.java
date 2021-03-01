@@ -34,6 +34,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.grade.quickid.R;
+import com.grade.quickid.model.Estadisticas.aplication.CrearEstadistica;
+import com.grade.quickid.model.Estadisticas.domain.Estadistica;
 import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.registros.aplication.CrearRegistro;
@@ -65,6 +67,8 @@ public class QRScannerActivity extends AppCompatActivity {
     private static LatLng latLng ;
     private static FusedLocationProviderClient client ;
     CrearRegistro crearRegistro = new CrearRegistro();
+    CrearEstadistica crearEstadistica = new CrearEstadistica();
+
 
     /**
      * se cargan todos los componentes
@@ -152,7 +156,7 @@ public class QRScannerActivity extends AppCompatActivity {
                             };
                             FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
                             myRefEvento = firebaseDatabase2.getInstance().getReference().child("Evento");
-                            myRefEvento.orderByChild("idActividad").equalTo(idActividad).addValueEventListener(mEventListenerEvento);
+                            myRefEvento.orderByChild("idEvento").equalTo(idActividad).addValueEventListener(mEventListenerEvento);
                         } else {
                             resultData.setText("Codigo QR invalido");
                             vibrar();
@@ -299,8 +303,6 @@ public class QRScannerActivity extends AppCompatActivity {
             isWithin100m = distanceInMeters < 100;
         }
     }
-
-
     private void gestionarRegistro(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
         String geoLocStatus = objSnapshot.child("geolocStatus").getValue(String.class);
         if (geoLocStatus.equals("1")) {
@@ -326,7 +328,6 @@ public class QRScannerActivity extends AppCompatActivity {
             reloadActivity();
         }
     }
-
     private void closeEventListeners() {
         myRefRegistroEvento.removeEventListener(mEventListenerRegistroEvento);
         myRefEvento.removeEventListener(mEventListenerEvento);

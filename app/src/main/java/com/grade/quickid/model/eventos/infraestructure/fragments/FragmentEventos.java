@@ -34,7 +34,7 @@ import com.grade.quickid.R;
 import com.grade.quickid.model.eventos.aplication.CrearDatosCsv;
 import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.eventos.infraestructure.CrearEventoActivity;
-import com.grade.quickid.model.eventos.infraestructure.QRGeneratorActivity;
+import com.grade.quickid.model.Estadisticas.infraestructure.QRGenAndStatisticsActivity;
 
 import java.util.ArrayList;
 
@@ -97,11 +97,11 @@ public class FragmentEventos extends Fragment {
                                     adapterFragmentEvento.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            String idActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
+                                            String idEvento = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdEvento();
                                             String nombreActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getNombre();
-                                            String lugarActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdActividad();
-                                            Intent intent = new Intent(getActivity(), QRGeneratorActivity.class);
-                                            intent.putExtra("idActividad", idActividad);
+                                            String lugarActividad = listActividades.get(rvActividades.getChildAdapterPosition(v)).getIdEvento();
+                                            Intent intent = new Intent(getActivity(), QRGenAndStatisticsActivity.class);
+                                            intent.putExtra("idEvento", idEvento);
                                             intent.putExtra("nombre", nombreActividad);
                                             intent.putExtra("lugar", lugarActividad);
                                             startActivity(intent);
@@ -180,7 +180,7 @@ public class FragmentEventos extends Fragment {
             }
 
             public void aceptar() {
-                databaseReference.child("Evento").child(evento.getIdActividad()).removeValue();
+                databaseReference.child("Evento").child(evento.getIdEvento()).removeValue();
                 mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl(evento.getUrlImagen());
                 mStorageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

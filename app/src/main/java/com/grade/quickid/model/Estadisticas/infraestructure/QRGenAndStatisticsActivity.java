@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.infraestructure;
+package com.grade.quickid.model.Estadisticas.infraestructure;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,7 +43,6 @@ import com.grade.quickid.model.registros.domain.Registro;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,23 +50,21 @@ import java.util.Calendar;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
-public class QRGeneratorActivity extends AppCompatActivity {
+public class QRGenAndStatisticsActivity extends AppCompatActivity {
     private EditText txt_textoqr;
     private TextView textViewNombreActividad;
     private TextView contadorRegistrosFechaActual;
     private TextView contadorRegistrosHistorico;
     private TextView contadorInasistentes;
-    ImageView imgQR;
-    Button btnSaveQr;
-    DatabaseReference myRefestadisticaRegistros;
-    OutputStream outputStream;
+    private ImageView imgQR;
+    private Button btnSaveQr;
+    private DatabaseReference myRefestadisticaRegistros;
     final int REQUEST_CODE = 1;
-    String idActividad;
-    ValueEventListener mEventListnerActividad;
-    DatabaseReference myRefActividad;
-    ValueEventListener mEventListEstadisticasRegistros;
-    ValueEventListener mEventListenerPersona;
-    DatabaseReference myRefPersona;
+    private String idEvento;
+    private ValueEventListener mEventListnerActividad;
+    private DatabaseReference myRefActividad;
+    private ValueEventListener mEventListEstadisticasRegistros;
+
     private int v_RegistrosFechaActual = 0;
     private int v_registrosHistorico = 0;
     private int contadorAsistentes = 0;
@@ -84,7 +81,7 @@ public class QRGeneratorActivity extends AppCompatActivity {
         btnSaveQr = (Button) findViewById(R.id.btn_save_qr);
 
         Intent intent = getIntent();
-        idActividad = intent.getStringExtra("idActividad");
+        idEvento = intent.getStringExtra("idEvento");
 
         createChart();
         createBarchart();
@@ -93,12 +90,12 @@ public class QRGeneratorActivity extends AppCompatActivity {
         titulo();
 
         // genera el Qrcode
-        generateQR(idActividad);
+        generateQR(idEvento);
 
         btnSaveQr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ActivityCompat.checkSelfPermission(QRGeneratorActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(QRGenAndStatisticsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     try {
                         saveToGallery();
                     } catch (IOException e) {
@@ -138,7 +135,10 @@ public class QRGeneratorActivity extends AppCompatActivity {
                                 contadorRegistrosFechaActual.setText(String.valueOf(v_RegistrosFechaActual));
                                 // obtengo la cantidad de inasistentes
                                 contadorAsistentes = act.getListaPersonas().size() - v_RegistrosFechaActual;
-                                contadorInasistentes.setText(String.valueOf(contadorAsistentes));
+                                if (!act.getListaPersonas().isEmpty()){
+                                    contadorInasistentes.setText(String.valueOf(contadorAsistentes));
+                                }
+
                             }
 
                             }
@@ -148,10 +148,9 @@ public class QRGeneratorActivity extends AppCompatActivity {
                             System.out.println("Fallo la lectura: " + error.getCode());
                         }
                     };
-
                     FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
                     myRefestadisticaRegistros = firebaseDatabase2.getInstance().getReference().child("Registro");
-                    myRefestadisticaRegistros.orderByChild("idActividad").equalTo(act.getIdActividad()).addValueEventListener(valueEventListenerRegistroActividad);
+                    myRefestadisticaRegistros.orderByChild("idEvento").equalTo(act.getIdEvento()).addValueEventListener(valueEventListenerRegistroActividad);
                     mEventListEstadisticasRegistros = valueEventListenerRegistroActividad;
                 }
             }
@@ -163,7 +162,7 @@ public class QRGeneratorActivity extends AppCompatActivity {
         };
         FirebaseDatabase firebaseDatabase1 = FirebaseDatabase.getInstance();
         myRefActividad = firebaseDatabase1.getInstance().getReference().child("Evento");
-        myRefActividad.orderByChild("idActividad").equalTo(idActividad).addValueEventListener(valueEventListenerActividad);
+        myRefActividad.orderByChild("idEvento").equalTo(idEvento).addValueEventListener(valueEventListenerActividad);
         mEventListnerActividad = valueEventListenerActividad;
     }
     private void createBarchart() {
@@ -187,8 +186,6 @@ public class QRGeneratorActivity extends AppCompatActivity {
         barChart.setData(barData);
         barChart.getDescription().setText("Bar Chart Example");
         barChart.animateY(2000);
-
-
         PieChart pieChart = findViewById(R.id.pieChart);
         ArrayList<PieEntry> visitantes = new ArrayList<>();
         visitantes.add(new PieEntry(508, "2019"));
@@ -204,11 +201,10 @@ public class QRGeneratorActivity extends AppCompatActivity {
         pieChart.setCenterText("Visitantes");
         pieChart.animate();
 
-
     }
 
     private void pedirPermisos() {
-        ActivityCompat.requestPermissions(QRGeneratorActivity.this, new String[]{
+        ActivityCompat.requestPermissions(QRGenAndStatisticsActivity.this, new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, 1);
     }

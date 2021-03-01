@@ -23,14 +23,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.grade.quickid.R;
 import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.personas.application.PersonaController;
-import com.grade.quickid.model.personas.domain.Persona;
 
 /**
  * Clase que realiza el Login de la aplicacion mediante Google Sign in
@@ -108,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void ShowAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Proceso cancelado");
+        builder.setTitle("Error");
         builder.setMessage("Regresando...");
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -150,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                                         email = account.getEmail().toString();
                                         imagen = account.getPhotoUrl().toString();
                                         nombre = account.getDisplayName();
-                                        personaController.crearPersona(account);
+                                        personaController.crearPersona(account,task);
                                         ShowMain();
                                     } else {
                                         ShowAlert();

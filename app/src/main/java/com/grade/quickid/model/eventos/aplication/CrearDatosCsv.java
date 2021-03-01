@@ -101,7 +101,7 @@ public class CrearDatosCsv {
         };
         FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
         myRefDatosRegistroEvento = firebaseDatabase3.getInstance().getReference().child("Registro");
-        myRefDatosRegistroEvento.orderByChild("idActividad").equalTo(evento.getIdActividad()).addValueEventListener(valueEventListenerRegistroEvento);
+        myRefDatosRegistroEvento.orderByChild("idEvento").equalTo(evento.getIdEvento()).addValueEventListener(valueEventListenerRegistroEvento);
         mEventListnerRegistroEvento = valueEventListenerRegistroEvento;
 
     }

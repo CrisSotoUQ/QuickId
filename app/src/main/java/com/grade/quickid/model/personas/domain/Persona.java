@@ -23,36 +23,8 @@ public class Persona {
         this.imagenUri = imagenUri;
     }
 
-    public String getImagenUri() {
-        return imagenUri;
-    }
-
     public void setImagenUri(String imagenUri) {
         this.imagenUri = imagenUri;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public String getGenero() {
-        return genero;
-    }
-
-    public void setGenero(String genero) {
-        this.genero = genero;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
     }
 
     public String getNombre() {

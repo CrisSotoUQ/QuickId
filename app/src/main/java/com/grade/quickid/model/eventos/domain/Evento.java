@@ -4,14 +4,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class Evento implements Serializable  {
-    public String idActividad;
+    public String idEvento;
     public String nombre;
     public String fIni;
     public String fFin;
     public String lugar;
     public double latitud;
     public double longitud;
-    public String estadoActividad;//1 iniciada 2 pausada
+    public String estadoEvento;//1 iniciada 2 pausada
     public String geolocStatus;
     public String cargueArchivoStatus;
     public String id_persona;
@@ -21,18 +21,18 @@ public class Evento implements Serializable  {
     public Evento() {
     }
 
-    public Evento(String idActividad, String nombre, String fIni, String fFin, String lugar,
-                  double latitud, double longitud, String estadoActividad, String geolocStatus,
-                  String cargueArchivoStatus, String id_persona, String horaIni, String urlImagen,
-                  HashMap<String, String> listaPersonas) {
-        this.idActividad = idActividad;
+    public Evento(String idEvento, String nombre, String fIni, String fFin, String lugar,
+                  double latitud, double longitud, String estadoEvento, String geolocStatus,
+                  String cargueArchivoStatus, String id_persona, String horaIni,
+                  String urlImagen, HashMap<String, String> listaPersonas) {
+        this.idEvento = idEvento;
         this.nombre = nombre;
         this.fIni = fIni;
         this.fFin = fFin;
         this.lugar = lugar;
         this.latitud = latitud;
         this.longitud = longitud;
-        this.estadoActividad = estadoActividad;
+        this.estadoEvento = estadoEvento;
         this.geolocStatus = geolocStatus;
         this.cargueArchivoStatus = cargueArchivoStatus;
         this.id_persona = id_persona;
@@ -41,28 +41,12 @@ public class Evento implements Serializable  {
         this.listaPersonas = listaPersonas;
     }
 
-    public HashMap<String, String> getListaPersonas() {
-        return listaPersonas;
+    public String getIdEvento() {
+        return idEvento;
     }
 
-    public void setListaPersonas(String a,String b) {
-        listaPersonas.put("correo:"+a,b);
-    }
-
-    public String getUrlImagen() {
-        return urlImagen;
-    }
-
-    public void setUrlImagen(String urlImagen) {
-        this.urlImagen = urlImagen;
-    }
-
-    public String getIdActividad() {
-        return idActividad;
-    }
-
-    public void setIdActividad(String idActividad) {
-        this.idActividad = idActividad;
+    public void setIdEvento(String idEvento) {
+        this.idEvento = idEvento;
     }
 
     public String getNombre() {
@@ -81,30 +65,6 @@ public class Evento implements Serializable  {
         this.fIni = fIni;
     }
 
-    public double getLatitud() {
-        return latitud;
-    }
-
-   public void setLatitud(double latitud) {
-        this.latitud = latitud;
-    }
-
-    public String getHoraIni() {
-        return horaIni;
-    }
-
-    public void setHoraIni(String horaIni) {
-        this.horaIni = horaIni;
-    }
-
-    public double getLongitud() {
-        return longitud;
-    }
-
-    public void setLongitud(double longitud) {
-        this.longitud = longitud;
-    }
-
     public String getfFin() {
         return fFin;
     }
@@ -121,12 +81,29 @@ public class Evento implements Serializable  {
         this.lugar = lugar;
     }
 
-    public String getEstadoActividad() {
-        return estadoActividad;
+    public double getLatitud() {
+        return latitud;
     }
 
-    public void setEstadoActividad(String estadoActividad) {
-        this.estadoActividad = estadoActividad; }
+    public void setLatitud(double latitud) {
+        this.latitud = latitud;
+    }
+
+    public double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(double longitud) {
+        this.longitud = longitud;
+    }
+
+    public String getEstadoEvento() {
+        return estadoEvento;
+    }
+
+    public void setEstadoEvento(String estadoEvento) {
+        this.estadoEvento = estadoEvento;
+    }
 
     public String getGeolocStatus() {
         return geolocStatus;
@@ -152,4 +129,30 @@ public class Evento implements Serializable  {
         this.id_persona = id_persona;
     }
 
+    public String getHoraIni() {
+        return horaIni;
+    }
+
+    public void setHoraIni(String horaIni) {
+        this.horaIni = horaIni;
+    }
+
+    public String getUrlImagen() {
+        return urlImagen;
+    }
+
+    public void setUrlImagen(String urlImagen) {
+        this.urlImagen = urlImagen;
+    }
+
+    public HashMap<String, String> getListaPersonas() {
+        return listaPersonas;
+    }
+
+    public void setListaPersonas(String a,String b) {
+        listaPersonas.put("correo:"+a,b);
+    }
+
 }
+
+

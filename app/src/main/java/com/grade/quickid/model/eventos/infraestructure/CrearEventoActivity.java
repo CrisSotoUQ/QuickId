@@ -280,12 +280,12 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String id = claveQR + UUID.randomUUID().toString();
         Evento evento = new Evento();
-        evento.setIdActividad(id);
+        evento.setIdEvento(id);
         evento.setNombre(txt_nombreActividad.getText().toString());
         evento.setLugar(txt_nombreLugar.getText().toString());
         evento.setfIni(time.fecha());
         evento.setId_persona(user.getUid());
-        evento.setEstadoActividad(null);
+        evento.setEstadoEvento(null);
         evento.setUrlImagen(mImageUri.toString());
         evento.setGeolocStatus(activarGeolocalizacion);
         evento.setCargueArchivoStatus(activarCargueCsv);
