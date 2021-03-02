@@ -54,7 +54,6 @@ public class QRScannerActivity extends AppCompatActivity {
     private CodeScanner mCodeScanner;
     private CodeScannerView scannView;
     private TextView resultData;
-    private static int OnScannerElse;
     private DatabaseReference databaseReference;
     private DatabaseReference myRefRegistroEvento;
     private DatabaseReference myRefEvento;
@@ -79,7 +78,6 @@ public class QRScannerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_q_r_scanner);
-        OnScannerElse = 0;
         client = LocationServices.getFusedLocationProviderClient(QRScannerActivity.this);
         scannView = findViewById(R.id.scanner_view);
         mCodeScanner = new CodeScanner(this, scannView);
@@ -315,6 +313,10 @@ public class QRScannerActivity extends AppCompatActivity {
                 Registro registro = (Registro) crearRegistro.CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
                 final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Registro");
                 myRef2.getRef().child(idRegistro).setValue(registro);
+
+                Estadistica estadistica = (Estadistica) crearEstadistica.setearEstadisticas(objSnapshot,result,claveActPer,idRegistro);
+                final DatabaseReference myRef4 = FirebaseDatabase.getInstance().getReference("Estadistica");
+                myRef4.getRef().child(estadistica.getIdEvento()).setValue(estadistica);
                 resultData.setText("Registro Exitoso");
                 closeEventListeners();
                 reloadActivity();
@@ -323,6 +325,11 @@ public class QRScannerActivity extends AppCompatActivity {
             Registro registro2 = (Registro) crearRegistro.CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
             final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Registro");
             myRef3.getRef().child(idRegistro).setValue(registro2);
+
+            Estadistica estadistica = (Estadistica) crearEstadistica.setearEstadisticas(objSnapshot,result,claveActPer,idRegistro);
+            final DatabaseReference myRef4 = FirebaseDatabase.getInstance().getReference("Estadistica");
+            myRef4.getRef().child(estadistica.getIdEvento()).setValue(estadistica);
+
             resultData.setText("Registro Exitoso");
             closeEventListeners();
             reloadActivity();

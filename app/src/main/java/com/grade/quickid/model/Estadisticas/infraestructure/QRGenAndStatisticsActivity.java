@@ -46,6 +46,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -69,6 +72,8 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
     private int v_registrosHistorico = 0;
     private int contadorAsistentes = 0;
     private String nombreActividad;
+    // voy a guardar los años en este array
+   final HashMap<String,Integer> arrayAnios = new HashMap<String,Integer>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +89,6 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         idEvento = intent.getStringExtra("idEvento");
 
         createChart();
-        createBarchart();
         nombreActividad = intent.getStringExtra("nombre");
         textViewNombreActividad.setText(nombreActividad);
         titulo();
@@ -109,6 +113,23 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         });
     }
 
+    private void pieChart() {
+        PieChart pieChart = findViewById(R.id.pieChart);
+        ArrayList<PieEntry> visitantes = new ArrayList<>();
+        visitantes.add(new PieEntry(508, "2019"));
+        visitantes.add(new PieEntry(700, "2020"));
+        visitantes.add(new PieEntry(800, "2021"));
+        PieDataSet pieDataSet = new PieDataSet(visitantes, "Visitantes");
+        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        pieDataSet.setValueTextColor(Color.BLACK);
+        pieDataSet.setValueTextSize(16f);
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.setData(pieData);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setCenterText("Visitantes");
+        pieChart.animate();
+    }
+
     private void createChart() {
         ValueEventListener valueEventListenerActividad = new ValueEventListener() {
             @Override
@@ -130,6 +151,22 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                                     if (date.equals(fecha)) {
                                         v_RegistrosFechaActual++;
                                     }
+
+                                    StringTokenizer st = new StringTokenizer(RAct.getFechaRegistro(), "-"); //delimitador -
+                                    String dia = st.nextToken();
+                                    String mes = st.nextToken();
+                                    String anio = st.nextToken();
+                                    if (!arrayAnios.isEmpty()) {
+                                        for (String key : arrayAnios.keySet()) {
+                                            if (anio.equals(key)) {
+                                                arrayAnios.put(anio, arrayAnios.get(key) + 1);
+                                            }else{
+                                                arrayAnios.put(anio,1);
+                                            }
+                                        }
+                                    }else {
+                                        arrayAnios.put(anio,1);
+                                    }
                                 }
                                 contadorRegistrosHistorico.setText(String.valueOf(v_registrosHistorico));
                                 contadorRegistrosFechaActual.setText(String.valueOf(v_RegistrosFechaActual));
@@ -138,8 +175,9 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                                 if (!act.getListaPersonas().isEmpty()){
                                     contadorInasistentes.setText(String.valueOf(contadorAsistentes));
                                 }
-
                             }
+                            createBarchart();
+                            pieChart();
 
                             }
 
@@ -164,19 +202,21 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         myRefActividad = firebaseDatabase1.getInstance().getReference().child("Evento");
         myRefActividad.orderByChild("idEvento").equalTo(idEvento).addValueEventListener(valueEventListenerActividad);
         mEventListnerActividad = valueEventListenerActividad;
+        createBarchart();
+        pieChart();
     }
     private void createBarchart() {
         BarChart barChart = findViewById(R.id.barChart);
         ArrayList<BarEntry> visitorsByDate = new ArrayList<>();
-        visitorsByDate.add(new BarEntry(2014, 300));
-        visitorsByDate.add(new BarEntry(2015, 500));
-        visitorsByDate.add(new BarEntry(2016, 600));
-        visitorsByDate.add(new BarEntry(2017, 620));
-        visitorsByDate.add(new BarEntry(2018, 500));
-        visitorsByDate.add(new BarEntry(2019, 300));
-        visitorsByDate.add(new BarEntry(2020, 200));
-        visitorsByDate.add(new BarEntry(2021, 600));
-        visitorsByDate.add(new BarEntry(2022, 700));
+        if (arrayAnios.size()==0) {
+            visitorsByDate.add(new BarEntry(2020, 0));
+        }
+        for (Map.Entry<String,Integer> entry : arrayAnios.entrySet()) {
+            String key = entry.getKey();
+            Integer contador  = entry.getValue();
+            visitorsByDate.add(new BarEntry(Integer.parseInt(key), contador));
+        }
+
         BarDataSet barDataSet = new BarDataSet(visitorsByDate, "Visitors By Date ");
         barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         barDataSet.setValueTextColor(Color.BLACK);
@@ -186,20 +226,8 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         barChart.setData(barData);
         barChart.getDescription().setText("Bar Chart Example");
         barChart.animateY(2000);
-        PieChart pieChart = findViewById(R.id.pieChart);
-        ArrayList<PieEntry> visitantes = new ArrayList<>();
-        visitantes.add(new PieEntry(508, "2019"));
-        visitantes.add(new PieEntry(700, "2020"));
-        visitantes.add(new PieEntry(800, "2021"));
-        PieDataSet pieDataSet = new PieDataSet(visitantes, "Visitantes");
-        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        pieDataSet.setValueTextColor(Color.BLACK);
-        pieDataSet.setValueTextSize(16f);
-        PieData pieData = new PieData(pieDataSet);
-        pieChart.setData(pieData);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setCenterText("Visitantes");
-        pieChart.animate();
+
+
 
     }
 

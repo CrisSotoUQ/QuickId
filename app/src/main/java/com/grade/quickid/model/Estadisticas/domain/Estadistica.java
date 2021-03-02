@@ -1,5 +1,7 @@
 package com.grade.quickid.model.Estadisticas.domain;
 
+import com.grade.quickid.model.Estadisticas.aplication.EstadisticaFecha;
+
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -8,16 +10,25 @@ public class Estadistica implements Serializable {
     private String idEvento;
     private int contadorAsistentesFechaActual;
     private int contadorAsistentesHistorico;
-    private HashMap<String,HashMap<String,HashMap<String,String>>> fechas = new HashMap<String,HashMap<String,HashMap<String,String>>> ();
+    private  EstadisticaFecha estadisticaFecha = new EstadisticaFecha("",null);
+
+    public EstadisticaFecha getEstadisticaFecha() {
+        return estadisticaFecha;
+    }
+
+    public void setEstadisticaFecha(EstadisticaFecha estadisticaFecha) {
+        this.estadisticaFecha = estadisticaFecha;
+    }
+
     public Estadistica() {
     }
 
-    public Estadistica(String idEstadistica, String idEvento, int contadorAsistentesFechaActual, int contadorAsistentesHistorico, HashMap<String, HashMap<String, HashMap<String, String>>> fechas) {
+    public Estadistica(String idEstadistica, String idEvento, int contadorAsistentesFechaActual, int contadorAsistentesHistorico, EstadisticaFecha estadisticaFecha) {
         this.idEstadistica = idEstadistica;
         this.idEvento = idEvento;
         this.contadorAsistentesFechaActual = contadorAsistentesFechaActual;
         this.contadorAsistentesHistorico = contadorAsistentesHistorico;
-        this.fechas = fechas;
+        this.estadisticaFecha = estadisticaFecha;
     }
 
     public String getIdEstadistica() {
@@ -50,13 +61,5 @@ public class Estadistica implements Serializable {
 
     public void setContadorAsistentesHistorico(int contadorAsistentesHistorico) {
         this.contadorAsistentesHistorico = contadorAsistentesHistorico;
-    }
-
-    public HashMap<String, HashMap<String, HashMap<String, String>>> getFechas() {
-        return fechas;
-    }
-
-    public void setFechas(HashMap<String, HashMap<String, HashMap<String, String>>> fechas) {
-        this.fechas = fechas;
     }
 }
