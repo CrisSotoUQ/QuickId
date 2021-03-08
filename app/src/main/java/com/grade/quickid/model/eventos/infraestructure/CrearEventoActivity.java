@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -27,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.grade.quickid.R;
@@ -40,7 +42,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.UUID;
-
+/*
+@auth Cristian Camilo Soto
+ */
 public class CrearEventoActivity extends AppCompatActivity implements Serializable {
     FragmentPagerController pagerAdapter;
     private EditText txt_nombreActividad, txt_nombreLugar;
@@ -54,7 +58,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     private Button btn_cancelar;
     private ImageView imageview_photo;
     private Button btn_siguiente;
-    private ImageButton btn_TimePicker;
+    private ImageButton btn_TimePickerHoraSalida;
+    private ImageButton btn_TimePickerHoraEntrada;
     public Bitmap image;
     private Switch mapSwitch;
     private static final int CAMERA_INTENT = 0;
@@ -81,7 +86,10 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     final int minuto = c.get(Calendar.MINUTE);
 
     //Widgets
-    EditText etHora;
+    EditText etHoraEntrada;
+    EditText etHoraSalida;
+    //Hora edittext
+    String horaEditText;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,11 +98,13 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         switchCargueCsv = findViewById(R.id.switch1_cargacsv);
         imageview_photo = findViewById(R.id.imageView_nuevoEvento);
         btn_dialog_subirImagen = findViewById(R.id.btn_cargarImagen);
-        etHora = findViewById(R.id.et_mostrar_hora_picker);
+        etHoraEntrada = findViewById(R.id.et_mostrar_hora_picker_entrada);
+        etHoraSalida= findViewById(R.id.et_mostrar_hora_picker_salida);
         txt_nombreActividad = (EditText) findViewById(R.id.txt_nombreActividad);
         txt_nombreLugar = (EditText) findViewById(R.id.txt_lugarActividad);
         btn_siguiente = findViewById(R.id.btn_Siguiente);
-        btn_TimePicker = findViewById(R.id.ib_time_picker);
+        btn_TimePickerHoraSalida = findViewById(R.id.id_time_picker_hora_salida);
+        btn_TimePickerHoraEntrada = findViewById(R.id.id_time_picker_hora_entrada);
         setup();
         Intent intent = getIntent();
         update = intent.getIntExtra("Update", 0);
@@ -104,6 +114,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
             txt_nombreActividad.setText(receiveEvento.getNombre().toString());
             txt_nombreLugar.setText(receiveEvento.getLugar().toString());
             Uri myUri = Uri.parse(receiveEvento.getUrlImagen());
+            etHoraEntrada.setText(receiveEvento.getHoraIni());
+            etHoraSalida.setText(receiveEvento.getHoraFin());
             imageview_photo.setImageURI(myUri);
             imageview_photo.setVisibility(View.VISIBLE);
             mImageUri = myUri;
@@ -136,10 +148,16 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                 }
             }
         });
-        btn_TimePicker.setOnClickListener(new View.OnClickListener() {
+        btn_TimePickerHoraEntrada.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                obtenerHora();
+               obtenerHoraentrada();
+            }
+        });
+        btn_TimePickerHoraSalida.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                obtenerHoraSalida();
             }
         });
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
@@ -240,7 +258,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         });
     }
 
-    private void obtenerHora() {
+    private  void obtenerHoraentrada() {
         TimePickerDialog recogerHora = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -256,13 +274,37 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                     AM_PM = "p.m.";
                 }
                 //Muestro la hora con el formato deseado
-                etHora.setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
+                 etHoraEntrada .setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
             }
             //Estos valores deben ir en ese orden
             //Al colocar en false se muestra en formato 12 horas y true en formato 24 horas
             //Pero el sistema devuelve la hora en formato 24 horas
         }, hora, minuto, false);
 
+        recogerHora.show();
+    }
+    private  void obtenerHoraSalida() {
+        TimePickerDialog recogerHora = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                //Formateo el hora obtenido: antepone el 0 si son menores de 10
+                String horaFormateada = (hourOfDay < 10) ? String.valueOf(CERO + hourOfDay) : String.valueOf(hourOfDay);
+                //Formateo el minuto obtenido: antepone el 0 si son menores de 10
+                String minutoFormateado = (minute < 10) ? String.valueOf(CERO + minute) : String.valueOf(minute);
+                //Obtengo el valor a.m. o p.m., dependiendo de la selección del usuario
+                String AM_PM;
+                if (hourOfDay < 12) {
+                    AM_PM = "a.m.";
+                } else {
+                    AM_PM = "p.m.";
+                }
+                //Muestro la hora con el formato deseado
+                etHoraSalida .setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
+            }
+            //Estos valores deben ir en ese orden
+            //Al colocar en false se muestra en formato 12 horas y true en formato 24 horas
+            //Pero el sistema devuelve la hora en formato 24 horas
+        }, hora, minuto, false);
         recogerHora.show();
     }
 
@@ -272,7 +314,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         receiveEvento.setNombre(txt_nombreActividad.getText().toString());
         receiveEvento.setLugar(txt_nombreLugar.getText().toString());
         receiveEvento.setUrlImagen(mImageUri.toString());
-        receiveEvento.setHoraIni(etHora.getText().toString());
+        receiveEvento.setHoraIni(etHoraEntrada.getText().toString());
+        receiveEvento.setHoraFin(etHoraSalida.getText().toString());
     }
 
     private Object retornoObjetoActividad() {
@@ -289,6 +332,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         evento.setUrlImagen(mImageUri.toString());
         evento.setGeolocStatus(activarGeolocalizacion);
         evento.setCargueArchivoStatus(activarCargueCsv);
+        evento.setHoraIni(etHoraEntrada.getText().toString());
+        evento.setHoraFin(etHoraSalida.getText().toString());
         return evento;
     }
 
@@ -364,6 +409,11 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         if (mImageUri == null) {
             Toast.makeText(CrearEventoActivity.this, "Imagen Requerida", Toast.LENGTH_LONG).show();
         }
+
+        if (etHoraSalida== null||etHoraEntrada== null) {
+            Toast.makeText(CrearEventoActivity.this, "Hora inicio rquerida", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     private void setup() {

@@ -3,36 +3,33 @@ package com.grade.quickid.model.registros.domain;
 public class Registro {
     String idRegistro;
     String fechaRegistro;
-    String idActividad;
+    String idEvento;
     String horaRegistro;
     String idPersona;
-    // una vez se realize el registro se completan los valores del objeto actividad
+    // una vez se realize el registro se completan los valores del objeto Evento
     // con el fin de mas celeridad al llenar las listas RecyclerView
-    String nombreActividad;
-    String lugarActividad;
-    String imagenActividad;
+    String nombreEvento;
+    String lugarEvento;
+    String imagenEvento;
     String visibilidad;
-    //campo para poder filtrar actividadPersona en un mismo query
+    //campo para poder filtrar EventoPersona en un mismo query
     String idAct_idPer;
 
-    public Registro() {
-    }
-    public Registro(String idRegistro, String fechaRegistro, String idActividad,
-                    String horaRegistro, String idPersona, String nombreActividad,
-                    String lugarActividad, String imagenActividad, String idAct_idPer,
-                    String visibilidad) {
+    public Registro(String idRegistro, String fechaRegistro, String idEvento, String horaRegistro, String idPersona,
+                    String nombreEvento, String lugarEvento, String imagenEvento, String visibilidad, String idAct_idPer) {
         this.idRegistro = idRegistro;
         this.fechaRegistro = fechaRegistro;
-        this.idActividad = idActividad;
+        this.idEvento = idEvento;
         this.horaRegistro = horaRegistro;
         this.idPersona = idPersona;
-        this.nombreActividad = nombreActividad;
-        this.lugarActividad = lugarActividad;
-        this.imagenActividad = imagenActividad;
-        this.idAct_idPer = idAct_idPer;
+        this.nombreEvento = nombreEvento;
+        this.lugarEvento = lugarEvento;
+        this.imagenEvento = imagenEvento;
         this.visibilidad = visibilidad;
+        this.idAct_idPer = idAct_idPer;
     }
 
+    public Registro() { }
     public String getVisibilidad() {
         return visibilidad;
     }
@@ -41,21 +38,10 @@ public class Registro {
         this.visibilidad = visibilidad;
     }
 
-    public String getIdAct_idPer() {
-        return idAct_idPer;
-    }
-
     public void setIdAct_idPer(String idAct_idPer) {
         this.idAct_idPer = idAct_idPer;
     }
 
-    public String getImagenActividad() {
-        return imagenActividad;
-    }
-
-    public void setImagenActividad(String imagenActividad) {
-        this.imagenActividad = imagenActividad;
-    }
 
     public String getFechaRegistro() {
         return fechaRegistro;
@@ -73,22 +59,6 @@ public class Registro {
         this.horaRegistro = horaRegistro;
     }
 
-    public String getNombreActividad() {
-        return nombreActividad;
-    }
-
-    public void setNombreActividad(String nombreActividad) {
-        this.nombreActividad = nombreActividad;
-    }
-
-    public String getLugarActividad() {
-        return lugarActividad;
-    }
-
-    public void setLugarActividad(String lugarActividad) {
-        this.lugarActividad = lugarActividad;
-    }
-
     public String getIdPersona() {
         return idPersona;
     }
@@ -104,11 +74,39 @@ public class Registro {
         this.idRegistro = idRegistro;
     }
 
-    public String getIdActividad() {
-        return idActividad;
+    public String getIdEvento() {
+        return idEvento;
     }
 
-    public void setIdActividad(String idActividad) {
-        this.idActividad = idActividad;
+    public void setIdEvento(String idEvento) {
+        this.idEvento = idEvento;
+    }
+
+    public String getNombreEvento() {
+        return nombreEvento;
+    }
+
+    public void setNombreEvento(String nombreEvento) {
+        this.nombreEvento = nombreEvento;
+    }
+
+    public String getLugarEvento() {
+        return lugarEvento;
+    }
+
+    public void setLugarEvento(String lugarEvento) {
+        this.lugarEvento = lugarEvento;
+    }
+
+    public String getImagenEvento() {
+        return imagenEvento;
+    }
+
+    public void setImagenEvento(String imagenEvento) {
+        this.imagenEvento = imagenEvento;
+    }
+
+    public String getIdAct_idPer() {
+        return idAct_idPer;
     }
 }

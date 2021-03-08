@@ -96,10 +96,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             editor.apply();
             editor.commit();
         } else {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            email = prefs.getString("email", null);
-            nombre = prefs.getString("nombre", null);
-            imagen = prefs.getString("imagen", null);
+            settings = PreferenceManager.getDefaultSharedPreferences(this);
+            email = settings.getString("email", null);
+            nombre = settings.getString("nombre", null);
+            imagen = settings.getString("imagen", null);
         }
         setup(email, imagen, nombre);
         mainQrScanner.setOnClickListener(new View.OnClickListener() {

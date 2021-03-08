@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
@@ -66,9 +67,6 @@ public class QRScannerActivity extends AppCompatActivity {
     private static LatLng latLng ;
     private static FusedLocationProviderClient client ;
     CrearRegistro crearRegistro = new CrearRegistro();
-    CrearEstadistica crearEstadistica = new CrearEstadistica();
-
-
     /**
      * se cargan todos los componentes
      *
@@ -314,9 +312,9 @@ public class QRScannerActivity extends AppCompatActivity {
                 final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Registro");
                 myRef2.getRef().child(idRegistro).setValue(registro);
 
-                Estadistica estadistica = (Estadistica) crearEstadistica.setearEstadisticas(objSnapshot,result,claveActPer,idRegistro);
+         /*       Estadistica estadistica = (Estadistica) crearEstadistica.setearEstadisticas(objSnapshot,result,claveActPer,idRegistro);
                 final DatabaseReference myRef4 = FirebaseDatabase.getInstance().getReference("Estadistica");
-                myRef4.getRef().child(estadistica.getIdEvento()).setValue(estadistica);
+                myRef4.getRef().child(estadistica.getIdEvento()).setValue(estadistica);*/
                 resultData.setText("Registro Exitoso");
                 closeEventListeners();
                 reloadActivity();
@@ -326,9 +324,9 @@ public class QRScannerActivity extends AppCompatActivity {
             final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Registro");
             myRef3.getRef().child(idRegistro).setValue(registro2);
 
-            Estadistica estadistica = (Estadistica) crearEstadistica.setearEstadisticas(objSnapshot,result,claveActPer,idRegistro);
+      /*      Estadistica estadistica = (Estadistica) crearEstadistica.setearEstadisticas(objSnapshot,result,claveActPer,idRegistro);
             final DatabaseReference myRef4 = FirebaseDatabase.getInstance().getReference("Estadistica");
-            myRef4.getRef().child(estadistica.getIdEvento()).setValue(estadistica);
+            myRef4.getRef().child(estadistica.getIdEvento()).setValue(estadistica);*/
 
             resultData.setText("Registro Exitoso");
             closeEventListeners();
@@ -368,5 +366,8 @@ public class QRScannerActivity extends AppCompatActivity {
         databaseReference = firebaseDatabase.getReference();
     }
 
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 }

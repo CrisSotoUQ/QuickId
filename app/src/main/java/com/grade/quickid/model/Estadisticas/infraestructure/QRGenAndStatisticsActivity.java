@@ -1,6 +1,7 @@
 package com.grade.quickid.model.Estadisticas.infraestructure;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -13,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -44,17 +46,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
 public class QRGenAndStatisticsActivity extends AppCompatActivity {
-    private EditText txt_textoqr;
     private TextView textViewNombreActividad;
     private TextView contadorRegistrosFechaActual;
     private TextView contadorRegistrosHistorico;
@@ -64,16 +69,20 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
     private DatabaseReference myRefestadisticaRegistros;
     final int REQUEST_CODE = 1;
     private String idEvento;
-    private ValueEventListener mEventListnerActividad;
-    private DatabaseReference myRefActividad;
-    private ValueEventListener mEventListEstadisticasRegistros;
-
+    private ValueEventListener valueEventListenerEvento;
+    private DatabaseReference myRefEvento;
+    private ValueEventListener valueEventListenerRegistroEvento;
     private int v_RegistrosFechaActual = 0;
     private int v_registrosHistorico = 0;
     private int contadorAsistentes = 0;
     private String nombreActividad;
+    PieChart pieChart;
+    BarChart barChart;
     // voy a guardar los años en este array
-   final HashMap<String,Integer> arrayAnios = new HashMap<String,Integer>();
+    final HashMap<String, Integer> arrayMes = new HashMap<String, Integer>();
+    HashMap<String, Integer> arrayAnio = new HashMap<String, Integer>();
+    final ArrayList<BarEntry> visitorsByDate = new ArrayList<>();
+    final ArrayList<PieEntry> visitantes = new ArrayList<>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +93,8 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         contadorInasistentes = findViewById(R.id.contadorInasistentesFechaActual);
         contadorRegistrosHistorico = findViewById(R.id.contadorRegistrosHistorico);
         btnSaveQr = (Button) findViewById(R.id.btn_save_qr);
-
+        barChart = findViewById(R.id.barChart);
+        pieChart = findViewById(R.id.pieChart);
         Intent intent = getIntent();
         idEvento = intent.getStringExtra("idEvento");
 
@@ -113,34 +123,21 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         });
     }
 
-    private void pieChart() {
-        PieChart pieChart = findViewById(R.id.pieChart);
-        ArrayList<PieEntry> visitantes = new ArrayList<>();
-        visitantes.add(new PieEntry(508, "2019"));
-        visitantes.add(new PieEntry(700, "2020"));
-        visitantes.add(new PieEntry(800, "2021"));
-        PieDataSet pieDataSet = new PieDataSet(visitantes, "Visitantes");
-        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        pieDataSet.setValueTextColor(Color.BLACK);
-        pieDataSet.setValueTextSize(16f);
-        PieData pieData = new PieData(pieDataSet);
-        pieChart.setData(pieData);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setCenterText("Visitantes");
-        pieChart.animate();
-    }
-
     private void createChart() {
-        ValueEventListener valueEventListenerActividad = new ValueEventListener() {
+        valueEventListenerEvento = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot objSnapshot1 : snapshot.getChildren()) {
                     Evento act = objSnapshot1.getValue(Evento.class);
 
-                    ValueEventListener valueEventListenerRegistroActividad = new ValueEventListener() {
+                    valueEventListenerRegistroEvento = new ValueEventListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.O)
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
+                                v_registrosHistorico = 0;
+                                arrayMes.clear();
+                                arrayAnio.clear();
                                 for (DataSnapshot objSnapshot2 : snapshot.getChildren()) {
                                     Registro RAct = objSnapshot2.getValue(Registro.class);
                                     v_registrosHistorico++;
@@ -151,35 +148,37 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                                     if (date.equals(fecha)) {
                                         v_RegistrosFechaActual++;
                                     }
-
                                     StringTokenizer st = new StringTokenizer(RAct.getFechaRegistro(), "-"); //delimitador -
                                     String dia = st.nextToken();
+
+                                    //Estadistica para el mes
                                     String mes = st.nextToken();
-                                    String anio = st.nextToken();
-                                    if (!arrayAnios.isEmpty()) {
-                                        for (String key : arrayAnios.keySet()) {
-                                            if (anio.equals(key)) {
-                                                arrayAnios.put(anio, arrayAnios.get(key) + 1);
-                                            }else{
-                                                arrayAnios.put(anio,1);
-                                            }
-                                        }
-                                    }else {
-                                        arrayAnios.put(anio,1);
+                                    if (arrayMes.containsKey(mes)) {
+                                        arrayMes.put(mes, arrayMes.get(mes) + 1);
+                                    } else {
+                                        arrayMes.put(mes, 1);
                                     }
+                                    ;
+
+                                    String anio = st.nextToken();
+                                    if (arrayAnio.containsKey(anio)) {
+                                        arrayAnio.put(anio, arrayAnio.get(anio) + 1);
+                                    } else {
+                                        arrayAnio.put(anio, 1);
+                                    }
+
                                 }
                                 contadorRegistrosHistorico.setText(String.valueOf(v_registrosHistorico));
                                 contadorRegistrosFechaActual.setText(String.valueOf(v_RegistrosFechaActual));
                                 // obtengo la cantidad de inasistentes
                                 contadorAsistentes = act.getListaPersonas().size() - v_RegistrosFechaActual;
-                                if (!act.getListaPersonas().isEmpty()){
+                                if (!act.getListaPersonas().isEmpty()) {
                                     contadorInasistentes.setText(String.valueOf(contadorAsistentes));
                                 }
                             }
                             createBarchart();
                             pieChart();
-
-                            }
+                        }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
@@ -188,8 +187,7 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                     };
                     FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();
                     myRefestadisticaRegistros = firebaseDatabase2.getInstance().getReference().child("Registro");
-                    myRefestadisticaRegistros.orderByChild("idEvento").equalTo(act.getIdEvento()).addValueEventListener(valueEventListenerRegistroActividad);
-                    mEventListEstadisticasRegistros = valueEventListenerRegistroActividad;
+                    myRefestadisticaRegistros.orderByChild("idEvento").equalTo(act.getIdEvento()).addValueEventListener(valueEventListenerRegistroEvento);
                 }
             }
 
@@ -199,37 +197,60 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
             }
         };
         FirebaseDatabase firebaseDatabase1 = FirebaseDatabase.getInstance();
-        myRefActividad = firebaseDatabase1.getInstance().getReference().child("Evento");
-        myRefActividad.orderByChild("idEvento").equalTo(idEvento).addValueEventListener(valueEventListenerActividad);
-        mEventListnerActividad = valueEventListenerActividad;
-        createBarchart();
-        pieChart();
-    }
-    private void createBarchart() {
-        BarChart barChart = findViewById(R.id.barChart);
-        ArrayList<BarEntry> visitorsByDate = new ArrayList<>();
-        if (arrayAnios.size()==0) {
-            visitorsByDate.add(new BarEntry(2020, 0));
-        }
-        for (Map.Entry<String,Integer> entry : arrayAnios.entrySet()) {
-            String key = entry.getKey();
-            Integer contador  = entry.getValue();
-            visitorsByDate.add(new BarEntry(Integer.parseInt(key), contador));
-        }
+        myRefEvento = firebaseDatabase1.getInstance().getReference().child("Evento");
+        myRefEvento.orderByChild("idEvento").equalTo(idEvento).addValueEventListener(valueEventListenerEvento);
 
-        BarDataSet barDataSet = new BarDataSet(visitorsByDate, "Visitors By Date ");
-        barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+    }
+
+    private void createBarchart() {
+        visitorsByDate.clear();
+        if (arrayMes.size() == 0) {
+            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+            int currentMonth = calendar.get(Calendar.MONTH) + 1;
+            visitorsByDate.add(new BarEntry(currentMonth, 0));
+        }else{
+        for (Map.Entry<String, Integer> entry : arrayMes.entrySet()) {
+            String key = entry.getKey();
+            Integer contador = entry.getValue();
+            visitorsByDate.add(new BarEntry(Integer.parseInt(key), contador));
+        }}
+
+        BarDataSet barDataSet = new BarDataSet(visitorsByDate, "Asistentes por mes");
+        barDataSet.setColors(ColorTemplate.PASTEL_COLORS);
         barDataSet.setValueTextColor(Color.BLACK);
-        barDataSet.setValueTextSize(16f);
+        barDataSet.setValueTextSize(10f);
         BarData barData = new BarData(barDataSet);
         barChart.setFitBars(true);
         barChart.setData(barData);
-        barChart.getDescription().setText("Bar Chart Example");
+        barChart.getDescription().setText("QuickId");
         barChart.animateY(2000);
-
-
-
     }
+
+    private void pieChart() {
+        visitantes.clear();
+        if (arrayAnio.size() == 0) {
+            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+            int currentYear = calendar.get(Calendar.YEAR);
+            visitantes.add(new PieEntry(currentYear, "0"));
+        }else{
+            for (Map.Entry<String, Integer> entry : arrayAnio.entrySet()) {
+                String key = entry.getKey();
+                Integer contador = entry.getValue();
+                visitantes.add(new PieEntry(Integer.parseInt(key), String.valueOf(contador)));
+            }}
+            PieDataSet pieDataSet = new PieDataSet(visitantes, "Asistentes por año");
+            pieDataSet.setColors(ColorTemplate.PASTEL_COLORS);
+            pieDataSet.setValueTextColor(Color.WHITE);
+            pieDataSet.setValueTextSize(10f);
+            PieData pieData = new PieData(pieDataSet);
+            pieChart.setData(pieData);
+            pieChart.getDescription().setText("hello");
+            pieChart.setCenterText("Asistentes");
+            pieChart.invalidate();
+            pieChart.animate();
+        }
+
+
 
     private void pedirPermisos() {
         ActivityCompat.requestPermissions(QRGenAndStatisticsActivity.this, new String[]{
@@ -295,7 +316,8 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        myRefestadisticaRegistros.removeEventListener(mEventListEstadisticasRegistros);
+        myRefestadisticaRegistros.removeEventListener(valueEventListenerRegistroEvento);
+        myRefEvento.removeEventListener(valueEventListenerEvento);
         this.finish();
 
     }

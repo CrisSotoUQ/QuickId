@@ -5,10 +5,6 @@
         android:icon="@drawable/inicio"
         android:title="Inicio" />
 
-    <item android:id="@+id/menuProfile"
-       android:icon="@drawable/profile"
-       android:title="Perfil" />
-
     <item android:id="@+id/menuScanQr"
         android:icon="@drawable/scanqr"
         android:title="Escaner QR" />

@@ -155,8 +155,6 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
         myRef = databaseReference.child("Evento");
         myRef2 = databaseReference.child("Estadistica");
         receive.setUrlImagen(Uri);
-        Estadistica estadistica = (Estadistica) crearEstadistica.CrearObjetoEstadistica(receive.getIdEvento(),receive.getfIni());
-        myRef2.child(estadistica.getIdEstadistica()).setValue(estadistica);
         myRef.child(receive.getIdEvento()).setValue(receive);
         finish();
     }

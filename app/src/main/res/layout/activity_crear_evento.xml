@@ -60,15 +60,15 @@
                 android:layout_marginStart="5dp"
                 android:paddingTop="20dp"
                 android:paddingBottom="5dp"
-                android:text="Hora evento" />
+                android:text="Hora Entrada" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/et_mostrar_hora_picker"
+                    android:id="@+id/et_mostrar_hora_picker_entrada"
                     android:layout_width="253dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
@@ -77,7 +77,38 @@
                     app:layout_constraintLeft_toLeftOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/ib_time_picker"
+                    android:id="@+id/id_time_picker_hora_entrada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clock"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt_HoraEvento3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="5dp"
+                android:text="Hora Salida" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_mostrar_hora_picker_salida"
+                    android:layout_width="253dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:hint="@string/formato_hora"
+                    android:inputType="time"
+                    app:layout_constraintLeft_toLeftOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/id_time_picker_hora_salida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:src="@drawable/clock"

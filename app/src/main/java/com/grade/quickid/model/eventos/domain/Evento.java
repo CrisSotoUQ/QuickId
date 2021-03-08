@@ -16,6 +16,7 @@ public class Evento implements Serializable  {
     public String cargueArchivoStatus;
     public String id_persona;
     public String horaIni;
+    public String horaFin;
     public String urlImagen;
     public HashMap<String,String> listaPersonas = new HashMap<>();
     public Evento() {
@@ -24,7 +25,7 @@ public class Evento implements Serializable  {
     public Evento(String idEvento, String nombre, String fIni, String fFin, String lugar,
                   double latitud, double longitud, String estadoEvento, String geolocStatus,
                   String cargueArchivoStatus, String id_persona, String horaIni,
-                  String urlImagen, HashMap<String, String> listaPersonas) {
+                  String urlImagen, HashMap<String, String> listaPersonas, String horaFin) {
         this.idEvento = idEvento;
         this.nombre = nombre;
         this.fIni = fIni;
@@ -39,6 +40,7 @@ public class Evento implements Serializable  {
         this.horaIni = horaIni;
         this.urlImagen = urlImagen;
         this.listaPersonas = listaPersonas;
+        this.horaFin = horaFin;
     }
 
     public String getIdEvento() {
@@ -135,6 +137,14 @@ public class Evento implements Serializable  {
 
     public void setHoraIni(String horaIni) {
         this.horaIni = horaIni;
+    }
+
+    public String getHoraFin() {
+        return horaFin;
+    }
+
+    public void setHoraFin(String horaFin) {
+        this.horaFin = horaFin;
     }
 
     public String getUrlImagen() {

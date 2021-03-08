@@ -64,14 +64,14 @@ if (onClickListener!= null){
 
     @Override
     public void onBindViewHolder(@NonNull AdapterRegistros.ViewHolder holder, int position) {
-        String nombreActividad = modelRegistro.get(position).getNombreActividad();
+        String nombreActividad = modelRegistro.get(position).getNombreEvento();
         String fechaRegistro = modelRegistro.get(position).getFechaRegistro();
-        String lugarActividad= modelRegistro.get(position).getLugarActividad();
+        String lugarActividad= modelRegistro.get(position).getLugarEvento();
 
         holder.txt_nombre.setText(nombreActividad);
         holder.txt_fecha.setText(fechaRegistro);
         holder.txt_lugar.setText(lugarActividad);
-        Picasso.get().load(modelRegistro.get(position).getImagenActividad()).fit().centerInside().into(holder.imageview);
+        Picasso.get().load(modelRegistro.get(position).getImagenEvento()).fit().centerInside().into(holder.imageview);
     }
 
     @Override

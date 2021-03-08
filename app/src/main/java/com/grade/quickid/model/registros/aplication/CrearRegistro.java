@@ -13,6 +13,7 @@ public class CrearRegistro {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String nombreEvento = (String) objSnapshot.child("nombre").getValue();
         String lugarEvento = (String) objSnapshot.child("lugar").getValue();
+        String idEvento = (String) objSnapshot.child("idEvento").getValue();
         String imagenUrl = (String) objSnapshot.child("urlImagen").getValue();
         Time time = new Time();
         // En este momento el usuario toma una copia
@@ -21,13 +22,13 @@ public class CrearRegistro {
         // o llevar por parametro las veces que se necesita tomar asistencia
         Registro registro = new Registro();
         registro.setIdRegistro(idRegistro);
-        registro.setNombreActividad(nombreEvento);
-        registro.setLugarActividad(lugarEvento);
-        registro.setIdActividad(result.getText());
+        registro.setNombreEvento(nombreEvento);
+        registro.setLugarEvento(lugarEvento);
+        registro.setIdEvento(idEvento);
         registro.setIdPersona(user.getUid());
         registro.setHoraRegistro(time.hora());
         registro.setFechaRegistro(time.fecha());
-        registro.setImagenActividad(imagenUrl);
+        registro.setImagenEvento(imagenUrl);
         registro.setVisibilidad("1");
         registro.setIdAct_idPer(actPer);
         //decision

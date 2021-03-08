@@ -101,7 +101,7 @@ public class FragmentRegistros extends Fragment {
             public void onClick(View v) {
                 AlertDialog.Builder dialogo1 = new AlertDialog.Builder(getActivity());
                 dialogo1.setTitle("Importante");
-                dialogo1.setMessage("¿Quieres eliminar el Registro " + registro.getNombreActividad() + " ? ");
+                dialogo1.setMessage("¿Quieres eliminar el Registro " + registro.getNombreEvento() + " ? ");
                 dialogo1.setCancelable(false);
                 dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogo1, int id) {
