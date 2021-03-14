@@ -13,4 +13,16 @@
     <string name="titlulo_pickers">Obtener fecha y hora</string>
     <string name="formato_fecha">dd/mm/yyyy</string>
     <string name="formato_hora">hh:mm</string>
+    <string name="title_activity_comentario">Comentario</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="comentarios">!Gracias por ser uno de los primeros en probar  QuickId!
+        Durante estos primeros dias, estamos impacientes por recibir comentarios
+        que nos ayudaran muchisimo. ¿Tienes ideas, sugerencias o algun error encontrado?
+        Esto nos ayudara a mejorar. Si es asi porfavor compartelas mas abajo.</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>

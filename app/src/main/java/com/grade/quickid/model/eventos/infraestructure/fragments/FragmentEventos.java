@@ -34,7 +34,7 @@ import com.grade.quickid.R;
 import com.grade.quickid.model.eventos.aplication.CrearDatosCsv;
 import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.eventos.infraestructure.CrearEventoActivity;
-import com.grade.quickid.model.Estadisticas.infraestructure.QRGenAndStatisticsActivity;
+import com.grade.quickid.model.estadisticas.infraestructure.QRGenAndStatisticsActivity;
 
 import java.util.ArrayList;
 

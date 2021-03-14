@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabItem;
@@ -33,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import com.grade.quickid.R;
+import com.grade.quickid.model.comentarios.infraestructure.ComentarioActivity;
 import com.grade.quickid.model.eventos.infraestructure.CrearEventoActivity;
 import com.grade.quickid.model.eventos.infraestructure.QRScannerActivity;
 import com.grade.quickid.model.personas.infrastructure.LoginActivity;
@@ -188,6 +188,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.menuEventos: {
                 Intent intent = new Intent(MainActivity.this, CrearEventoActivity.class);
                 intent.putExtra("Update", 0);
+                startActivity(intent);
+                finish();
+                break;
+            }
+            case R.id.menuComentarios: {
+                Intent intent = new Intent(MainActivity.this, ComentarioActivity.class);
                 startActivity(intent);
                 finish();
                 break;

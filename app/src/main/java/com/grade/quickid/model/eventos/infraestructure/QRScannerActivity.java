@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
@@ -35,8 +34,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.grade.quickid.R;
-import com.grade.quickid.model.Estadisticas.aplication.CrearEstadistica;
-import com.grade.quickid.model.Estadisticas.domain.Estadistica;
 import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.registros.aplication.CrearRegistro;

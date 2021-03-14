@@ -1,4 +1,4 @@
-package com.grade.quickid.model.Estadisticas.aplication;
+package com.grade.quickid.model.estadisticas.aplication;
 
 import androidx.annotation.NonNull;
 
@@ -8,12 +8,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
-import com.grade.quickid.model.Estadisticas.domain.Estadistica;
-import com.grade.quickid.model.Time;
-import com.grade.quickid.model.eventos.domain.Evento;
-import com.grade.quickid.model.registros.domain.Registro;
+import com.grade.quickid.model.estadisticas.domain.Estadistica;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.UUID;

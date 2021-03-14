@@ -24,8 +24,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.grade.quickid.R;
-import com.grade.quickid.model.Estadisticas.aplication.CrearEstadistica;
-import com.grade.quickid.model.Estadisticas.domain.Estadistica;
+import com.grade.quickid.model.estadisticas.aplication.CrearEstadistica;
 import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.eventos.domain.Evento;
 

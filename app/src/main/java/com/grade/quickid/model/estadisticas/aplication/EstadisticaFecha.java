@@ -1,7 +1,4 @@
-package com.grade.quickid.model.Estadisticas.aplication;
-
-import com.google.common.escape.Escaper;
-import com.grade.quickid.model.Estadisticas.domain.Estadistica;
+package com.grade.quickid.model.estadisticas.aplication;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

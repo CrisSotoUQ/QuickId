@@ -1,9 +1,8 @@
-package com.grade.quickid.model.Estadisticas.domain;
+package com.grade.quickid.model.estadisticas.domain;
 
-import com.grade.quickid.model.Estadisticas.aplication.EstadisticaFecha;
+import com.grade.quickid.model.estadisticas.aplication.EstadisticaFecha;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 public class Estadistica implements Serializable {
     private String idEstadistica;
