@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.infraestructure;
+package com.grade.quickid.model.eventos.aplication;
 
 import android.Manifest;
 import android.app.TimePickerDialog;
@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -28,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.grade.quickid.R;
@@ -36,6 +34,9 @@ import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.Time;
 import com.grade.quickid.model.FragmentPagerController;
 import com.grade.quickid.model.eventos.domain.Evento;
+import com.grade.quickid.model.eventos.infraestructure.CargarDatosCsvActivity;
+import com.grade.quickid.model.eventos.infraestructure.ConfirmarEventoActivity;
+import com.grade.quickid.model.eventos.infraestructure.MapsEventoActivity;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;

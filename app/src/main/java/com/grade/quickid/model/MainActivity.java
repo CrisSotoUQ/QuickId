@@ -9,8 +9,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -33,7 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import com.grade.quickid.R;
 import com.grade.quickid.model.comentarios.infraestructure.ComentarioActivity;
-import com.grade.quickid.model.eventos.infraestructure.CrearEventoActivity;
+import com.grade.quickid.model.eventos.aplication.CrearEventoActivity;
 import com.grade.quickid.model.eventos.infraestructure.QRScannerActivity;
 import com.grade.quickid.model.personas.infrastructure.LoginActivity;
 import com.squareup.picasso.Picasso;

@@ -45,7 +45,7 @@
         <activity android:name=".model.MainActivity" />
         <activity android:name=".model.eventos.infraestructure.QRScannerActivity" />
         <activity android:name=".model.estadisticas.infraestructure.QRGenAndStatisticsActivity" />
-        <activity android:name=".model.eventos.infraestructure.CrearEventoActivity" />
+        <activity android:name=".model.eventos.aplication.CrearEventoActivity" />
         <activity android:name=".model.personas.infrastructure.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
