@@ -1,20 +1,33 @@
 package com.grade.quickid.model.eventos.infraestructure;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,12 +35,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.grade.quickid.R;
+import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.eventos.domain.Evento;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCallback, Serializable {
 
@@ -40,6 +57,8 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
     private Button btn_siguiente;
     private int update;
     String imagenOriginal;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +72,7 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
         client = LocationServices.getFusedLocationProviderClient(this);
         // permisos|
         getCurrentLocation(1);
+
         btn_siguiente = (Button) findViewById(R.id.btn_siguiente_maps);
 
         receiveEvento = (Evento) getIntent().getSerializableExtra("Evento");
@@ -90,9 +110,9 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
 
     }
 
-    private void marcarOnUpdate() {
+    private void marcarOnUpdate(Double lati, Double longi) {
 
-        LatLng latLng = new LatLng(latitude, longitude);
+        LatLng latLng = new LatLng(lati, longi);
         //marcador
         MarkerOptions markerOptions = new MarkerOptions();
         // posicion marcador
@@ -116,63 +136,112 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                     Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
         Task<Location> task = client.getLastLocation();
-
         if (flagLocation != 0) {
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    //satisfactorio
-                    if (location != null) {
-                        //sincronizo
-                        mapFragment.getMapAsync(new OnMapReadyCallback() {
-                            @Override
-                            public void onMapReady(GoogleMap googleMap) {
-
-                                //inicializar lat long
-                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                // crear marcador
-                                MarkerOptions option = new MarkerOptions().position(latLng)
-                                        .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                //Zoom
-                                // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
-                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                                //agregar marcador en el mapa
-                                googleMap.addMarker(option);
+                    locationRequest = LocationRequest.create();
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                    locationRequest.setInterval(20 * 1000);
+                    locationCallback = new LocationCallback() {
+                        @Override
+                        public void onLocationResult(LocationResult locationResult) {
+                            if (locationResult == null) {
+                                return;
                             }
-                        });
+                            for (Location location : locationResult.getLocations()) {
+                                if (location != null) {
+                                    latitude = location.getLatitude();
+                                    longitude = location.getLongitude();
+                                }
+                            }
+                            mapFragment.getMapAsync(new OnMapReadyCallback() {
+                                @Override
+                                public void onMapReady(GoogleMap googleMap) {
 
+                                    //inicializar lat long
+                                    LatLng latLng = new LatLng(latitude, longitude);
+                                    // crear marcador
+                                    MarkerOptions option = new MarkerOptions().position(latLng)
+                                            .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                    //Zoom
+                                    // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
+                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                                    //agregar marcador en el mapa
+                                    googleMap.addMarker(option);
+                                    client.removeLocationUpdates(locationCallback);
+                                }
+                            });
+                        }
+                    };
+                    if (ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
                     }
+                    client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
                 }
             });
         } else {
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    //satisfactorio
-                    if (location != null) {
-                        //sincronizo
-                        mapFragment.getMapAsync(new OnMapReadyCallback() {
-                            @Override
-                            public void onMapReady(GoogleMap googleMap) {
 
-                                //inicializar lat long
-                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                // crear marcador
-                                MarkerOptions option = new MarkerOptions().position(latLng)
-                                        .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                ;
-                                // no hace Zoom
-                                //agregar marcador en el mapa
-                                googleMap.addMarker(option);
+                    locationRequest = LocationRequest.create();
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                    locationRequest.setInterval(20 * 1000);
+                    locationCallback = new LocationCallback() {
+                        @Override
+                        public void onLocationResult(LocationResult locationResult) {
+                            if (locationResult == null) {
+                                return;
                             }
-                        });
+                            for (Location location : locationResult.getLocations()) {
+                                if (location != null) {
+                                    latitude = location.getLatitude();
+                                    longitude = location.getLongitude();
 
+                                }
+                            }
+                            mapFragment.getMapAsync(new OnMapReadyCallback() {
+                                @Override
+                                public void onMapReady(GoogleMap googleMap) {
+
+                                    //inicializar lat long
+                                    LatLng latLng = new LatLng(latitude, longitude);
+                                    // crear marcador
+                                    MarkerOptions option = new MarkerOptions().position(latLng)
+                                            .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                    ;
+                                    // no hace Zoom
+                                    //agregar marcador en el mapa
+                                    googleMap.addMarker(option);
+                                    client.removeLocationUpdates(locationCallback);
+                                }
+                            });
+                        }
+                    };
+                    if (ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
                     }
+                    client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
                 }
             });
         }
-    }
 
+    }
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -186,9 +255,11 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         if (update != 0) {
-            latitude = receiveEvento.getLatitud();
-            longitude = receiveEvento.getLongitud();
-            marcarOnUpdate();
+            double lati;
+            double longi;
+            lati = receiveEvento.getLatitud();
+            longi = receiveEvento.getLongitud();
+            marcarOnUpdate(lati,longi);
         }
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override

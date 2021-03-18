@@ -29,6 +29,7 @@ public class CrearDatosCsv {
     DatabaseReference myRefDatosRegistroEvento ;
     ValueEventListener  mEventListnerRegistroEvento ;
     ValueEventListener mEventListnerPersonaEvento ;
+    int contador = 0;
     public  void CrearDatosCsv(Evento evento, Context context){
         StringBuilder data = new StringBuilder();
         ValueEventListener valueEventListenerRegistroEvento = new ValueEventListener() {
@@ -38,7 +39,7 @@ public class CrearDatosCsv {
                     data.append("Nombre Evento: " + evento.getNombre());
                     data.append("\n" + "Lugar Evento: " + evento.getLugar());
                     data.append("\n");
-                    data.append("\n" + "Correo ,   Apellido  ,   Nombre   , Fecha  ,  Hora entrada");
+                    data.append("\n" + "Numero,Correo,Apellido,Nombre,Fecha,Hora entrada");
 
                     for (DataSnapshot objSnapshot : snapshot.getChildren()) {
                         Registro ra = objSnapshot.getValue(Registro.class);
@@ -46,9 +47,10 @@ public class CrearDatosCsv {
                         ValueEventListener valueEventListenerPersonaEvento = new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                contador = contador+1;
                                 for (DataSnapshot objSnapshot : snapshot1.getChildren()) {
                                     Persona per = objSnapshot.getValue(Persona.class);
-                                    data.append("\n" + String.valueOf(per.getCorreo()) + "," + String.valueOf(per.getApellido())
+                                    data.append("\n" + String.valueOf(contador) + "," + String.valueOf(per.getCorreo()) + "," + String.valueOf(per.getApellido())
                                             + "," + String.valueOf(per.getNombre()) + "," + String.valueOf(ra.getFechaRegistro())
                                             + "," + String.valueOf(ra.getHoraRegistro()));
                                 }

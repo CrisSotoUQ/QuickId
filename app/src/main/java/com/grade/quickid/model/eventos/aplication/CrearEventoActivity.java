@@ -149,6 +149,17 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                 }
             }
         });
+
+        mapSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    activarGeolocalizacion = "1";
+                } else {
+                    activarGeolocalizacion = "0";
+                }
+            }
+        });
         btn_TimePickerHoraEntrada.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
