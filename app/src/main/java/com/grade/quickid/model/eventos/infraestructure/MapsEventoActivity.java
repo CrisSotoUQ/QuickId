@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -54,11 +55,14 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
     Evento receiveEvento;
     private double latitude;
     private double longitude;
+    private double latitudeOnUpdate;
+    private double longitudeOnUpdate;
     private Button btn_siguiente;
     private int update;
     String imagenOriginal;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
+    public static final int REQUEST_CHECK_SETTING = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,7 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
         //inicializar locacion
         client = LocationServices.getFusedLocationProviderClient(this);
         // permisos|
+        prenderGps();
         getCurrentLocation(1);
 
         btn_siguiente = (Button) findViewById(R.id.btn_siguiente_maps);
@@ -81,9 +86,9 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
         btn_siguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                receiveEvento.setLatitud(latitude);
-                receiveEvento.setLongitud(longitude);
-                if (latitude == 0.0 && longitude == 0.0) {
+                receiveEvento.setLatitud(latitudeOnUpdate);
+                receiveEvento.setLongitud(longitudeOnUpdate);
+                if (latitudeOnUpdate == 0.0 && longitudeOnUpdate == 0.0) {
                     Toast.makeText(MapsEventoActivity.this, "Es necesario marcar la ubicacion", Toast.LENGTH_SHORT).show();
                 } else {
                     if (receiveEvento.getCargueArchivoStatus().equals("0")) {
@@ -110,9 +115,46 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
 
     }
 
-    private void marcarOnUpdate(Double lati, Double longi) {
+    private void prenderGps() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2000);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
 
-        LatLng latLng = new LatLng(lati, longi);
+        Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(getApplicationContext())
+                .checkLocationSettings(builder.build());
+
+        result.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
+                try {
+                    LocationSettingsResponse response = task.getResult(ApiException.class);
+                    Toast.makeText(MapsEventoActivity.this,"Gps is on",Toast.LENGTH_LONG).show();
+                } catch (ApiException e) {
+                    switch (e.getStatusCode()){
+                        case    LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            ResolvableApiException resolvableApiException = (ResolvableApiException) e;
+                            try {
+                                resolvableApiException.startResolutionForResult(MapsEventoActivity.this,REQUEST_CHECK_SETTING);
+                            } catch (IntentSender.SendIntentException sendIntentException) {
+                                sendIntentException.printStackTrace();
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            break;
+
+                    }
+                }
+            }
+        });
+    }
+
+    private void marcarOnUpdate() {
+
+        LatLng latLng = new LatLng(latitudeOnUpdate,longitudeOnUpdate);
         //marcador
         MarkerOptions markerOptions = new MarkerOptions();
         // posicion marcador
@@ -136,13 +178,13 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                     Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
         Task<Location> task = client.getLastLocation();
-        if (flagLocation != 0) {
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
-                public void onSuccess(Location location) {
+                public void onSuccess(Location location1) {
                     locationRequest = LocationRequest.create();
                     locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                    locationRequest.setInterval(20 * 1000);
+                    locationRequest.setInterval(5000);
+                    locationRequest.setFastestInterval(2000);
                     locationCallback = new LocationCallback() {
                         @Override
                         public void onLocationResult(LocationResult locationResult) {
@@ -155,23 +197,43 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                                     longitude = location.getLongitude();
                                 }
                             }
-                            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                                @Override
-                                public void onMapReady(GoogleMap googleMap) {
+                            if (flagLocation != 0) {
+                                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                                    @Override
+                                    public void onMapReady(GoogleMap googleMap) {
 
-                                    //inicializar lat long
-                                    LatLng latLng = new LatLng(latitude, longitude);
-                                    // crear marcador
-                                    MarkerOptions option = new MarkerOptions().position(latLng)
-                                            .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                    //Zoom
-                                    // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
-                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                                    //agregar marcador en el mapa
-                                    googleMap.addMarker(option);
-                                    client.removeLocationUpdates(locationCallback);
-                                }
-                            });
+                                        //inicializar lat long
+                                        LatLng latLng = new LatLng(latitude, longitude);
+                                        // crear marcador
+                                        MarkerOptions option = new MarkerOptions().position(latLng)
+                                                .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                        //Zoom
+                                        // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
+                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+                                        //agregar marcador en el mapa
+                                        googleMap.addMarker(option);
+                                        client.removeLocationUpdates(locationCallback);
+                                    }
+                                });
+                            }else {
+
+                                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                                    @Override
+                                    public void onMapReady(GoogleMap googleMap) {
+
+                                        //inicializar lat long
+                                        LatLng latLng = new LatLng(latitude, longitude);
+                                        // crear marcador
+                                        MarkerOptions option = new MarkerOptions().position(latLng)
+                                                .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                        ;
+                                        // no hace Zoom
+                                        //agregar marcador en el mapa
+                                        googleMap.addMarker(option);
+                                        client.removeLocationUpdates(locationCallback);
+                                    }
+                                });
+                            }
                         }
                     };
                     if (ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -187,59 +249,6 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                     client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
                 }
             });
-        } else {
-            task.addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-
-                    locationRequest = LocationRequest.create();
-                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                    locationRequest.setInterval(20 * 1000);
-                    locationCallback = new LocationCallback() {
-                        @Override
-                        public void onLocationResult(LocationResult locationResult) {
-                            if (locationResult == null) {
-                                return;
-                            }
-                            for (Location location : locationResult.getLocations()) {
-                                if (location != null) {
-                                    latitude = location.getLatitude();
-                                    longitude = location.getLongitude();
-
-                                }
-                            }
-                            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                                @Override
-                                public void onMapReady(GoogleMap googleMap) {
-
-                                    //inicializar lat long
-                                    LatLng latLng = new LatLng(latitude, longitude);
-                                    // crear marcador
-                                    MarkerOptions option = new MarkerOptions().position(latLng)
-                                            .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                    ;
-                                    // no hace Zoom
-                                    //agregar marcador en el mapa
-                                    googleMap.addMarker(option);
-                                    client.removeLocationUpdates(locationCallback);
-                                }
-                            });
-                        }
-                    };
-                    if (ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
-                    client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                }
-            });
-        }
 
     }
     /**
@@ -255,11 +264,9 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         if (update != 0) {
-            double lati;
-            double longi;
-            lati = receiveEvento.getLatitud();
-            longi = receiveEvento.getLongitud();
-            marcarOnUpdate(lati,longi);
+            latitudeOnUpdate = receiveEvento.getLatitud();
+            longitudeOnUpdate = receiveEvento.getLongitud();
+            marcarOnUpdate();
         }
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -271,8 +278,8 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                 markerOptions.position(latLng);
                 //latitud y longitud
                 markerOptions.title("ubicacion del evento");
-                latitude = latLng.latitude;
-                longitude = latLng.longitude;
+                latitudeOnUpdate = latLng.latitude;
+                longitudeOnUpdate = latLng.longitude;
                 //limpiar click anterior
                 mMap.clear();
                 //Zoom al marcador
@@ -289,6 +296,23 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
         if (requestCode == 44) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation(1);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CHECK_SETTING){
+            switch (resultCode){
+                case Activity.RESULT_OK:
+                    Toast.makeText(MapsEventoActivity.this, "Gps activado", Toast.LENGTH_LONG).show();;
+                    break;
+                case Activity.RESULT_CANCELED:
+                    Toast.makeText(MapsEventoActivity.this, "El GPS es requerido y debe ser activado", Toast.LENGTH_LONG).show();
+                    break;
+
             }
         }
     }

@@ -360,9 +360,16 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(CrearEventoActivity.this,
                         Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(camera, CAMERA_INTENT);
+                    try {
+
+
+                        Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(camera, CAMERA_INTENT);
+                    }catch (Exception e){
+                        Toast.makeText(CrearEventoActivity.this, "Telefono incompatible"+e.toString(),Toast.LENGTH_LONG);
+                    }
                     dialog.dismiss();
+
                 } else {
                     requestCameraPermission();
                 }
@@ -397,7 +404,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        try {
         if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK && data != null && data.getData() != null) {
             mImageUri = data.getData();
             imageview_photo.setVisibility(View.VISIBLE);
@@ -408,6 +415,10 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
             imageview_photo.setVisibility(View.VISIBLE);
             imageview_photo.setImageBitmap(image);
             mImageUri = getImageUri(this, image);
+        }
+    }catch (Exception e){
+            Toast.makeText(CrearEventoActivity.this, "Telefono incompatible con la funcionalidad porfavor cargar desde galeria"+ e.toString(),Toast.LENGTH_LONG).show();
+
         }
     }
 
