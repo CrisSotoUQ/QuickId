@@ -1,8 +1,10 @@
 package com.grade.quickid.model.eventos.infraestructure;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,17 +13,26 @@ import android.os.Looper;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -64,6 +75,8 @@ public class QRScannerActivity extends AppCompatActivity {
     private static LatLng latLng ;
     private static FusedLocationProviderClient client ;
     CrearRegistro crearRegistro = new CrearRegistro();
+    public static final int REQUEST_CHECK_SETTING = 1001;
+    private LocationRequest locationRequest;
     /**
      * se cargan todos los componentes
      *
@@ -78,6 +91,7 @@ public class QRScannerActivity extends AppCompatActivity {
         mCodeScanner = new CodeScanner(this, scannView);
         resultData = findViewById(R.id.txtResult);
         resultData.setText("");
+        prenderGps();
         obtenerLocation(1);
         scannView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -309,9 +323,6 @@ public class QRScannerActivity extends AppCompatActivity {
                 final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Registro");
                 myRef2.getRef().child(idRegistro).setValue(registro);
 
-         /*       Estadistica estadistica = (Estadistica) crearEstadistica.setearEstadisticas(objSnapshot,result,claveActPer,idRegistro);
-                final DatabaseReference myRef4 = FirebaseDatabase.getInstance().getReference("Estadistica");
-                myRef4.getRef().child(estadistica.getIdEvento()).setValue(estadistica);*/
                 resultData.setText("Registro Exitoso");
                 closeEventListeners();
                 reloadActivity();
@@ -320,10 +331,6 @@ public class QRScannerActivity extends AppCompatActivity {
             Registro registro2 = (Registro) crearRegistro.CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
             final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Registro");
             myRef3.getRef().child(idRegistro).setValue(registro2);
-
-      /*      Estadistica estadistica = (Estadistica) crearEstadistica.setearEstadisticas(objSnapshot,result,claveActPer,idRegistro);
-            final DatabaseReference myRef4 = FirebaseDatabase.getInstance().getReference("Estadistica");
-            myRef4.getRef().child(estadistica.getIdEvento()).setValue(estadistica);*/
 
             resultData.setText("Registro Exitoso");
             closeEventListeners();
@@ -366,5 +373,57 @@ public class QRScannerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+    }
+    private void prenderGps() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2000);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(getApplicationContext())
+                .checkLocationSettings(builder.build());
+
+        result.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
+                try {
+                    LocationSettingsResponse response = task.getResult(ApiException.class);
+                    Toast.makeText(QRScannerActivity.this,"Gps is on",Toast.LENGTH_LONG).show();
+                } catch (ApiException e) {
+                    switch (e.getStatusCode()){
+                        case    LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            ResolvableApiException resolvableApiException = (ResolvableApiException) e;
+                            try {
+                                resolvableApiException.startResolutionForResult(QRScannerActivity.this,REQUEST_CHECK_SETTING);
+                            } catch (IntentSender.SendIntentException sendIntentException) {
+                                sendIntentException.printStackTrace();
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            break;
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CHECK_SETTING){
+            switch (resultCode){
+                case Activity.RESULT_OK:
+                    Toast.makeText(QRScannerActivity.this, "Gps activado", Toast.LENGTH_LONG).show();;
+                    break;
+                case Activity.RESULT_CANCELED:
+                    Toast.makeText(QRScannerActivity.this, "El GPS es requerido y debe ser activado", Toast.LENGTH_LONG).show();
+                    break;
+
+            }
+        }
     }
 }

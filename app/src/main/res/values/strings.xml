@@ -24,7 +24,7 @@
         que nos ayudaran muchisimo. ¿Tienes ideas, sugerencias o algun error encontrado?
         Esto nos ayudara a mejorar. Si es asi porfavor compartelas mas abajo.</string>
     <string name="confirmar"> Se creara el evento en la lista de eventos, para visualizar la imagen QR
-     y estadisticas se debera pulsar sobre el nuevo item.></string>
+     y estadisticas se debera pulsar sobre el nuevo item.</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>

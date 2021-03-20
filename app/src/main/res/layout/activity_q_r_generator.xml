@@ -62,8 +62,10 @@
 
     <ImageView
         android:id="@+id/imageView_qr"
-        android:layout_width="586dp"
-        android:layout_height="392dp"
+        android:layout_width="384dp"
+        android:layout_height="361dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -93,17 +95,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textViewNombreAct"
-            android:layout_width="92dp"
-            android:layout_height="match_parent"
-            android:text="Nombre :"
-            android:textSize="18sp" />
-
-        <TextView
             android:id="@+id/textViewNombreActividad"
-            android:layout_width="270dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="18sp" />
+            android:gravity="center_horizontal"
+            android:textSize="24sp" />
     </LinearLayout>
 
     <TextView
@@ -131,11 +127,11 @@
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barChart"
-        android:layout_width="426dp"
-        android:layout_height="373dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="318dp"
+        android:layout_height="321dp"
+        android:layout_marginStart="25dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="25dp"
         app:layout_constraintBottom_toTopOf="@+id/textView12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -170,14 +166,16 @@
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pieChart"
-        android:layout_width="431dp"
-        android:layout_height="344dp"
+        android:layout_width="330dp"
+        android:layout_height="309dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.714"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
    </ScrollView>
