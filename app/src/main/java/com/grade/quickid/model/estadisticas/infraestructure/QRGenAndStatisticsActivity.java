@@ -146,23 +146,22 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                                     }
                                     StringTokenizer st = new StringTokenizer(RAct.getFechaRegistro(), "-"); //delimitador -
                                     String dia = st.nextToken();
-
-                                    //Estadistica para el mes
                                     String mes = st.nextToken();
-                                    if (arrayMes.containsKey(mes)) {
-                                        arrayMes.put(mes, arrayMes.get(mes) + 1);
-                                    } else {
-                                        arrayMes.put(mes, 1);
-                                    }
-                                    ;
-
                                     String anio = st.nextToken();
+                                    String anioActual = Integer.toString(calendar.get(Calendar.YEAR));
+                                    //Estadistica para el mes
+                                    if(anioActual.equals(anio)) {
+                                        if (arrayMes.containsKey(mes)) {
+                                            arrayMes.put(mes, arrayMes.get(mes) + 1);
+                                        } else {
+                                            arrayMes.put(mes, 1);
+                                        }
+                                    }
                                     if (arrayAnio.containsKey(anio)) {
                                         arrayAnio.put(anio, arrayAnio.get(anio) + 1);
                                     } else {
                                         arrayAnio.put(anio, 1);
                                     }
-
                                 }
                                 contadorRegistrosHistorico.setText(String.valueOf(v_registrosHistorico));
                                 contadorRegistrosFechaActual.setText(String.valueOf(v_RegistrosFechaActual));
@@ -212,7 +211,7 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         }}
 
         BarDataSet barDataSet = new BarDataSet(visitorsByDate, "Asistentes por mes");
-        barDataSet.setColors(ColorTemplate.PASTEL_COLORS);
+        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         barDataSet.setValueTextColor(Color.BLACK);
         barDataSet.setValueTextSize(10f);
         BarData barData = new BarData(barDataSet);
@@ -235,12 +234,12 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                 visitantes.add(new PieEntry(Integer.parseInt(key), String.valueOf(contador)));
             }}
             PieDataSet pieDataSet = new PieDataSet(visitantes, "Asistentes por año");
-            pieDataSet.setColors(ColorTemplate.PASTEL_COLORS);
+            pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
             pieDataSet.setValueTextColor(Color.WHITE);
             pieDataSet.setValueTextSize(10f);
             PieData pieData = new PieData(pieDataSet);
             pieChart.setData(pieData);
-            pieChart.getDescription().setText("hello");
+            pieChart.getDescription().setText("Quickid");
             pieChart.setCenterText("Asistentes");
             pieChart.invalidate();
             pieChart.animate();

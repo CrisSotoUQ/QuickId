@@ -132,28 +132,28 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="25dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView12"
+        app:layout_constraintBottom_toTopOf="@+id/txtAsisAnio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView16">
+        app:layout_constraintTop_toBottomOf="@+id/txtAsisMes">
 
     </com.github.mikephil.charting.charts.BarChart>
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/txtAsisMes"
         android:layout_width="290dp"
         android:layout_height="47dp"
         android:layout_marginTop="20dp"
         android:gravity="center_horizontal"
         android:text="Asistentes por mes"
-        android:textSize="30sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/txtAsisAnio"
         android:layout_width="241dp"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
@@ -174,7 +174,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.714"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView12"
+        app:layout_constraintTop_toBottomOf="@+id/txtAsisAnio"
         app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -209,7 +209,7 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                                                 .title("Estas aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                                         //Zoom
                                         // si vuelvo a llamar el metodo que no haga zoom la geolocalizacion
-                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                                         //agregar marcador en el mapa
                                         googleMap.addMarker(option);
                                         client.removeLocationUpdates(locationCallback);
