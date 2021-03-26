@@ -42,7 +42,7 @@ if (onClickListener!= null){
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-    TextView txt_fecha,txt_nombre,txt_lugar;
+    TextView txt_fecha,txt_nombre,txt_lugar,txt_hora,txt_horaNombre;
     ImageView imageview;
 
         public ViewHolder(@NonNull View itemView) {
@@ -51,6 +51,10 @@ if (onClickListener!= null){
             txt_lugar = itemView.findViewById(R.id.txt_lugar);
             txt_nombre = itemView.findViewById(R.id.txt_nombre);
             imageview = itemView.findViewById(R.id.idImagen);
+            txt_hora = itemView.findViewById(R.id.txt_hora_registro);
+            txt_horaNombre = itemView.findViewById(R.id.txt_hora_registro_nombre);
+            txt_horaNombre.setVisibility(View.VISIBLE);
+            txt_hora.setVisibility(View.VISIBLE);
         }
     }
     @NonNull
@@ -67,11 +71,13 @@ if (onClickListener!= null){
         String nombreActividad = modelRegistro.get(position).getNombreEvento();
         String fechaRegistro = modelRegistro.get(position).getFechaRegistro();
         String lugarActividad= modelRegistro.get(position).getLugarEvento();
+        String horaDeRegistro= modelRegistro.get(position).getHoraRegistro();
 
         holder.txt_nombre.setText(nombreActividad);
         holder.txt_fecha.setText(fechaRegistro);
         holder.txt_lugar.setText(lugarActividad);
         Picasso.get().load(modelRegistro.get(position).getImagenEvento()).fit().centerInside().into(holder.imageview);
+        holder.txt_hora.setText(horaDeRegistro);
     }
 
     @Override

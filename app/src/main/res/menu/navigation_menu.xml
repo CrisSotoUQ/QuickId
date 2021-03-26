@@ -19,7 +19,7 @@
     <item
         android:id="@+id/menuComentarios"
         android:icon="@drawable/comentarios"
-        android:title="Deja un comentario" />
+        android:title="Comentarios" />
 
     <item
         android:id="@+id/Salir"

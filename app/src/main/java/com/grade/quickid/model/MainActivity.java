@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabItem;
@@ -32,9 +33,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.grade.quickid.R;
 import com.grade.quickid.model.comentarios.infraestructure.ComentarioActivity;
 import com.grade.quickid.model.eventos.aplication.CrearEventoActivity;
-import com.grade.quickid.model.eventos.infraestructure.QRScannerActivity;
+import com.grade.quickid.model.registros.infraestructure.QRScannerActivity;
 import com.grade.quickid.model.personas.infrastructure.LoginActivity;
 import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 /**
  * Clase Main de la app, controla todos los componentes principales
@@ -56,9 +59,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView textoNombreGoogle;
     private String nombre;
     private String email;
+    private int tab;
     private Button mainQrScanner;
     private String imagen;
-
+    private int REQUEST_CODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -84,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         email = intent.getStringExtra("email");
         imagen = intent.getStringExtra("imagen");
         nombre = intent.getStringExtra("nombre");
+        tab= intent.getIntExtra("tab",0);
         //Guardar datos persistentes de session
         if (email != null) {
             settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -145,14 +150,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         inicializarFirebase();
+        // focus en registros
+        if (tab == 1){
+            TabLayout.Tab tab = tabLayout.getTabAt(1);
+            tab.select();
+        }
+
     }
-
-
     private void setup(String email, String imagen, String nombre) {
         Picasso.get().load(imagen).fit().centerInside().into(imageprofile);
         textoCorreoGoogle.setText(email);
         textoNombreGoogle.setText(nombre);
-
     }
 
     private void inicializarFirebase() {
@@ -210,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void requestCameraPermission() {
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+
     }
     private boolean yaTienePermisos() {
         if (ContextCompat.checkSelfPermission(MainActivity.this,
@@ -220,5 +229,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
+    }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == REQUEST_CODE) {
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                try {
+                    lanzarIntent();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(this, "porfavor otorgar permisos", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

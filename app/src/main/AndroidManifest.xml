@@ -19,6 +19,7 @@
     <application
         android:name=".model.Persistencia"
         android:allowBackup="true"
+        android:label="QuickId"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -44,7 +45,7 @@
 
         <activity android:name=".model.eventos.infraestructure.MapsEventoActivity" />
         <activity android:name=".model.MainActivity" />
-        <activity android:name=".model.eventos.infraestructure.QRScannerActivity" />
+        <activity android:name=".model.registros.infraestructure.QRScannerActivity" />
         <activity android:name=".model.estadisticas.infraestructure.QRGenAndStatisticsActivity" />
         <activity android:name=".model.eventos.aplication.CrearEventoActivity" />
         <activity android:name=".model.personas.infrastructure.LoginActivity">

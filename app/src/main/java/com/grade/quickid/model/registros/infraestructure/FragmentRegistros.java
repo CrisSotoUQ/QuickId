@@ -1,6 +1,7 @@
 package com.grade.quickid.model.registros.infraestructure;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grade.quickid.R;
+import com.grade.quickid.model.estadisticas.infraestructure.QRGenAndStatisticsActivity;
 import com.grade.quickid.model.registros.domain.Registro;
 import com.grade.quickid.model.registros.infraestructure.AdapterRegistros;
 
@@ -81,6 +83,20 @@ public class FragmentRegistros extends Fragment {
                                 });
                                 rvRegistros.setAdapter(adapterRegistros);
                             }
+
+                            adapterRegistros.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    String idEvento = listRegistros.get(rvRegistros.getChildAdapterPosition(v)).getIdEvento();
+                                    String nombreActividad = listRegistros.get(rvRegistros.getChildAdapterPosition(v)).getNombreEvento();
+                                    String lugarActividad = listRegistros.get(rvRegistros.getChildAdapterPosition(v)).getIdEvento();
+                                    Intent intent = new Intent(getActivity(), QRGenAndStatisticsActivity.class);
+                                    intent.putExtra("idEvento", idEvento);
+                                    intent.putExtra("nombre", nombreActividad);
+                                    intent.putExtra("lugar", lugarActividad);
+                                    startActivity(intent);
+                                }
+                            });
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {

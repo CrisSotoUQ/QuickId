@@ -409,6 +409,10 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
             mImageUri = data.getData();
             imageview_photo.setVisibility(View.VISIBLE);
             imageview_photo.setImageURI(mImageUri);
+            // hago un resize
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+            mImageUri = getImageUri(this, bitmap);
+
         }
         if (requestCode == CAMERA_INTENT && resultCode == RESULT_OK) {
             image = (Bitmap) data.getExtras().get("data");

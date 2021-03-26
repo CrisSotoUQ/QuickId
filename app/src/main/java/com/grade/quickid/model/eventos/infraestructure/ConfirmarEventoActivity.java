@@ -27,6 +27,7 @@ import com.grade.quickid.R;
 import com.grade.quickid.model.estadisticas.aplication.CrearEstadistica;
 import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.eventos.domain.Evento;
+import com.grade.quickid.model.registros.aplication.ActualizarRegistros;
 
 import java.io.Serializable;
 
@@ -81,7 +82,7 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
                     mProgress.setMessage("Creando Evento");
                     mProgress.show();
                      if(mImageUri.toString().equals(imagenOriginal)){
-                         actualizarEvento(imagenOriginal);
+                         actualizarEventoImagenOriginal(imagenOriginal);
                          mProgress.dismiss();
                          Toast.makeText(ConfirmarEventoActivity.this, "Evento Actualizado Satisfactoriamente", Toast.LENGTH_LONG).show();
                          Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -97,7 +98,7 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
                                 fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
-                                        crearEvento(uri.toString());
+                                        actualizarEventoImagenChanged(uri.toString());
                                         mProgress.dismiss();
                                         Toast.makeText(ConfirmarEventoActivity.this, "Ok", Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -129,12 +130,12 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
 
     }
 
-    private void actualizarEvento(String Uri) {
-
+    private void actualizarEventoImagenOriginal(String Uri) {
         myRef = databaseReference.child("Evento");
         receive.setUrlImagen(Uri);
+        ActualizarRegistros actualizarRegistros = new ActualizarRegistros();
+        actualizarRegistros.ActualizarRegistros(receive,this.getApplicationContext());
         myRef.child(receive.getIdEvento()).setValue(receive);
-
         finish();
     }
 
@@ -149,11 +150,13 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
         MimeTypeMap mime =  MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
-    private void crearEvento(String Uri) {
+    private void actualizarEventoImagenChanged(String Uri) {
         // inserto el objeto Registro
         myRef = databaseReference.child("Evento");
         myRef2 = databaseReference.child("Estadistica");
         receive.setUrlImagen(Uri);
+        ActualizarRegistros actualizarRegistros = new ActualizarRegistros();
+        actualizarRegistros.ActualizarRegistros(receive,this.getApplicationContext());
         myRef.child(receive.getIdEvento()).setValue(receive);
         finish();
     }

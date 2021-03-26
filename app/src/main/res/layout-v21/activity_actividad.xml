@@ -13,49 +13,70 @@
 
     <LinearLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_width="0dp"
+        android:layout_height="51dp"
+        android:background="@color/colorPrimary"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/colorPrimary">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageMenu"
-            android:layout_width="49dp"
-            android:adjustViewBounds="true"
-            android:layout_height="37dp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_menu"
-            app:tint="@color/colorWhite">
-        </ImageView>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textTitle"
-            android:layout_width="280dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="15dp"
-            android:text="@string/app_name"
-            android:textColor="@color/colorWhite"
-            android:textSize="18sp"
-            android:textStyle="bold">
+            <Button
+                android:id="@+id/mainQrScannner"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/scanqr"
+                android:elevation="10dp"
+                android:foregroundGravity="left|center_horizontal"
+                android:gravity="left"
+                android:hapticFeedbackEnabled="false"
+                android:shadowColor="#FF0000"
+                android:soundEffectsEnabled="false"
+                app:backgroundTint="#000000"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </TextView>
+            <TextView
+                android:id="@+id/textTitle"
+                android:layout_width="0dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="@string/app_name"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/mainQrScannner"
+                app:layout_constraintHorizontal_bias="0.178"
+                app:layout_constraintStart_toEndOf="@+id/imageMenu"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/mainQrScannner"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/scanqr"
-            android:elevation="10dp"
-            android:foregroundGravity="center_vertical"
-            android:gravity="center_vertical"
-            android:hapticFeedbackEnabled="false"
-            android:shadowColor="#FF0000"
-            android:soundEffectsEnabled="false"
-            app:backgroundTint="#000000" />
+            </TextView>
+
+            <ImageView
+                android:id="@+id/imageMenu"
+                android:layout_width="49dp"
+                android:layout_height="37dp"
+                android:layout_marginStart="16dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_menu"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/colorWhite"></ImageView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
     <LinearLayout

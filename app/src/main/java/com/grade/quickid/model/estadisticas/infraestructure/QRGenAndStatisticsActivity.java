@@ -132,6 +132,7 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
                                 v_registrosHistorico = 0;
+                                v_RegistrosFechaActual=0;
                                 arrayMes.clear();
                                 arrayAnio.clear();
                                 for (DataSnapshot objSnapshot2 : snapshot.getChildren()) {

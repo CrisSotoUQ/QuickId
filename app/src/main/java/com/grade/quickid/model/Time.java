@@ -10,7 +10,7 @@ public String fecha(){
     return dateString;
     }
     public String hora(){
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
         String dateString = sdf.format(date);
         return dateString;
     }

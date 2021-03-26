@@ -5,16 +5,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.zxing.Result;
 import com.grade.quickid.model.Time;
+import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.registros.domain.Registro;
 
 public class CrearRegistro {
 
-    public Object CrearObjetoRegistro(DataSnapshot objSnapshot, Result result, String actPer, String idRegistro) {
+    public Object CrearObjetoRegistro(Evento evento, Result result, String actPer, String idRegistro) {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String nombreEvento = (String) objSnapshot.child("nombre").getValue();
-        String lugarEvento = (String) objSnapshot.child("lugar").getValue();
-        String idEvento = (String) objSnapshot.child("idEvento").getValue();
-        String imagenUrl = (String) objSnapshot.child("urlImagen").getValue();
+        String nombreEvento = evento.getNombre();
+        String lugarEvento = evento.getLugar();
+        String idEvento = evento.getIdEvento();
+        String imagenUrl = evento.getUrlImagen();
         Time time = new Time();
         // En este momento el usuario toma una copia
         // y se crea un nuevo registro

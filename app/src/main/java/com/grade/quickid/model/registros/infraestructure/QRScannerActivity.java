@@ -1,4 +1,4 @@
-package com.grade.quickid.model.eventos.infraestructure;
+package com.grade.quickid.model.registros.infraestructure;
 
 import android.Manifest;
 import android.app.Activity;
@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.icu.util.DateInterval;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.client.util.DateTime;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,8 +54,14 @@ import com.grade.quickid.model.registros.aplication.CrearRegistro;
 import com.grade.quickid.model.registros.domain.Registro;
 import com.grade.quickid.model.Time;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
+import java.util.function.DoublePredicate;
 
 /**
  * Clase que controla el scanner QR de la aplicación
@@ -106,11 +115,12 @@ public class QRScannerActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         String idActividad = result.getText();
                         String idUsuario = user.getUid();
                         // valido el identificador de los codigos QR por ahora un numero
-                        // default 23, con el fin de separarlos del resto de QRS en el mundo
+                        // default 23, con el fin de separarlos del resto de QRS
                         if (idActividad.substring(0, 2).equals("23")) {
                             mEventListenerEvento = new ValueEventListener() {
                                 @Override
@@ -118,7 +128,6 @@ public class QRScannerActivity extends AppCompatActivity {
                                     if (snapshot.exists()) {
                                         for (DataSnapshot objSnapshot : snapshot.getChildren()) {
                                             String claveEventoPersona = idActividad + "" + idUsuario;
-                                            String idRegistro = UUID.randomUUID().toString();
                                             Evento evento = objSnapshot.getValue(Evento.class);
                                             // valido si tiene activa la opcion de cargue archivo
                                             if (evento.getCargueArchivoStatus().equals("1")) {
@@ -132,17 +141,25 @@ public class QRScannerActivity extends AppCompatActivity {
                                                     }
                                                 }
                                                 if (contadorMatch > 0) {
-                                                    snapshotRegistro(objSnapshot, result, claveEventoPersona, idRegistro);
+                                                    try {
+                                                        snapshotRegistro(evento, result, claveEventoPersona);
+                                                    } catch (ParseException e) {
+                                                        e.printStackTrace();
+                                                    }
                                                 } else {
-                                                    resultData.setText("no estas en la lista");
+                                                    resultData.setText("Correo no encontrado");
                                                     closeEventListener();
                                                     vibrar();
                                                     break;
 
                                                 }
-                                                // si no entonces es una actividad normal voy a registros
+                                                // es una actividad sin lista predeterminada
                                             } else {
-                                                snapshotRegistro(objSnapshot, result, claveEventoPersona, idRegistro);
+                                                try {
+                                                    snapshotRegistro(evento, result, claveEventoPersona);
+                                                } catch (ParseException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
 
                                         }
@@ -167,6 +184,7 @@ public class QRScannerActivity extends AppCompatActivity {
                         } else {
                             resultData.setText("Codigo QR invalido");
                             vibrar();
+                            closeEventListeners();
                             reloadActivity();
                         }
 
@@ -236,82 +254,102 @@ public class QRScannerActivity extends AppCompatActivity {
      * Funcion que controla las decisiones que se deben tomar para registros
      * segun las opciones de localizacion
      *
-     * @param objSnapshot
      * @param result
      * @param claveActPer
-     * @param idRegistro
      */
-    private void snapshotRegistro(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
+    private void snapshotRegistro(Evento evento, Result result, String claveActPer) throws ParseException {
+        // obtener la hora actual
+        Date dateHoraActual = new Date();
+        DateFormat formatter = new SimpleDateFormat("H:mm");
+        String StringHoraActual = formatter.format(dateHoraActual);
+        Date HoraActualFormateada = (Date) formatter.parse(StringHoraActual) ;
 
-        calcularDistanciaEntreLocalizacionUsuarioYEvento(objSnapshot);
+        // obtener la hora de inicio del evento
+        String horaEventoIni =  evento.getHoraIni().substring(0,5);
+        Date dateEventoIni = (Date)formatter.parse(horaEventoIni);
 
-        mEventListenerRegistroEvento = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists() && processDone != 1) {
-                    processDone = 1;
-                    int contadorRegistroFechaActual = 0;
-                    int parametroCantidadRegistrosEnUnDia = 0;
-                    ArrayList<Registro> listRegistros = new ArrayList<Registro>();
-                    for (DataSnapshot objSnapshot : snapshot.getChildren()) {
-                        Registro ra = objSnapshot.getValue(Registro.class);
-                        listRegistros.add(ra);
-                        Time time = new Time();
-                        if (ra.getFechaRegistro().equals((time.fecha()))) {
-                            contadorRegistroFechaActual++;
+        // obtener la hora fin del evento
+        String horaEventoFin =  evento.getHoraFin().substring(0,5);
+        Date dateEventoFin = (Date)formatter.parse(horaEventoFin);
+
+        if (HoraActualFormateada.after(dateEventoIni) && HoraActualFormateada.before(dateEventoFin)) {
+            String idRegistro = UUID.randomUUID().toString();
+            calcularDistanciaEntreLocalizacionUsuarioYEvento(evento);
+
+            mEventListenerRegistroEvento = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists() && processDone != 1) {
+                        processDone = 1;
+                        int contadorRegistroFechaActual = 0;
+                        int parametroCantidadRegistrosEnUnDia = 0;
+                        ArrayList<Registro> listRegistros = new ArrayList<Registro>();
+                        for (DataSnapshot objSnapshot : snapshot.getChildren()) {
+                            Registro ra = objSnapshot.getValue(Registro.class);
+                            listRegistros.add(ra);
+                            Time time = new Time();
+                            if (ra.getFechaRegistro().equals((time.fecha()))) {
+                                contadorRegistroFechaActual++;
+                                break;
+                            }
                         }
-                    }
-                    if (contadorRegistroFechaActual > parametroCantidadRegistrosEnUnDia) {
-                        resultData.setText("Ya se registro en esta fecha");
-                        reloadActivity();
+                        // parametrizar a futuro cantidad de registros validado para un evento
+                        if (contadorRegistroFechaActual > parametroCantidadRegistrosEnUnDia) {
+                            resultData.setText("Ya se registro en esta fecha");
+                            reloadActivity();
+                        } else {
+                            myRefRegistroEvento = databaseReference.child("Registro");
+                            for (int i = 0; i < listRegistros.size(); i++) {
+                                Registro ra = listRegistros.get(i);
+                                String key = String.valueOf(ra.getIdRegistro());
+                                ra.setVisibilidad("0");
+                                myRefRegistroEvento.child(key).setValue(ra);
+                            }
+                            //creo el nodo Registro evento
+                            gestionarRegistro(evento, result, claveActPer, idRegistro);
+                        }
                     } else {
-                        myRefRegistroEvento = databaseReference.child("Registro");
-                        for (int i = 0; i < listRegistros.size(); i++) {
-                            Registro ra = listRegistros.get(i);
-                            String key = String.valueOf(ra.getIdRegistro());
-                            ra.setVisibilidad("0");
-                            myRefRegistroEvento.child(key).setValue(ra);
+                        if (processDone == 0) {
+                            processDone++;
+                            //creo el nodo Registro evento
+                            gestionarRegistro(evento, result, claveActPer, idRegistro);
                         }
-                        //creo el nodo Registro evento
-                        gestionarRegistro(objSnapshot, result, claveActPer, idRegistro);
-                    }
-                } else {
-                    if (processDone == 0) {
-                        processDone++;
-                        //creo el nodo Registro evento
-                        gestionarRegistro(objSnapshot, result, claveActPer, idRegistro);
                     }
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        };
-        FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
-        myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("Registro");
-        myRefRegistroEvento.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(mEventListenerRegistroEvento);
-        vibrar();
-    }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            };
+            FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
+            myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("Registro");
+            myRefRegistroEvento.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(mEventListenerRegistroEvento);
+            vibrar();
+        }else{
+            resultData.setText("Hora registro no valida ");
+            vibrar();
+            reloadActivity();
+            closeEventListener();
+        }
+    }
     /**
      * funcion que calcula la distancia entre dos puntos en el espacio
-     *
-     * @param objSnapshot
+     *Evento evento
      */
-    private void calcularDistanciaEntreLocalizacionUsuarioYEvento(DataSnapshot objSnapshot) {
+    private void calcularDistanciaEntreLocalizacionUsuarioYEvento(Evento evento) {
         // valido que la variable global latlong este llena para encontrar la distancia entre dos puntos en el espacio
         if (latLng != null) {
-            double latActividad = objSnapshot.child("latitud").getValue(double.class);
-            double longActividad = objSnapshot.child("longitud").getValue(double.class);
+            double latEvento= evento.getLatitud();
+            double longEvento = evento.getLongitud();
             float[] results = new float[1];
-            Location.distanceBetween(latActividad, longActividad, latLng.latitude, latLng.longitude, results);
+            Location.distanceBetween(latEvento, longEvento, latLng.latitude, latLng.longitude, results);
             float distanceInMeters = results[0];
             // se establecen 100 metros como distancia maxima, por temas de error en la captura
             isWithin100m = distanceInMeters < 100;
         }
     }
-    private void gestionarRegistro(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
-        String geoLocStatus = objSnapshot.child("geolocStatus").getValue(String.class);
+    private void gestionarRegistro(Evento evento, Result result, String claveActPer, String idRegistro) {
+        String geoLocStatus = evento.geolocStatus;
         if (geoLocStatus.equals("1")) {
             if (latLng != null && isWithin100m == false) {
                 resultData.setText("Fuera de rango del evento");
@@ -319,22 +357,28 @@ public class QRScannerActivity extends AppCompatActivity {
                 reloadActivity();
             }
             if (latLng != null && isWithin100m == true) {
-                Registro registro = (Registro) crearRegistro.CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
+                Registro registro = (Registro) crearRegistro.CrearObjetoRegistro(evento, result, claveActPer, idRegistro);
                 final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Registro");
                 myRef2.getRef().child(idRegistro).setValue(registro);
 
                 resultData.setText("Registro Exitoso");
                 closeEventListeners();
-                reloadActivity();
+                Intent intent = new Intent(QRScannerActivity.this, MainActivity.class);
+                startActivity(intent);
+                intent.putExtra("tab", 1);
+                this.finish();
             }
         } else {
-            Registro registro2 = (Registro) crearRegistro.CrearObjetoRegistro(objSnapshot, result, claveActPer, idRegistro);
+            Registro registro2 = (Registro) crearRegistro.CrearObjetoRegistro(evento, result, claveActPer, idRegistro);
             final DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Registro");
             myRef3.getRef().child(idRegistro).setValue(registro2);
 
             resultData.setText("Registro Exitoso");
             closeEventListeners();
-            reloadActivity();
+            Intent intent = new Intent(QRScannerActivity.this, MainActivity.class);
+            intent.putExtra("tab", 1);
+            startActivity(intent);
+            this.finish();
         }
     }
     private void closeEventListeners() {
@@ -426,4 +470,6 @@ public class QRScannerActivity extends AppCompatActivity {
             }
         }
     }
+
+
 }

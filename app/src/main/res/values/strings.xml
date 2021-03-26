@@ -20,8 +20,8 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="comentarios">!Gracias por ser uno de los primeros en probar  QuickId!
-        Durante estos primeros dias, estamos impacientes por recibir comentarios
-        que nos ayudaran muchisimo. ¿Tienes ideas, sugerencias o algun error encontrado?
+        Durante estos dias estamos impacientes por recibir comentarios.
+        ¿Tienes ideas, sugerencias o algun error encontrado?
         Esto nos ayudara a mejorar. Si es asi porfavor compartelas mas abajo.</string>
     <string name="confirmar"> Se creara el evento en la lista de eventos, para visualizar la imagen QR
      y estadisticas se debera pulsar sobre el nuevo item.</string>
