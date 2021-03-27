@@ -21,18 +21,26 @@
             "package_name": "com.grade.quickid",
             "certificate_hash": "c910f872a151663ece4963757d0826f0b3eb488e"
           }
+        },
+        {
+          "client_id": "325202218608-k9dm65idudht590mhtrn6ccsfhimdos3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grade.quickid",
+            "certificate_hash": "a990493b6f216d63212f6321119822ef62b8204d"
+          }
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAmCdBGk1BjofC0_XXVPnIPzcnB3UCYuxQ"
+          "current_key": "AIzaSyD9mpNJTl83KJDj2zjkkj7GbPCYNNh4wEA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "325202218608-of01uq1o2l6et8liuvu87cf79jivna33.apps.googleusercontent.com",
+              "client_id": "325202218608-omid265niarr31ht6de06sp1nqni6td2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

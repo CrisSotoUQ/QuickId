@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(
-                            GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("325202218608-omid265niarr31ht6de06sp1nqni6td2.apps.googleusercontent.com")
+                            GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("325202218608-vlc12f68e2mco7donpnpe5mupvt7uie4.apps.googleusercontent.com")
                             .requestEmail()
                             .build();
                     GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(LoginActivity.this, googleSignInOptions);
@@ -102,10 +102,10 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * por si sucede error
      */
-    private void ShowAlert() {
+    private void ShowAlert(Task task) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Error");
-        builder.setMessage("Regresando...");
+        builder.setMessage("Regresando..."+ task.getException()+ " "+ task.getResult());
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -149,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
                                         personaController.crearPersona(account,task);
                                         ShowMain();
                                     } else {
-                                        ShowAlert();
+                                        ShowAlert(task);
                                     }
                                 }
                             }

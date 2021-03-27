@@ -28,9 +28,9 @@
 
     <item android:title="Otros">
         <item
-            android:id="@+id/Contactanos"
+            android:id="@+id/contacto"
             android:icon="@drawable/contactus"
-            android:title="Contáctanos" />
+            android:title="Contacto" />
     </item>
 
 

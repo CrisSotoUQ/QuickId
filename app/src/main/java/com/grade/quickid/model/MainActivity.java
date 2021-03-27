@@ -33,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.grade.quickid.R;
 import com.grade.quickid.model.comentarios.infraestructure.ComentarioActivity;
 import com.grade.quickid.model.eventos.aplication.CrearEventoActivity;
+import com.grade.quickid.model.personas.infrastructure.ContactoActivity;
 import com.grade.quickid.model.registros.infraestructure.QRScannerActivity;
 import com.grade.quickid.model.personas.infrastructure.LoginActivity;
 import com.squareup.picasso.Picasso;
@@ -200,6 +201,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             case R.id.menuComentarios: {
                 Intent intent = new Intent(MainActivity.this, ComentarioActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+            }
+            case R.id.contacto: {
+                Intent intent = new Intent(MainActivity.this, ContactoActivity.class);
                 startActivity(intent);
                 finish();
                 break;

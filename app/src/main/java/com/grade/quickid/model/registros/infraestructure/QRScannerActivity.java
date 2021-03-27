@@ -175,7 +175,7 @@ public class QRScannerActivity extends AppCompatActivity {
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
                                     System.out.println("Fallo la lectura: " + error.getCode());
-
+                                    closeEventListener();
                                 }
                             };
                             FirebaseDatabase firebaseDatabase2 = FirebaseDatabase.getInstance();

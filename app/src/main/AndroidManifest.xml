@@ -19,16 +19,20 @@
     <application
         android:name=".model.Persistencia"
         android:allowBackup="true"
-        android:label="QuickId"
         android:icon="@mipmap/ic_launcher"
+        android:label="QuickId"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".model.personas.infrastructure.ContactoActivity"
+            android:label="@string/title_activity_contacto"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".model.comentarios.infraestructure.ComentarioActivity"
             android:label="@string/title_activity_comentario"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".model.eventos.infraestructure.CargarDatosCsvActivity" />
         <activity android:name=".model.eventos.infraestructure.ConfirmarEventoActivity" />
         <!--
