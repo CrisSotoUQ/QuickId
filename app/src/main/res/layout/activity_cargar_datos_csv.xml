@@ -22,11 +22,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:layout_marginTop="20dp"
                 android:text="Cargar Csv"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.068"
-                tools:layout_editor_absoluteX="0dp" />
+                tools:layout_editor_absoluteX="10dp" />
 
 
             <Button
@@ -41,16 +40,21 @@
                 app:layout_constraintHorizontal_bias="0.846"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.878" />
+                app:layout_constraintVertical_bias="0.894" />
 
             <ScrollView
-                android:id="@+id/scrollView3"
-                android:layout_width="303dp"
-                android:layout_height="443dp"
+                android:id="@+id/scrollViewCsv"
+                android:layout_width="193dp"
+                android:layout_height="341dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:foreground="@drawable/correos"
                 app:layout_constraintBottom_toTopOf="@+id/btn_csvSiguiente"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/buttonCsv" >
+                app:layout_constraintTop_toBottomOf="@+id/textView12"
+                app:layout_constraintVertical_bias="0.091">
 
                 <TextView
                     android:id="@+id/textView_csvResult"
@@ -60,6 +64,19 @@
                     android:scrollbars="vertical"
                     android:text="The result will be displayed here." />
             </ScrollView>
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="311dp"
+                android:layout_height="71dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="25dp"
+                android:text="La lista debera ser cargada en el siguiente formato, solo correos de los participantes en la primera columna en formato csv."
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.62"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonCsv" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

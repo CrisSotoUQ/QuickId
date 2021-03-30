@@ -149,6 +149,7 @@ public class QRScannerActivity extends AppCompatActivity {
                                                 } else {
                                                     resultData.setText("Correo no encontrado");
                                                     closeEventListener();
+                                                    reloadActivity();
                                                     vibrar();
                                                     break;
 
@@ -345,7 +346,7 @@ public class QRScannerActivity extends AppCompatActivity {
             Location.distanceBetween(latEvento, longEvento, latLng.latitude, latLng.longitude, results);
             float distanceInMeters = results[0];
             // se establecen 100 metros como distancia maxima, por temas de error en la captura
-            isWithin100m = distanceInMeters < 100;
+            isWithin100m = distanceInMeters < 1000;
         }
     }
     private void gestionarRegistro(Evento evento, Result result, String claveActPer, String idRegistro) {

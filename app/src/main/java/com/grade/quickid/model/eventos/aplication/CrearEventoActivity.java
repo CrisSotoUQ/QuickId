@@ -250,6 +250,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
 
                 }
         });
+        etHoraEntrada.setKeyListener(null);
+        etHoraSalida.setKeyListener(null);
         switchGeolocalizacion = (Switch) findViewById(R.id.switch1_geolocalizacion);
         switchGeolocalizacion .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

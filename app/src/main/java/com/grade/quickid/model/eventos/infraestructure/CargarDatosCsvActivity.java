@@ -13,6 +13,7 @@ import android.provider.OpenableColumns;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ public class CargarDatosCsvActivity extends AppCompatActivity {
     String imagenOriginal;
     TextView textViewData;
     String line = " ";
+    ScrollView scrollViewCsv;
     private int READ_REQUEST_CODE = 100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class CargarDatosCsvActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cargar_datos_csv);
         textViewData = findViewById(R.id.textView_csvResult);
         btn_cargarCsv = (Button) findViewById(R.id.buttonCsv);
+        scrollViewCsv = (ScrollView) findViewById(R.id.scrollViewCsv);
         btn_siguiente = (Button) findViewById(R.id.btn_csvSiguiente);
         textViewData.setMovementMethod(new ScrollingMovementMethod());
         receiveEvento = (Evento) getIntent().getSerializableExtra("Evento");
@@ -60,7 +63,7 @@ public class CargarDatosCsvActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent act = new Intent(CargarDatosCsvActivity.this, ConfirmarEventoActivity.class);
 
-                if (!receiveEvento.getListaPersonas().equals(null)){
+                if (!receiveEvento.getListaPersonas().isEmpty()){
                     act.putExtra("Evento", receiveEvento);
                     act.putExtra("Original",imagenOriginal);
                     if(update !=0){
@@ -69,7 +72,7 @@ public class CargarDatosCsvActivity extends AppCompatActivity {
                     startActivity(act);
 
             }else{
-                    Toast.makeText(CargarDatosCsvActivity.this,"Es necesario cargar el archivo CSV",Toast.LENGTH_LONG);
+                    Toast.makeText(CargarDatosCsvActivity.this,"Es necesario cargar el archivo CSV",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -79,7 +82,7 @@ public class CargarDatosCsvActivity extends AppCompatActivity {
 
                 Intent intent = new  Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
+                intent.setType("text/comma-separated-values");
                 startActivityForResult(intent, READ_REQUEST_CODE);
             }
         });
@@ -149,6 +152,7 @@ public class CargarDatosCsvActivity extends AppCompatActivity {
             concat += "\r\n" +line;
         }
         textViewData.setText(concat);
+        scrollViewCsv.setForeground(null);
         br.close();
     }
 
