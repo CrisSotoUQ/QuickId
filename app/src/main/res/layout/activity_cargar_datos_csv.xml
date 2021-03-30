@@ -32,6 +32,7 @@
                 android:id="@+id/btn_csvSiguiente"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="50dp"
                 android:text="Siguiente"
@@ -39,14 +40,15 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.846"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.894" />
+                app:layout_constraintTop_toBottomOf="@+id/scrollViewCsv" />
 
             <ScrollView
                 android:id="@+id/scrollViewCsv"
-                android:layout_width="193dp"
-                android:layout_height="341dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginEnd="30dp"
                 android:layout_marginBottom="20dp"
                 android:foreground="@drawable/correos"
                 app:layout_constraintBottom_toTopOf="@+id/btn_csvSiguiente"
@@ -67,12 +69,12 @@
 
             <TextView
                 android:id="@+id/textView12"
-                android:layout_width="311dp"
-                android:layout_height="71dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="25dp"
-                android:text="La lista debera ser cargada en el siguiente formato, solo correos de los participantes en la primera columna en formato csv."
+                android:text="Carga una lista con los participantes del evento,  los correos en la primera columna en un archivo csv."
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.62"
                 app:layout_constraintStart_toStartOf="parent"

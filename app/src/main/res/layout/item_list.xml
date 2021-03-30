@@ -13,7 +13,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/id_cardview"
         android:layout_width="390dp"
-        android:layout_height="105dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
@@ -21,7 +21,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="104dp"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <com.makeramen.roundedimageview.RoundedImageView
@@ -34,8 +34,8 @@
                 app:riv_oval="true" />
 
             <LinearLayout
-                android:layout_width="298dp"
-                android:layout_height="96dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <TextView
@@ -75,14 +75,14 @@
 
                     <TextView
                         android:id="@+id/textView3"
-                        android:layout_width="8dp"
+                        android:layout_width="10dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Fecha :" />
 
                     <TextView
                         android:id="@+id/txt_fecha"
-                        android:layout_width="207dp"
+                        android:layout_width="210dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="left"
@@ -96,19 +96,18 @@
 
                     <TextView
                         android:id="@+id/txt_hora_registro_nombre"
-                        android:layout_width="94dp"
+                        android:layout_width="10dp"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:text="Hora registro :" />
+                        android:text="Hora registro :"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/txt_hora_registro"
-                        android:layout_width="94dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="210dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:visibility="gone"
                         android:text="Hora registro :"
-                        />
+                        android:visibility="gone" />
 
                 </LinearLayout>
 

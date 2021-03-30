@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="25dp"
         android:text="Configuracion evento terminada!"
         android:textColor="#000000"
@@ -47,12 +47,11 @@
         android:layout_width="150dp"
         android:layout_height="44dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="100dp"
         android:background="#FFFFFF"
         android:text="Crear"
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="@+id/textView8"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        tools:layout_editor_absoluteY="416dp" />
 
     <Button
         android:id="@+id/btn_cancelarEvento"

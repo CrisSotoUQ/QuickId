@@ -82,7 +82,7 @@ public class CargarDatosCsvActivity extends AppCompatActivity {
 
                 Intent intent = new  Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("text/comma-separated-values");
+                intent.setType("text/*");
                 startActivityForResult(intent, READ_REQUEST_CODE);
             }
         });
