@@ -361,12 +361,12 @@ public class QRScannerActivity extends AppCompatActivity {
                 Registro registro = (Registro) crearRegistro.CrearObjetoRegistro(evento, result, claveActPer, idRegistro);
                 final DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Registro");
                 myRef2.getRef().child(idRegistro).setValue(registro);
-
                 resultData.setText("Registro Exitoso");
                 closeEventListeners();
                 Intent intent = new Intent(QRScannerActivity.this, MainActivity.class);
-                startActivity(intent);
                 intent.putExtra("tab", 1);
+                startActivity(intent);
+
                 this.finish();
             }
         } else {

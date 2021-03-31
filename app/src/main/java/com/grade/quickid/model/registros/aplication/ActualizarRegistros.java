@@ -11,12 +11,13 @@ import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.registros.domain.Registro;
 
 public class ActualizarRegistros {
-    ValueEventListener valueEventListenerPersonaEvento;
+    ValueEventListener valueEventListenerPersonaEvento = null;
     DatabaseReference myRefDatosPersonaEvento ;
     DatabaseReference myRef;
     DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase;
   public  void ActualizarRegistros(Evento evento, Context context){
+      String idEvento = evento.getIdEvento();
       firebaseDatabase = FirebaseDatabase.getInstance();
       // firebaseDatabase.setPersistenceEnabled(true);
       databaseReference= firebaseDatabase.getReference();
@@ -44,5 +45,5 @@ public class ActualizarRegistros {
     };
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     myRefDatosPersonaEvento = firebaseDatabase.getInstance().getReference().child("Registro");
-    myRefDatosPersonaEvento.orderByChild("idEvento").equalTo(evento.getIdEvento()).addValueEventListener(valueEventListenerPersonaEvento);
+    myRefDatosPersonaEvento.orderByChild("idEvento").equalTo(idEvento).addValueEventListener(valueEventListenerPersonaEvento);
 }}

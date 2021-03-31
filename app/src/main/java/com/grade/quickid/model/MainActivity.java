@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imagen = intent.getStringExtra("imagen");
         nombre = intent.getStringExtra("nombre");
         tab= intent.getIntExtra("tab",0);
+
         //Guardar datos persistentes de session
         if (email != null) {
             settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -149,13 +150,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+        if (tab == 1){
+            tabLayout.getTabAt(1).select();
+        }
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         inicializarFirebase();
         // focus en registros
-        if (tab == 1){
-            TabLayout.Tab tab = tabLayout.getTabAt(1);
-            tab.select();
-        }
+
+
 
     }
     private void setup(String email, String imagen, String nombre) {

@@ -46,6 +46,7 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
     String imagenOriginal;
     CrearEstadistica crearEstadistica = new CrearEstadistica();
     private int update;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,8 +60,8 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
         receive = (Evento) getIntent().getSerializableExtra("Evento");
         mImageUri = Uri.parse(receive.getUrlImagen());
         imagenOriginal = getIntent().getStringExtra("Original");
-        update = getIntent().getIntExtra("Update",0);
-        if (update !=0){
+        update = getIntent().getIntExtra("Update", 0);
+        if (update != 0) {
             titulo.setText("Actualizacion evento terminada!");
             btn_CrearEvento.setText("Actualizar");
         }
@@ -79,17 +80,21 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
             public void onClick(View v) {
 
                 if (mImageUri != null) {
-                    mProgress.setMessage("Creando Evento");
+                    if (update == 0) {
+                        mProgress.setMessage("Creando Evento");
+                    } else {
+                        mProgress.setMessage("Actualizando Evento");
+                    }
                     mProgress.show();
-                     if(mImageUri.toString().equals(imagenOriginal)){
-                         actualizarEventoImagenOriginal(imagenOriginal);
-                         mProgress.dismiss();
-                         Toast.makeText(ConfirmarEventoActivity.this, "Evento Actualizado Satisfactoriamente", Toast.LENGTH_LONG).show();
-                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                         // Closing all the Activities, clear the back stack.
-                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                         startActivity(intent);
-                     }else{
+                    if (mImageUri.toString().equals(imagenOriginal)) {
+                        actualizarEventoImagenOriginal(imagenOriginal);
+                        mProgress.dismiss();
+                        Toast.makeText(ConfirmarEventoActivity.this, "Evento Actualizado Satisfactoriamente", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        // Closing all the Activities, clear the back stack.
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    } else {
 
                         final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
                         fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -134,7 +139,7 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
         myRef = databaseReference.child("Evento");
         receive.setUrlImagen(Uri);
         ActualizarRegistros actualizarRegistros = new ActualizarRegistros();
-        actualizarRegistros.ActualizarRegistros(receive,this.getApplicationContext());
+        actualizarRegistros.ActualizarRegistros(receive, this.getApplicationContext());
         myRef.child(receive.getIdEvento()).setValue(receive);
         finish();
     }
@@ -143,20 +148,22 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
         FirebaseApp.initializeApp(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         // firebaseDatabase.setPersistenceEnabled(true);
-        databaseReference= firebaseDatabase.getReference();
+        databaseReference = firebaseDatabase.getReference();
     }
-    private String getFileExtension(Uri uri){
+
+    private String getFileExtension(Uri uri) {
         ContentResolver cR = getContentResolver();
-        MimeTypeMap mime =  MimeTypeMap.getSingleton();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
+
     private void actualizarEventoImagenChanged(String Uri) {
         // inserto el objeto Registro
         myRef = databaseReference.child("Evento");
         myRef2 = databaseReference.child("Estadistica");
         receive.setUrlImagen(Uri);
         ActualizarRegistros actualizarRegistros = new ActualizarRegistros();
-        actualizarRegistros.ActualizarRegistros(receive,this.getApplicationContext());
+        actualizarRegistros.ActualizarRegistros(receive, this.getApplicationContext());
         myRef.child(receive.getIdEvento()).setValue(receive);
         finish();
     }

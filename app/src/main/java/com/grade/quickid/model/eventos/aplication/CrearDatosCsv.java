@@ -1,10 +1,12 @@
 package com.grade.quickid.model.eventos.aplication;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import com.google.firebase.database.DataSnapshot;
@@ -18,8 +20,17 @@ import com.grade.quickid.model.eventos.infraestructure.fragments.FragmentEventos
 import com.grade.quickid.model.personas.domain.Persona;
 import com.grade.quickid.model.registros.domain.Registro;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Clase que se encarga de generar los datos csv correspondientes a cada evento
@@ -39,6 +50,7 @@ public class CrearDatosCsv {
                     data.append("Nombre Evento: " + evento.getNombre());
                     data.append("\n" + "Lugar Evento: " + evento.getLugar());
                     data.append("\n");
+                    data.append("\n");
                     data.append("\n" + "Numero ,   Correo,         Apellido,          Nombre,           Fecha,   Hora entrada");
 
                     for (DataSnapshot objSnapshot : snapshot.getChildren()) {
@@ -57,22 +69,32 @@ public class CrearDatosCsv {
                                 try {
 
                                     if (data != null) {
-                                        FileOutputStream out = context.openFileOutput("data.csv", Context.MODE_PRIVATE);
+                                        String formato = "yyyy-MM-dd";
+                                        Calendar calendar = Calendar.getInstance();
+                                        Date date = calendar.getTime();
+                                        SimpleDateFormat sdf;
+                                        sdf = new SimpleDateFormat(formato);
+                                        sdf.setTimeZone(TimeZone.getTimeZone("America/Mexico_City"));
+                                        sdf.format(date);
+                                        FileOutputStream out = context.openFileOutput(evento.getNombre()+".csv", Context.MODE_PRIVATE);
                                         out.write((data.toString()).getBytes());
                                         out.close();
                                         Context auxContext = context;
-                                        File filelocation = new File(context.getFilesDir(), "data.csv");
+                                        File filelocation = new File(context.getFilesDir(), evento.getNombre()+".csv");
                                         Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", filelocation);
 
                                         Intent fileIntent = new Intent(Intent.ACTION_SEND);
                                         fileIntent.setType("text/csv");
-                                        fileIntent.putExtra(Intent.EXTRA_SUBJECT, evento.getNombre());
+                                        fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Reporte : "+evento.getNombre()+" "+ sdf.format(date));
                                         fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                         fileIntent.putExtra(Intent.EXTRA_STREAM, path);
+                                        fileIntent.putExtra(Intent.EXTRA_TEXT, "QuickId.");
                                         context.startActivity(Intent.createChooser(fileIntent, "Send mail"));
+
                                         myRefDatosPersonaEvento.removeEventListener(mEventListnerPersonaEvento);
                                         myRefDatosRegistroEvento.removeEventListener(mEventListnerRegistroEvento);
                                     }
+
                                     myRefDatosPersonaEvento.removeEventListener(mEventListnerPersonaEvento);
                                     myRefDatosRegistroEvento.removeEventListener(mEventListnerRegistroEvento);
                                 } catch (Exception e) {

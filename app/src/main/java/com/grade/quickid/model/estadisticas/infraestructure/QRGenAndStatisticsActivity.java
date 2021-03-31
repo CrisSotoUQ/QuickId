@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -281,6 +282,13 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
         try {
+            String formato = "yyyy-MM-dd";
+            Calendar calendar = Calendar.getInstance();
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf;
+            sdf = new SimpleDateFormat(formato);
+            sdf.setTimeZone(TimeZone.getTimeZone("America/Mexico_City"));
+
             File file = new File(getApplicationContext().getFilesDir(), File.separator + "Evento.jpg");
             FileOutputStream fOut = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
@@ -290,7 +298,9 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
             final Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             Uri photoUri = FileProvider.getUriForFile(getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider", file);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Imagen QR : "+nombreActividad+" "+ sdf.format(date));
             intent.putExtra(Intent.EXTRA_STREAM, photoUri);
+            intent.putExtra(Intent.EXTRA_TEXT, "QuickId.");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             intent.setType("image/jpg");
@@ -323,10 +333,9 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
             float x_coord = (qrBits.getWidth() - width)/2;
             cs.drawText(yourText, x_coord, height+20f, tPaint); // 15f is to put space between top edge and the text, if you want to change it, you can
             try {
-                dest.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(new File("/sdcard/ImageAfterAddingText.jpg")));
-                // dest is Bitmap, if you want to preview the final image, you can display it on screen also before saving
                 imgQR.setImageBitmap(dest);
-            } catch (FileNotFoundException e) {
+                // dest is Bitmap, if you want to preview the final image, you can display it on screen also before saving
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
