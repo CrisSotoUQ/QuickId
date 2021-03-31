@@ -76,7 +76,6 @@
                     android:cursorVisible="false"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:text="EditText not editable"
                     android:hint="@string/formato_hora"
                     android:inputType="time"
                     app:layout_constraintLeft_toLeftOf="parent" />
@@ -112,7 +111,6 @@
                     android:cursorVisible="false"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:text="EditText not editable"
                     android:hint="@string/formato_hora"
                     android:inputType="time"
                     app:layout_constraintLeft_toLeftOf="parent" />

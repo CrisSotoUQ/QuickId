@@ -10,7 +10,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -42,6 +45,7 @@ import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.registros.domain.Registro;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -56,7 +60,6 @@ import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
 public class QRGenAndStatisticsActivity extends AppCompatActivity {
-    private TextView textViewNombreActividad;
     private TextView contadorRegistrosFechaActual;
     private TextView contadorRegistrosHistorico;
     private TextView contadorInasistentes;
@@ -84,7 +87,6 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_q_r_generator);
         imgQR = findViewById(R.id.imageView_qr);
-        textViewNombreActividad = (TextView) findViewById(R.id.textViewNombreActividad);
         contadorRegistrosFechaActual = findViewById(R.id.contadorRegistrosFechaActual);
         contadorInasistentes = findViewById(R.id.contadorInasistentesFechaActual);
         contadorRegistrosHistorico = findViewById(R.id.contadorRegistrosHistorico);
@@ -96,7 +98,6 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
 
         createChart();
         nombreActividad = intent.getStringExtra("nombre");
-        textViewNombreActividad.setText(nombreActividad);
         titulo();
 
         // genera el Qrcode
@@ -132,7 +133,7 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
                                 v_registrosHistorico = 0;
-                                v_RegistrosFechaActual=0;
+                                v_RegistrosFechaActual = 0;
                                 arrayMes.clear();
                                 arrayAnio.clear();
                                 for (DataSnapshot objSnapshot2 : snapshot.getChildren()) {
@@ -151,7 +152,7 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                                     String anio = st.nextToken();
                                     String anioActual = Integer.toString(calendar.get(Calendar.YEAR));
                                     //Estadistica para el mes
-                                    if(anioActual.equals(anio)) {
+                                    if (anioActual.equals(anio)) {
                                         if (arrayMes.containsKey(mes)) {
                                             arrayMes.put(mes, arrayMes.get(mes) + 1);
                                         } else {
@@ -167,9 +168,12 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
                                 contadorRegistrosHistorico.setText(String.valueOf(v_registrosHistorico));
                                 contadorRegistrosFechaActual.setText(String.valueOf(v_RegistrosFechaActual));
                                 // obtengo la cantidad de inasistentes
-                                contadorAsistentes = act.getListaPersonas().size() - v_RegistrosFechaActual;
-                                if (!act.getListaPersonas().isEmpty()) {
-                                    contadorInasistentes.setText(String.valueOf(contadorAsistentes));
+
+                                if (act.getCargueArchivoStatus().equals("1")) {
+                                    contadorAsistentes = act.getListaPersonas().size() - v_RegistrosFechaActual;
+                                    if (!act.getListaPersonas().isEmpty()) {
+                                        contadorInasistentes.setText(String.valueOf(contadorAsistentes));
+                                    }
                                 }
                             }
                             createBarchart();
@@ -204,12 +208,13 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             int currentMonth = calendar.get(Calendar.MONTH) + 1;
             visitorsByDate.add(new BarEntry(currentMonth, 0));
-        }else{
-        for (Map.Entry<String, Integer> entry : arrayMes.entrySet()) {
-            String key = entry.getKey();
-            Integer contador = entry.getValue();
-            visitorsByDate.add(new BarEntry(Integer.parseInt(key), contador));
-        }}
+        } else {
+            for (Map.Entry<String, Integer> entry : arrayMes.entrySet()) {
+                String key = entry.getKey();
+                Integer contador = entry.getValue();
+                visitorsByDate.add(new BarEntry(Integer.parseInt(key), contador));
+            }
+        }
 
         BarDataSet barDataSet = new BarDataSet(visitorsByDate, "Asistentes por mes");
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
@@ -228,24 +233,24 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             int currentYear = calendar.get(Calendar.YEAR);
             visitantes.add(new PieEntry(currentYear, "0"));
-        }else{
+        } else {
             for (Map.Entry<String, Integer> entry : arrayAnio.entrySet()) {
                 String key = entry.getKey();
                 Integer contador = entry.getValue();
                 visitantes.add(new PieEntry(Integer.parseInt(key), String.valueOf(contador)));
-            }}
-            PieDataSet pieDataSet = new PieDataSet(visitantes, "Asistentes por año");
-            pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-            pieDataSet.setValueTextColor(Color.WHITE);
-            pieDataSet.setValueTextSize(10f);
-            PieData pieData = new PieData(pieDataSet);
-            pieChart.setData(pieData);
-            pieChart.getDescription().setText("Quickid");
-            pieChart.setCenterText("Asistentes");
-            pieChart.invalidate();
-            pieChart.animate();
+            }
         }
-
+        PieDataSet pieDataSet = new PieDataSet(visitantes, "Asistentes por año");
+        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        pieDataSet.setValueTextColor(Color.WHITE);
+        pieDataSet.setValueTextSize(10f);
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.setData(pieData);
+        pieChart.getDescription().setText("Quickid");
+        pieChart.setCenterText("Asistentes");
+        pieChart.invalidate();
+        pieChart.animate();
+    }
 
 
     private void pedirPermisos() {
@@ -303,7 +308,28 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         QRGEncoder qrgEncoder = new QRGEncoder(actividad, null, QRGContents.Type.TEXT, 2000);
         try {
             Bitmap qrBits = qrgEncoder.getBitmap();
-            imgQR.setImageBitmap(qrBits);
+            Bitmap dest = Bitmap.createBitmap(qrBits.getWidth(), qrBits.getHeight(), Bitmap.Config.ARGB_8888);
+
+            String yourText = nombreActividad;
+
+            Canvas cs = new Canvas(dest);
+            Paint tPaint = new Paint();
+            tPaint.setTextSize(120);
+            tPaint.setColor(Color.BLACK);
+            tPaint.setStyle(Paint.Style.FILL);
+            cs.drawBitmap(qrBits, 0f, 0f, null);
+            float height = tPaint.measureText("yY");
+            float width = tPaint.measureText(yourText);
+            float x_coord = (qrBits.getWidth() - width)/2;
+            cs.drawText(yourText, x_coord, height+20f, tPaint); // 15f is to put space between top edge and the text, if you want to change it, you can
+            try {
+                dest.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(new File("/sdcard/ImageAfterAddingText.jpg")));
+                // dest is Bitmap, if you want to preview the final image, you can display it on screen also before saving
+                imgQR.setImageBitmap(dest);
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -345,8 +345,8 @@ public class QRScannerActivity extends AppCompatActivity {
             float[] results = new float[1];
             Location.distanceBetween(latEvento, longEvento, latLng.latitude, latLng.longitude, results);
             float distanceInMeters = results[0];
-            // se establecen 100 metros como distancia maxima, por temas de error en la captura
-            isWithin100m = distanceInMeters < 1000;
+            // se establecen 500 metros como distancia maxima, por temas de error en la captura
+            isWithin100m = distanceInMeters < 500;
         }
     }
     private void gestionarRegistro(Evento evento, Result result, String claveActPer, String idRegistro) {

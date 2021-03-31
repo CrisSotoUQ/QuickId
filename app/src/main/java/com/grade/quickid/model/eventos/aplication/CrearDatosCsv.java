@@ -39,7 +39,7 @@ public class CrearDatosCsv {
                     data.append("Nombre Evento: " + evento.getNombre());
                     data.append("\n" + "Lugar Evento: " + evento.getLugar());
                     data.append("\n");
-                    data.append("\n" + "Numero ;Correo;Apellido;Nombre;Fecha;Hora entrada");
+                    data.append("\n" + "Numero ,   Correo,         Apellido,          Nombre,           Fecha,   Hora entrada");
 
                     for (DataSnapshot objSnapshot : snapshot.getChildren()) {
                         Registro ra = objSnapshot.getValue(Registro.class);
@@ -50,9 +50,9 @@ public class CrearDatosCsv {
                                 contador = contador+1;
                                 for (DataSnapshot objSnapshot : snapshot1.getChildren()) {
                                     Persona per = objSnapshot.getValue(Persona.class);
-                                    data.append("\n" + String.valueOf(contador) + ";" + String.valueOf(per.getCorreo()) + ";" + String.valueOf(per.getApellido())
-                                            + ";" + String.valueOf(per.getNombre()) + ";" + String.valueOf(ra.getFechaRegistro())
-                                            + ";" + String.valueOf(ra.getHoraRegistro()));
+                                    data.append("\n" + String.valueOf(contador) + "," + String.valueOf(per.getCorreo()) + "," + String.valueOf(per.getApellido())
+                                            + "," + String.valueOf(per.getNombre()) + "," + String.valueOf(ra.getFechaRegistro())
+                                            + "," + String.valueOf(ra.getHoraRegistro()));
                                 }
                                 try {
 
@@ -66,7 +66,7 @@ public class CrearDatosCsv {
 
                                         Intent fileIntent = new Intent(Intent.ACTION_SEND);
                                         fileIntent.setType("text/csv");
-                                        fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
+                                        fileIntent.putExtra(Intent.EXTRA_SUBJECT, evento.getNombre());
                                         fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                         fileIntent.putExtra(Intent.EXTRA_STREAM, path);
                                         context.startActivity(Intent.createChooser(fileIntent, "Send mail"));

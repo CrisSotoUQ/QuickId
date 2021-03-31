@@ -43,6 +43,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.UUID;
+
 /*
 @auth Cristian Camilo Soto
  */
@@ -100,7 +101,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         imageview_photo = findViewById(R.id.imageView_nuevoEvento);
         btn_dialog_subirImagen = findViewById(R.id.btn_cargarImagen);
         etHoraEntrada = findViewById(R.id.et_mostrar_hora_picker_entrada);
-        etHoraSalida= findViewById(R.id.et_mostrar_hora_picker_salida);
+        etHoraSalida = findViewById(R.id.et_mostrar_hora_picker_salida);
         txt_nombreActividad = (EditText) findViewById(R.id.txt_nombreActividad);
         txt_nombreLugar = (EditText) findViewById(R.id.txt_lugarActividad);
         btn_siguiente = findViewById(R.id.btn_Siguiente);
@@ -163,7 +164,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         btn_TimePickerHoraEntrada.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               obtenerHoraentrada();
+                obtenerHoraentrada();
             }
         });
         btn_TimePickerHoraSalida.setOnClickListener(new View.OnClickListener() {
@@ -200,7 +201,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                             startActivity(act);
                         }
                     }
-                }  if (activarGeolocalizacion.equals("0") && activarCargueCsv.equals("1")){
+                }
+                if (activarGeolocalizacion.equals("0") && activarCargueCsv.equals("1")) {
                     if (nombreActividad.equals("") || nombreLugar.equals("") || mImageUri == null) {
                         validacion();
                         return;
@@ -223,37 +225,37 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         }
                     }
                 }
-              if (activarGeolocalizacion.equals("1") && activarCargueCsv.equals("0") ||
-                      activarGeolocalizacion.equals("1") && activarCargueCsv.equals("1")){
-                if (nombreActividad.equals("") || nombreLugar.equals("") || mImageUri == null) {
-                    validacion();
-                    return;
-                } else {
-                    //si estamos en un update
-                    if (update != 0) {
-                        Intent act = new Intent(CrearEventoActivity.this, MapsEventoActivity.class);
-                        retornoObjetoActividadUpdate();
-                        act.putExtra("Evento", receiveEvento);
-                        act.putExtra("Update", 1);
-                        act.putExtra("Original", imagenOriginal);
-                        startActivity(act);
-                        // si estamos creando
+                if (activarGeolocalizacion.equals("1") && activarCargueCsv.equals("0") ||
+                        activarGeolocalizacion.equals("1") && activarCargueCsv.equals("1")) {
+                    if (nombreActividad.equals("") || nombreLugar.equals("") || mImageUri == null) {
+                        validacion();
+                        return;
                     } else {
-                        Evento evento = (Evento) retornoObjetoActividad();
-                        // envio en el intent al maps
-                        Intent act = new Intent(CrearEventoActivity.this, MapsEventoActivity.class);
-                        act.putExtra("Evento", evento);
-                        startActivity(act);
+                        //si estamos en un update
+                        if (update != 0) {
+                            Intent act = new Intent(CrearEventoActivity.this, MapsEventoActivity.class);
+                            retornoObjetoActividadUpdate();
+                            act.putExtra("Evento", receiveEvento);
+                            act.putExtra("Update", 1);
+                            act.putExtra("Original", imagenOriginal);
+                            startActivity(act);
+                            // si estamos creando
+                        } else {
+                            Evento evento = (Evento) retornoObjetoActividad();
+                            // envio en el intent al maps
+                            Intent act = new Intent(CrearEventoActivity.this, MapsEventoActivity.class);
+                            act.putExtra("Evento", evento);
+                            startActivity(act);
+                        }
                     }
                 }
-            }
 
-                }
+            }
         });
         etHoraEntrada.setKeyListener(null);
         etHoraSalida.setKeyListener(null);
         switchGeolocalizacion = (Switch) findViewById(R.id.switch1_geolocalizacion);
-        switchGeolocalizacion .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchGeolocalizacion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -272,7 +274,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         });
     }
 
-    private  void obtenerHoraentrada() {
+    private void obtenerHoraentrada() {
         TimePickerDialog recogerHora = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -288,7 +290,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                     AM_PM = "p.m.";
                 }
                 //Muestro la hora con el formato deseado
-                 etHoraEntrada .setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
+                etHoraEntrada.setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
             }
             //Estos valores deben ir en ese orden
             //Al colocar en false se muestra en formato 12 horas y true en formato 24 horas
@@ -297,7 +299,8 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
 
         recogerHora.show();
     }
-    private  void obtenerHoraSalida() {
+
+    private void obtenerHoraSalida() {
         TimePickerDialog recogerHora = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -313,7 +316,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                     AM_PM = "p.m.";
                 }
                 //Muestro la hora con el formato deseado
-                etHoraSalida .setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
+                etHoraSalida.setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
             }
             //Estos valores deben ir en ese orden
             //Al colocar en false se muestra en formato 12 horas y true en formato 24 horas
@@ -363,12 +366,10 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                 if (ContextCompat.checkSelfPermission(CrearEventoActivity.this,
                         Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     try {
-
-
                         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         startActivityForResult(camera, CAMERA_INTENT);
-                    }catch (Exception e){
-                        Toast.makeText(CrearEventoActivity.this, "Telefono incompatible"+e.toString(),Toast.LENGTH_LONG);
+                    } catch (Exception e) {
+                        Toast.makeText(CrearEventoActivity.this, "Telefono incompatible con funcionalidad de tomar fotos", Toast.LENGTH_LONG).show();
                     }
                     dialog.dismiss();
 
@@ -406,26 +407,31 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        try {
-        if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            mImageUri = data.getData();
-            imageview_photo.setVisibility(View.VISIBLE);
-            imageview_photo.setImageURI(mImageUri);
-            // hago un resize
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
-            mImageUri = getImageUri(this, bitmap);
 
+        if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            try {
+                mImageUri = data.getData();
+                imageview_photo.setVisibility(View.VISIBLE);
+                imageview_photo.setImageURI(mImageUri);
+                // hago un resize
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+                mImageUri = getImageUri(this, bitmap);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
         if (requestCode == CAMERA_INTENT && resultCode == RESULT_OK) {
-            image = (Bitmap) data.getExtras().get("data");
-            imageview_photo.setVisibility(View.VISIBLE);
-            imageview_photo.setImageBitmap(image);
-            mImageUri = getImageUri(this, image);
-        }
-    }catch (Exception e){
-            Toast.makeText(CrearEventoActivity.this, "Telefono incompatible con la funcionalidad porfavor cargar desde galeria"+ e.toString(),Toast.LENGTH_LONG).show();
+            try {
+                image = (Bitmap) data.getExtras().get("data");
+                imageview_photo.setVisibility(View.VISIBLE);
+                imageview_photo.setImageBitmap(image);
+                mImageUri = getImageUri(this, image);
+            } catch (Exception e) {
+                Toast.makeText(CrearEventoActivity.this, "Telefono incompatible con funcionalidad de tomar fotos", Toast.LENGTH_LONG).show();
+            }
 
         }
+
     }
 
     private void validacion() {
@@ -439,7 +445,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
             Toast.makeText(CrearEventoActivity.this, "Imagen Requerida", Toast.LENGTH_LONG).show();
         }
 
-        if (etHoraSalida== null||etHoraEntrada== null) {
+        if (etHoraSalida == null || etHoraEntrada == null) {
             Toast.makeText(CrearEventoActivity.this, "Hora inicio rquerida", Toast.LENGTH_LONG).show();
         }
 
@@ -452,9 +458,10 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
     public static Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage,"IMG_" + Calendar.getInstance().getTime(), null);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null);
         return Uri.parse(path);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == CAMERA_PERMISSION_CODE) {
