@@ -8,6 +8,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.icu.util.DateInterval;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,12 +29,19 @@ import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -50,6 +58,7 @@ import com.google.zxing.Result;
 import com.grade.quickid.R;
 import com.grade.quickid.model.MainActivity;
 import com.grade.quickid.model.eventos.domain.Evento;
+import com.grade.quickid.model.eventos.infraestructure.MapsEventoActivity;
 import com.grade.quickid.model.registros.aplication.CrearRegistro;
 import com.grade.quickid.model.registros.domain.Registro;
 import com.grade.quickid.model.Time;
@@ -59,6 +68,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.function.DoublePredicate;
@@ -79,13 +89,18 @@ public class QRScannerActivity extends AppCompatActivity {
     private int processDone = 0;
     private ValueEventListener mEventListenerRegistroEvento;
     private ValueEventListener mEventListenerEvento;
-    private int contadorMatch =0;
+    private int contadorMatch = 0;
     static boolean isWithin100m;
-    private static LatLng latLng ;
-    private static FusedLocationProviderClient client ;
+    private static LatLng latLng;
+    private static FusedLocationProviderClient client;
     CrearRegistro crearRegistro = new CrearRegistro();
     public static final int REQUEST_CHECK_SETTING = 1001;
     private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+    private double latitude;
+    private double longitude;
+    LocationManager locationManager;
+
     /**
      * se cargan todos los componentes
      *
@@ -101,7 +116,7 @@ public class QRScannerActivity extends AppCompatActivity {
         resultData = findViewById(R.id.txtResult);
         resultData.setText("");
         prenderGps();
-        obtenerLocation(1);
+
         scannView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,6 +124,7 @@ public class QRScannerActivity extends AppCompatActivity {
             }
         });
         inicializarFirebase();
+        obtenerLocation(1);
         mCodeScanner.setDecodeCallback(new DecodeCallback() {
             @Override
             public void onDecoded(@NonNull final Result result) {
@@ -200,28 +216,26 @@ public class QRScannerActivity extends AppCompatActivity {
     }
 
     private void obtenerLocation(int flagLocation) {
-        int flag = flagLocation;
         if (ActivityCompat.checkSelfPermission(QRScannerActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(QRScannerActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
-        Task<Location> task = client.getLastLocation();
-
-        if (flag != 0) {
-            task.addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    //satisfactorio
-                    if (location != null) {
-                        //sincronizoLatLng
-                        LatLng latLong;
-                        latLong = new LatLng(location.getLatitude(), location.getLongitude());
-                        latLng = latLong;
-                    }
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2000);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
                 }
-            });
-        }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        latLng = new LatLng(location.getLatitude(),location.getLongitude());
+                    }
+                }}};
     }
 
     private void vibrar() {
@@ -250,7 +264,6 @@ public class QRScannerActivity extends AppCompatActivity {
         }, 1500);
 
     }
-
     /**
      * Funcion que controla las decisiones que se deben tomar para registros
      * segun las opciones de localizacion
@@ -263,15 +276,15 @@ public class QRScannerActivity extends AppCompatActivity {
         Date dateHoraActual = new Date();
         DateFormat formatter = new SimpleDateFormat("H:mm");
         String StringHoraActual = formatter.format(dateHoraActual);
-        Date HoraActualFormateada = (Date) formatter.parse(StringHoraActual) ;
+        Date HoraActualFormateada = (Date) formatter.parse(StringHoraActual);
 
         // obtener la hora de inicio del evento
-        String horaEventoIni =  evento.getHoraIni().substring(0,5);
-        Date dateEventoIni = (Date)formatter.parse(horaEventoIni);
+        String horaEventoIni = evento.getHoraIni().substring(0, 5);
+        Date dateEventoIni = (Date) formatter.parse(horaEventoIni);
 
         // obtener la hora fin del evento
-        String horaEventoFin =  evento.getHoraFin().substring(0,5);
-        Date dateEventoFin = (Date)formatter.parse(horaEventoFin);
+        String horaEventoFin = evento.getHoraFin().substring(0, 5);
+        Date dateEventoFin = (Date) formatter.parse(horaEventoFin);
 
         if (HoraActualFormateada.after(dateEventoIni) && HoraActualFormateada.before(dateEventoFin)) {
             String idRegistro = UUID.randomUUID().toString();
@@ -325,22 +338,26 @@ public class QRScannerActivity extends AppCompatActivity {
             FirebaseDatabase firebaseDatabase3 = FirebaseDatabase.getInstance();
             myRefRegistroEvento = firebaseDatabase3.getInstance().getReference().child("Registro");
             myRefRegistroEvento.orderByChild("idAct_idPer").equalTo(claveActPer).addValueEventListener(mEventListenerRegistroEvento);
-            vibrar();
-        }else{
+        } else {
             resultData.setText("Hora registro no valida ");
             vibrar();
             reloadActivity();
             closeEventListener();
         }
     }
+
     /**
      * funcion que calcula la distancia entre dos puntos en el espacio
-     *Evento evento
+     * Evento evento
      */
     private void calcularDistanciaEntreLocalizacionUsuarioYEvento(Evento evento) {
         // valido que la variable global latlong este llena para encontrar la distancia entre dos puntos en el espacio
+        if (latLng == null) {
+            Location location = getLastKnownLocation();
+            latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        }
         if (latLng != null) {
-            double latEvento= evento.getLatitud();
+            double latEvento = evento.getLatitud();
             double longEvento = evento.getLongitud();
             float[] results = new float[1];
             Location.distanceBetween(latEvento, longEvento, latLng.latitude, latLng.longitude, results);
@@ -349,11 +366,13 @@ public class QRScannerActivity extends AppCompatActivity {
             isWithin100m = distanceInMeters < 500;
         }
     }
+
     private void gestionarRegistro(Evento evento, Result result, String claveActPer, String idRegistro) {
         String geoLocStatus = evento.geolocStatus;
         if (geoLocStatus.equals("1")) {
             if (latLng != null && isWithin100m == false) {
                 resultData.setText("Fuera de rango del evento");
+                vibrar();
                 closeEventListeners();
                 reloadActivity();
             }
@@ -366,7 +385,7 @@ public class QRScannerActivity extends AppCompatActivity {
                 Intent intent = new Intent(QRScannerActivity.this, MainActivity.class);
                 intent.putExtra("tab", 1);
                 startActivity(intent);
-
+                vibrar();
                 this.finish();
             }
         } else {
@@ -379,9 +398,11 @@ public class QRScannerActivity extends AppCompatActivity {
             Intent intent = new Intent(QRScannerActivity.this, MainActivity.class);
             intent.putExtra("tab", 1);
             startActivity(intent);
+            vibrar();
             this.finish();
         }
     }
+
     private void closeEventListeners() {
         myRefRegistroEvento.removeEventListener(mEventListenerRegistroEvento);
         myRefEvento.removeEventListener(mEventListenerEvento);
@@ -419,6 +440,7 @@ public class QRScannerActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
     }
+
     private void prenderGps() {
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -436,13 +458,13 @@ public class QRScannerActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
                 try {
                     LocationSettingsResponse response = task.getResult(ApiException.class);
-                    Toast.makeText(QRScannerActivity.this,"Gps is on",Toast.LENGTH_LONG).show();
+                    Toast.makeText(QRScannerActivity.this, "Gps is on", Toast.LENGTH_LONG).show();
                 } catch (ApiException e) {
-                    switch (e.getStatusCode()){
-                        case    LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                    switch (e.getStatusCode()) {
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                             ResolvableApiException resolvableApiException = (ResolvableApiException) e;
                             try {
-                                resolvableApiException.startResolutionForResult(QRScannerActivity.this,REQUEST_CHECK_SETTING);
+                                resolvableApiException.startResolutionForResult(QRScannerActivity.this, REQUEST_CHECK_SETTING);
                             } catch (IntentSender.SendIntentException sendIntentException) {
                                 sendIntentException.printStackTrace();
                             }
@@ -459,10 +481,10 @@ public class QRScannerActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CHECK_SETTING){
-            switch (resultCode){
+        if (requestCode == REQUEST_CHECK_SETTING) {
+            switch (resultCode) {
                 case Activity.RESULT_OK:
-                    Toast.makeText(QRScannerActivity.this, "Gps activado", Toast.LENGTH_LONG).show();;
+                    Toast.makeText(QRScannerActivity.this, "Gps activado", Toast.LENGTH_LONG).show();
                     break;
                 case Activity.RESULT_CANCELED:
                     Toast.makeText(QRScannerActivity.this, "El GPS es requerido y debe ser activado", Toast.LENGTH_LONG).show();
@@ -470,6 +492,38 @@ public class QRScannerActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    private Location getLastKnownLocation() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+            }
+            Location l = locationManager.getLastKnownLocation(provider);
+
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null
+                    || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
+        if (bestLocation == null) {
+            return null;
+
+        }
+        Log.d("location ",bestLocation.getLatitude()+" "+bestLocation.getLongitude());
+        return bestLocation;
     }
 
 

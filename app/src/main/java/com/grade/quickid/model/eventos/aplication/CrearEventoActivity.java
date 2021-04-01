@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -369,7 +370,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         startActivityForResult(camera, CAMERA_INTENT);
                     } catch (Exception e) {
-                        Toast.makeText(CrearEventoActivity.this, "Telefono incompatible con funcionalidad de tomar fotos", Toast.LENGTH_LONG).show();
+                        Log.d("ecxeption",e.getMessage());
                     }
                     dialog.dismiss();
 
@@ -417,7 +418,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
                 mImageUri = getImageUri(this, bitmap);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                Log.d("ecxeption",e.getMessage());
             }
         }
         if (requestCode == CAMERA_INTENT && resultCode == RESULT_OK) {
@@ -427,7 +428,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
                 imageview_photo.setImageBitmap(image);
                 mImageUri = getImageUri(this, image);
             } catch (Exception e) {
-                Toast.makeText(CrearEventoActivity.this, "Telefono incompatible con funcionalidad de tomar fotos", Toast.LENGTH_LONG).show();
+                Log.d("ecxeption",e.getMessage());
             }
 
         }

@@ -8,8 +8,8 @@ android {
         applicationId "com.grade.quickid"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 25
-        versionName "1.5"
+        versionCode 27
+        versionName "1.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true  //ADD THIS LINE
     }
@@ -80,7 +80,7 @@ dependencies {
     implementation "org.apache.poi:poi-ooxml-schemas:3.10-FINAL"
     implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '2.3.0'
     implementation group: 'stax', name: 'stax-api', version: '1.0.1'
-    implementation group: 'commons-codec', name: 'commons-codec', version: '1.5'
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.10'
     implementation group: 'xml-apis', name: 'xml-apis', version: '1.0.b2'
     implementation group: 'dom4j', name: 'dom4j', version: '1.6.1'
     implementation group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
