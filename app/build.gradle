@@ -8,8 +8,8 @@ android {
         applicationId "com.grade.quickid"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 27
-        versionName "1.6"
+        versionCode 28
+        versionName "1.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true  //ADD THIS LINE
     }
