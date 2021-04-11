@@ -37,6 +37,4 @@ int numoftabs;
         return numoftabs;
     }
 
-    public void setPrimaryItem(View v, int i) {
-    }
 }
