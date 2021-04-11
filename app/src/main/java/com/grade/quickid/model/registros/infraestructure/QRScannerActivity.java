@@ -49,6 +49,7 @@ import com.google.api.client.util.DateTime;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.crashlytics.internal.model.CrashlyticsReport;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -201,7 +202,6 @@ public class QRScannerActivity extends AppCompatActivity {
                         } else {
                             resultData.setText("Codigo QR invalido");
                             vibrar();
-                            closeEventListeners();
                             reloadActivity();
                         }
 
@@ -353,8 +353,13 @@ public class QRScannerActivity extends AppCompatActivity {
     private void calcularDistanciaEntreLocalizacionUsuarioYEvento(Evento evento) {
         // valido que la variable global latlong este llena para encontrar la distancia entre dos puntos en el espacio
         if (latLng == null) {
-            Location location = getLastKnownLocation();
-            latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            try {
+                Location location = getLastKnownLocation();
+                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            }catch (Exception e){
+                resultData.setText("Es necesario reiniciar la aplicación");
+                Log.d("Error",e.getMessage());
+            }
         }
         if (latLng != null) {
             double latEvento = evento.getLatitud();

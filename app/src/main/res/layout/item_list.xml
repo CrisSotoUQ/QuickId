@@ -78,7 +78,7 @@
                         android:layout_width="210dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center|left"
+                        android:gravity="left"
                         android:text="Lugar " />
                 </LinearLayout>
 
@@ -110,17 +110,16 @@
 
                     <TextView
                         android:id="@+id/txt_hora_registro_nombre"
-                        android:layout_width="92dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hora registro :"
+                        android:text="Hora registro : "
                         android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/txt_hora_registro"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Hora registro :"
                         android:visibility="gone" />
 
                 </LinearLayout>

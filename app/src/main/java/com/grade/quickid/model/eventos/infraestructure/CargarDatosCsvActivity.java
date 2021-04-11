@@ -51,11 +51,13 @@ public class CargarDatosCsvActivity extends AppCompatActivity {
         update = getIntent().getIntExtra("Update",0);
         String concat = " ";
         if (update==1&& receiveEvento.getCargueArchivoStatus().equals("1")){
-
-            for (String value : receiveEvento.getListaPersonas().values()) {
-                concat += "\r\n" +value;
+            if (!receiveEvento.getListaPersonas().isEmpty()){
+                for (String value : receiveEvento.getListaPersonas().values()) {
+                    concat += "\r\n" +value;
+                }
+                textViewData.setText(concat);
+                scrollViewCsv.setForeground(null);
             }
-            textViewData.setText(concat);
         }
         imagenOriginal = getIntent().getStringExtra("Original");
         btn_siguiente.setOnClickListener(new View.OnClickListener() {

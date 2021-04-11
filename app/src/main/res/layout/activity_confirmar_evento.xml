@@ -15,7 +15,7 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="25dp"
-        android:text="Configuracion evento terminada!"
+        android:text="Configuración evento terminada!"
         android:textColor="#000000"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"

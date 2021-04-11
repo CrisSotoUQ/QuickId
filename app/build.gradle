@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 android {
     compileSdkVersion 30
     buildToolsVersion "29.0.2"
@@ -8,8 +9,8 @@ android {
         applicationId "com.grade.quickid"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 28
-        versionName "1.7"
+        versionCode 30
+        versionName "1.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true  //ADD THIS LINE
     }
@@ -86,5 +87,12 @@ dependencies {
     implementation group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
     implementation group: 'net.sourceforge.jexcelapi', name: 'jxl', version: '2.6'
 
+    //Crahslitycs
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:26.8.0')
 
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
 }

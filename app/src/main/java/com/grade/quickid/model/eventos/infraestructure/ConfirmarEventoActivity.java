@@ -62,7 +62,7 @@ public class ConfirmarEventoActivity extends AppCompatActivity implements Serial
         imagenOriginal = getIntent().getStringExtra("Original");
         update = getIntent().getIntExtra("Update", 0);
         if (update != 0) {
-            titulo.setText("Actualizacion evento terminada!");
+            titulo.setText("Actualización evento terminada!");
             btn_CrearEvento.setText("Actualizar");
         }
         btn_CancelarEvento.setOnClickListener(new View.OnClickListener() {
