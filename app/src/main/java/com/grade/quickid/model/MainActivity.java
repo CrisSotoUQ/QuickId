@@ -1,5 +1,4 @@
 package com.grade.quickid.model;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -7,7 +6,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,15 +19,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import com.grade.quickid.R;
 import com.grade.quickid.model.comentarios.infraestructure.ComentarioActivity;
 import com.grade.quickid.model.eventos.aplication.CrearEventoActivity;
@@ -37,8 +32,6 @@ import com.grade.quickid.model.personas.infrastructure.ContactoActivity;
 import com.grade.quickid.model.registros.infraestructure.QRScannerActivity;
 import com.grade.quickid.model.personas.infrastructure.LoginActivity;
 import com.squareup.picasso.Picasso;
-
-import java.io.IOException;
 
 /**
  * Clase Main de la app, controla todos los componentes principales

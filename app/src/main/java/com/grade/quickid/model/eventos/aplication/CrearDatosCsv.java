@@ -1,14 +1,9 @@
 package com.grade.quickid.model.eventos.aplication;
-
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,12 +14,6 @@ import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.eventos.infraestructure.fragments.FragmentEventos;
 import com.grade.quickid.model.personas.domain.Persona;
 import com.grade.quickid.model.registros.domain.Registro;
-
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
