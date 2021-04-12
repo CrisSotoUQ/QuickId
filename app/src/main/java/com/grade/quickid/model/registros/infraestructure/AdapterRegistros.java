@@ -16,22 +16,25 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AdapterRegistros extends RecyclerView.Adapter<AdapterRegistros.ViewHolder>implements  View.OnClickListener,View.OnLongClickListener {
-    ArrayList<Registro> modelRegistro;
-    LayoutInflater layoutInflater;
+public class AdapterRegistros extends RecyclerView.Adapter<AdapterRegistros.ViewHolder> implements View.OnClickListener, View.OnLongClickListener {
+    private ArrayList<Registro> modelRegistro;
+    private LayoutInflater layoutInflater;
     //listener
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
-public AdapterRegistros(Context context, ArrayList<Registro> modelRegistro){
-    this.layoutInflater = LayoutInflater.from(context);
-    this.modelRegistro = modelRegistro;
-}
+
+    public AdapterRegistros(Context context, ArrayList<Registro> modelRegistro) {
+        this.layoutInflater = LayoutInflater.from(context);
+        this.modelRegistro = modelRegistro;
+    }
+
     @Override
     public void onClick(View v) {
-if (onClickListener!= null){
-    onClickListener.onClick(v);
-}
+        if (onClickListener != null) {
+            onClickListener.onClick(v);
+        }
     }
+
     @Override
     public boolean onLongClick(View v) {
         if (onLongClickListener != null) {
@@ -41,9 +44,13 @@ if (onClickListener!= null){
         return false;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-    TextView txt_fecha,txt_nombre,txt_lugar,txt_hora,txt_horaNombre;
-    ImageView imageview;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView txt_fecha;
+        private TextView txt_nombre;
+        private TextView txt_lugar;
+        private TextView txt_hora;
+        private TextView txt_horaNombre;
+        private ImageView imageview;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -57,12 +64,13 @@ if (onClickListener!= null){
             txt_hora.setVisibility(View.VISIBLE);
         }
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View view = layoutInflater.inflate(R.layout.item_list,parent,false);
-    view.setOnClickListener(this);
-    view.setOnLongClickListener(this);
+        View view = layoutInflater.inflate(R.layout.item_list, parent, false);
+        view.setOnClickListener(this);
+        view.setOnLongClickListener(this);
         return new ViewHolder(view);
     }
 
@@ -70,8 +78,8 @@ if (onClickListener!= null){
     public void onBindViewHolder(@NonNull AdapterRegistros.ViewHolder holder, int position) {
         String nombreActividad = modelRegistro.get(position).getNombreEvento();
         String fechaRegistro = modelRegistro.get(position).getFechaRegistro();
-        String lugarActividad= modelRegistro.get(position).getLugarEvento();
-        String horaDeRegistro= modelRegistro.get(position).getHoraRegistro();
+        String lugarActividad = modelRegistro.get(position).getLugarEvento();
+        String horaDeRegistro = modelRegistro.get(position).getHoraRegistro();
 
         holder.txt_nombre.setText(nombreActividad);
         holder.txt_fecha.setText(fechaRegistro);
@@ -88,10 +96,12 @@ if (onClickListener!= null){
         return 0;
 
     }
-    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener){
+
+    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
         this.onLongClickListener = onLongClickListener;
     }
-    public void setOnClickListener(View.OnClickListener onClickListener){
+
+    public void setOnClickListener(View.OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
 
     }

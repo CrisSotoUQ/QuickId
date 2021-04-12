@@ -33,11 +33,11 @@ import java.util.ArrayList;
 
 
 public class FragmentRegistros extends Fragment {
-    AdapterRegistros adapterRegistros;
-    RecyclerView rvRegistros;
-    ArrayList<Registro> listRegistros = new ArrayList<Registro>();
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    final DatabaseReference databaseReference = firebaseDatabase.getReference();
+    private AdapterRegistros adapterRegistros;
+    private RecyclerView rvRegistros;
+    private ArrayList<Registro> listRegistros = new ArrayList<Registro>();
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private final DatabaseReference databaseReference = firebaseDatabase.getReference();
     private AlertDialog dialog;
     private AlertDialog.Builder dialogBuilder;
     private Button btnEliminar;

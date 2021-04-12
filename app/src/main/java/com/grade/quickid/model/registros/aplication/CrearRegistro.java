@@ -2,7 +2,6 @@ package com.grade.quickid.model.registros.aplication;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.zxing.Result;
 import com.grade.quickid.model.Time;
 import com.grade.quickid.model.eventos.domain.Evento;

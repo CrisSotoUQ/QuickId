@@ -11,11 +11,11 @@ import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.registros.domain.Registro;
 
 public class ActualizarRegistros {
-    ValueEventListener valueEventListenerPersonaEvento = null;
-    DatabaseReference myRefDatosPersonaEvento ;
-    DatabaseReference myRef;
-    DatabaseReference databaseReference;
-    FirebaseDatabase firebaseDatabase;
+    private ValueEventListener valueEventListenerPersonaEvento = null;
+    private DatabaseReference myRefDatosPersonaEvento ;
+    private DatabaseReference myRef;
+    private DatabaseReference databaseReference;
+    private FirebaseDatabase firebaseDatabase;
   public  void ActualizarRegistros(Evento evento, Context context){
       String idEvento = evento.getIdEvento();
       firebaseDatabase = FirebaseDatabase.getInstance();

@@ -31,12 +31,12 @@ import java.util.HashMap;
 public class CargarDatosCsvActivity extends AppCompatActivity {
     private Button btn_cargarCsv;
     private Button btn_siguiente;
-    Evento receiveEvento;
+    private Evento receiveEvento;
     private int update;
-    String imagenOriginal;
-    TextView textViewData;
-    String line = " ";
-    ScrollView scrollViewCsv;
+    private String imagenOriginal;
+    private TextView textViewData;
+    private String line = " ";
+    private ScrollView scrollViewCsv;
     private int READ_REQUEST_CODE = 100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

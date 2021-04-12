@@ -34,17 +34,16 @@ import java.io.Serializable;
 public class ConfirmarEventoActivity extends AppCompatActivity implements Serializable {
     private Button btn_CrearEvento;
     private Button btn_CancelarEvento;
-    TextView titulo;
-    DatabaseReference databaseReference;
-    DatabaseReference myRef;
-    DatabaseReference myRef2;
-    Uri mImageUri;
+    private TextView titulo;
+    private DatabaseReference databaseReference;
+    private DatabaseReference myRef;
+    private DatabaseReference myRef2;
+    private Uri mImageUri;
     private ProgressDialog mProgress;
     private StorageReference mStorageRef;
-    FirebaseDatabase firebaseDatabase;
-    Evento receive;
-    String imagenOriginal;
-    CrearEstadistica crearEstadistica = new CrearEstadistica();
+    private FirebaseDatabase firebaseDatabase;
+    private Evento receive;
+    private String imagenOriginal;
     private int update;
 
     @Override

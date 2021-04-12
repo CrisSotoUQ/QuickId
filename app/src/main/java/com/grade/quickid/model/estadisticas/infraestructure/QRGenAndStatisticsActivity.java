@@ -67,7 +67,7 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
     private ImageView imgQR;
     private Button btnSaveQr;
     private DatabaseReference myRefestadisticaRegistros;
-    final int REQUEST_CODE = 1;
+    private final int REQUEST_CODE = 1;
     private String idEvento;
     private ValueEventListener valueEventListenerEvento;
     private DatabaseReference myRefEvento;

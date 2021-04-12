@@ -19,21 +19,7 @@ public class EstadisticaFecha {
     String getName() {
         return name;
     }
-
     void addChild(EstadisticaFecha child) {
         children.put(child.getName(), child);
-    }
-
-    void removeChild(String name) {
-        children.remove(name);
-    }
-
-    EstadisticaFecha getChild(String name) {
-        return children.get(name);
-    }
-
-    Set<EstadisticaFecha> getChildren() {
-        return Collections.unmodifiableSet(
-                new LinkedHashSet<EstadisticaFecha>(children.values()));
     }
 }

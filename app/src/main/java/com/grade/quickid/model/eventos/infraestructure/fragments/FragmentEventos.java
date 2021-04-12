@@ -40,17 +40,17 @@ import java.util.ArrayList;
 
 public class FragmentEventos extends Fragment {
     private static android.app.AlertDialog.Builder dialogo2;
-    AdapterFragmentEvento adapterFragmentEvento;
-    RecyclerView rvActividades;
-    ArrayList<Evento> listActividades = new ArrayList<Evento>();
-    Menu menu;
+    private AdapterFragmentEvento adapterFragmentEvento;
+    private RecyclerView rvActividades;
+    private ArrayList<Evento> listActividades = new ArrayList<Evento>();
+    private Menu menu;
     private StorageReference mStorageRef;
     private AlertDialog dialog;
     private AlertDialog.Builder dialogBuilder;
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    DatabaseReference databaseReference = firebaseDatabase.getReference();
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Button btnEliminar, btnEditar, btnDescargarDatos;
-    CardView cardView;
+    private CardView cardView;
 
     public FragmentEventos() {
         // Required empty public constructor

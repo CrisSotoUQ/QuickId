@@ -1,19 +1,19 @@
 package com.grade.quickid.model.registros.domain;
 
 public class Registro {
-    String idRegistro;
-    String fechaRegistro;
-    String idEvento;
-    String horaRegistro;
-    String idPersona;
+    private String idRegistro;
+    private String fechaRegistro;
+    private String idEvento;
+    private String horaRegistro;
+    private String idPersona;
     // una vez se realize el registro se completan los valores del objeto Evento
     // con el fin de mas celeridad al llenar las listas RecyclerView
-    String nombreEvento;
-    String lugarEvento;
-    String imagenEvento;
-    String visibilidad;
+    private String nombreEvento;
+    private String lugarEvento;
+    private String imagenEvento;
+    private String visibilidad;
     //campo para poder filtrar EventoPersona en un mismo query
-    String idAct_idPer;
+    private String idAct_idPer;
 
     public Registro(String idRegistro, String fechaRegistro, String idEvento, String horaRegistro, String idPersona,
                     String nombreEvento, String lugarEvento, String imagenEvento, String visibilidad, String idAct_idPer) {

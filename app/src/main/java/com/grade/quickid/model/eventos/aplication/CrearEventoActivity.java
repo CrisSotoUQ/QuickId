@@ -270,7 +270,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         btn_dialog_subirImagen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mostrarDialog(v);
+                mostrarDialog();
             }
         });
     }
@@ -355,7 +355,7 @@ public class CrearEventoActivity extends AppCompatActivity implements Serializab
         return evento;
     }
 
-    private void mostrarDialog(View v) {
+    private void mostrarDialog() {
         dialogBuilder = new AlertDialog.Builder(this);
         final View popCrearEventoFoto = getLayoutInflater().inflate(R.layout.popup_dialog_upload_images, null);
         btn_galeria = (Button) popCrearEventoFoto.findViewById(R.id.btn_galeria);
