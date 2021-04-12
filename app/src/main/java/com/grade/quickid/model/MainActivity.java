@@ -40,7 +40,8 @@ import com.squareup.picasso.Picasso;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private TabItem tabEventos, tabRegistros;
+    private TabItem tabEventos;
+    private TabItem tabRegistros;
     private int CAMERA_PERMISSION_CODE = 1;
     private ImageView imageMenu;
     private FragmentPagerController pagerAdapter;

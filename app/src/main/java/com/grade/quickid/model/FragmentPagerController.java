@@ -8,7 +8,7 @@ import com.grade.quickid.model.registros.infraestructure.FragmentRegistros;
 import com.grade.quickid.model.eventos.infraestructure.fragments.FragmentEventos;
 
 public class FragmentPagerController extends FragmentPagerAdapter {
-int numoftabs;
+private int numoftabs;
 
     public FragmentPagerController(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);

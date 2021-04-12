@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d("MAIL", email);
         }
         if (email != null) {
-            ShowMain();
+            showMain();
             finish();
 
         }
@@ -113,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * vamos a la clase main
      */
-    private void ShowMain() {
+    private void showMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.putExtra("email", email);
         intent.putExtra("nombre", nombre);
@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
                                         imagen = account.getPhotoUrl().toString();
                                         nombre = account.getDisplayName();
                                         personaController.crearPersona(account,task);
-                                        ShowMain();
+                                        showMain();
                                     } else {
                                         ShowAlert(task);
                                     }

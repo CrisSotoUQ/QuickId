@@ -15,8 +15,8 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 public class CrearEstadistica {
-    ValueEventListener mEstadisticaListener;
-    DatabaseReference myRefEstadistica;
+    private ValueEventListener mEstadisticaListener;
+    private DatabaseReference myRefEstadistica;
 
     public Object setearEstadisticas(DataSnapshot objSnapshot, Result result, String claveActPer, String idRegistro) {
         String idEvento = (String) objSnapshot.child("idEvento").getValue();

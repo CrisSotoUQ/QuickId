@@ -45,16 +45,16 @@ import java.io.Serializable;
 public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCallback, Serializable {
 
     private GoogleMap mMap;
-    FusedLocationProviderClient client;
-    SupportMapFragment mapFragment;
-    Evento receiveEvento;
+    private FusedLocationProviderClient client;
+    private SupportMapFragment mapFragment;
+    private Evento receiveEvento;
     private double latitude;
     private double longitude;
     private double latitudeOnUpdate;
     private double longitudeOnUpdate;
     private Button btn_siguiente;
     private int update;
-    String imagenOriginal;
+    private String imagenOriginal;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     public static final int REQUEST_CHECK_SETTING = 1001;

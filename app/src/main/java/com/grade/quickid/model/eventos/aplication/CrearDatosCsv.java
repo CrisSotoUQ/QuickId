@@ -25,11 +25,11 @@ import java.util.TimeZone;
  * Clase que se encarga de generar los datos csv correspondientes a cada evento
  */
 public class CrearDatosCsv {
-    DatabaseReference myRefDatosPersonaEvento ;
-    DatabaseReference myRefDatosRegistroEvento ;
-    ValueEventListener  mEventListnerRegistroEvento ;
-    ValueEventListener mEventListnerPersonaEvento ;
-    int contador = 0;
+    private DatabaseReference myRefDatosPersonaEvento ;
+    private DatabaseReference myRefDatosRegistroEvento ;
+    private ValueEventListener  mEventListnerRegistroEvento ;
+    private ValueEventListener mEventListnerPersonaEvento ;
+    private int contador = 0;
     public  void CrearDatosCsv(Evento evento, Context context){
         StringBuilder data = new StringBuilder();
         ValueEventListener valueEventListenerRegistroEvento = new ValueEventListener() {
