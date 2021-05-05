@@ -10,6 +10,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.grade.quickid.model.eventos.domain.Evento;
 import com.grade.quickid.model.registros.domain.Registro;
 
+/**
+ * Clase que controla la actualizacion de registros cuando se modifican los datos de un evento
+ *
+ * @author Cristian Camilo Soto
+ */
 public class ActualizarRegistros {
     private ValueEventListener valueEventListenerPersonaEvento = null;
     private DatabaseReference myRefDatosPersonaEvento ;

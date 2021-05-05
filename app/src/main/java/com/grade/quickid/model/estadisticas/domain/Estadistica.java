@@ -4,6 +4,11 @@ import com.grade.quickid.model.estadisticas.aplication.EstadisticaFecha;
 
 import java.io.Serializable;
 
+/**
+ * controlador de estadistica
+ *
+ * @author Cristian Camilo Soto
+ */
 public class Estadistica implements Serializable {
     private String idEstadistica;
     private String idEvento;

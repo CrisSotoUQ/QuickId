@@ -6,6 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.grade.quickid.R;
 import com.grade.quickid.model.MainActivity;
 
+/**
+ * Clase que controla la gestion de contacto del desarrollador
+ *
+ * @author Cristian Camilo Soto
+ */
 public class ContactoActivity extends AppCompatActivity {
 
     @Override

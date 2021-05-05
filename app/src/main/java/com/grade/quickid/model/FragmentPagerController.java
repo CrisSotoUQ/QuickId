@@ -7,6 +7,11 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.grade.quickid.model.registros.infraestructure.FragmentRegistros;
 import com.grade.quickid.model.eventos.infraestructure.fragments.FragmentEventos;
 
+/**
+ * Clase que controla el adaptador de los fragementos en el menu principal
+ *
+ * @author Cristian Camilo Soto
+ */
 public class FragmentPagerController extends FragmentPagerAdapter {
 private int numoftabs;
 

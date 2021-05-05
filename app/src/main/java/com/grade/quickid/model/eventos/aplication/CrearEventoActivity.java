@@ -45,8 +45,11 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.UUID;
 
-/*
-@auth Cristian Camilo Soto
+
+/**
+ * Clase que controla crear Eventos en el aplicativo
+ *
+ * @author Cristian Camilo Soto
  */
 public class CrearEventoActivity extends AppCompatActivity implements Serializable {
     FragmentPagerController pagerAdapter;

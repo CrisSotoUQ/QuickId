@@ -32,6 +32,11 @@ import com.grade.quickid.model.registros.infraestructure.AdapterRegistros;
 import java.util.ArrayList;
 
 
+/**
+ * Clase que controla el fragmento de los registros
+ *
+ * @author Cristian Camilo Soto
+ */
 public class FragmentRegistros extends Fragment {
     private AdapterRegistros adapterRegistros;
     private RecyclerView rvRegistros;

@@ -1,6 +1,11 @@
 package com.grade.quickid.model.comentarios.domain;
 
 
+/**
+ * Clase que contiene el objeto para los comentarios
+ *
+ * @author Cristian Camilo Soto
+ */
 public class Comentario {
     private String idCOmentario;
     private String comentario;

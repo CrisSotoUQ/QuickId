@@ -163,6 +163,7 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
     }
 
     private void getCurrentLocation(int flagLocation) {
+
         //Initialize task location
         //  Task<>
         final int flaglocation = flagLocation;
@@ -231,7 +232,8 @@ public class MapsEventoActivity extends FragmentActivity implements OnMapReadyCa
                             }
                         }
                     };
-                    if (ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(MapsEventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
                         //    ActivityCompat#requestPermissions
                         // here to request the missing permissions, and then overriding

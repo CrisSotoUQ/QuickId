@@ -1,5 +1,10 @@
 package com.grade.quickid.model.personas.domain;
 
+/**
+ * Clase que almacena el objeto persona
+ *
+ * @author Cristian Camilo Soto
+ */
 public class Persona {
     public String id;
     public String nombre;

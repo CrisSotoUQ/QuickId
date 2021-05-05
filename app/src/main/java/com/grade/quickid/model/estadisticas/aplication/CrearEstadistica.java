@@ -14,6 +14,11 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+/**
+ * Crear estadistica
+ *
+ * @author Cristian Camilo Soto
+ */
 public class CrearEstadistica {
     private ValueEventListener mEstadisticaListener;
     private DatabaseReference myRefEstadistica;

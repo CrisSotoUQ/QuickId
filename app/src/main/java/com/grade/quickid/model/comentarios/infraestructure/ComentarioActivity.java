@@ -21,6 +21,11 @@ import com.grade.quickid.model.comentarios.domain.Comentario;
 
 import java.util.UUID;
 
+/**
+ * Clase que gestiona Generar comentarios
+ *
+ * @author Cristian Camilo Soto
+ */
 public class ComentarioActivity extends AppCompatActivity {
 private Button enviarComentario;
 private TextView textoComentario;

@@ -16,6 +16,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+/**
+ * Clase que controla el adaptador que maneja los registros
+ *
+ * @author Cristian Camilo Soto
+ */
 public class AdapterRegistros extends RecyclerView.Adapter<AdapterRegistros.ViewHolder> implements View.OnClickListener, View.OnLongClickListener {
     private ArrayList<Registro> modelRegistro;
     private LayoutInflater layoutInflater;

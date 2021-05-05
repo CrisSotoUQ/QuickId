@@ -1,5 +1,10 @@
 package com.grade.quickid.model.registros.domain;
 
+/**
+ * Clase que almacena el objeto registro
+ *
+ * @author Cristian Camilo Soto
+ */
 public class Registro {
     private String idRegistro;
     private String fechaRegistro;

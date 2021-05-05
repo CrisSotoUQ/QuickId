@@ -2,6 +2,11 @@ package com.grade.quickid.model;
 
 import java.text.SimpleDateFormat;
 
+/**
+ * Clase que controla el tiempo de la aplicacion
+ *
+ * @author Cristian Camilo Soto
+ */
 public class Time<dateString> {
     long date = System.currentTimeMillis();
 public String fecha(){
