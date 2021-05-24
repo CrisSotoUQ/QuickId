@@ -27,12 +27,16 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -60,6 +64,11 @@ import java.util.TimeZone;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
+/**
+ * Clase que controla la generacion del codigo QR y muestra las estadisticas
+ *
+ * @author Cristian Camilo Soto
+ */
 public class QRGenAndStatisticsActivity extends AppCompatActivity {
     private TextView contadorRegistrosFechaActual;
     private TextView contadorRegistrosHistorico;
@@ -77,12 +86,16 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
     private int contadorAsistentes = 0;
     private String nombreActividad;
     PieChart pieChart;
+    ArrayList<Entry> entries;
+    ArrayList<String> PieEntryLabels;
+    PieDataSet pieDataSet;
+    PieData pieData;
     BarChart barChart;
     // voy a guardar los años en este array
     final HashMap<String, Integer> arrayMes = new HashMap<String, Integer>();
     HashMap<String, Integer> arrayAnio = new HashMap<String, Integer>();
     final ArrayList<BarEntry> visitorsByDate = new ArrayList<>();
-    final ArrayList<PieEntry> visitantes = new ArrayList<>();
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -208,49 +221,65 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
         if (arrayMes.size() == 0) {
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             int currentMonth = calendar.get(Calendar.MONTH) + 1;
-            visitorsByDate.add(new BarEntry(currentMonth, 0));
+            visitorsByDate.add(new BarEntry(0, currentMonth - 1));
         } else {
             for (Map.Entry<String, Integer> entry : arrayMes.entrySet()) {
                 String key = entry.getKey();
                 Integer contador = entry.getValue();
-                visitorsByDate.add(new BarEntry(Integer.parseInt(key), contador));
+                visitorsByDate.add(new BarEntry(contador, Integer.parseInt(key) - 1));
             }
         }
+//
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+        int currentYear = calendar.get(Calendar.YEAR);
+        BarDataSet barDataSet = new BarDataSet(visitorsByDate, "Asistentes por mes año actual " + currentYear);
 
-        BarDataSet barDataSet = new BarDataSet(visitorsByDate, "Asistentes por mes");
+        ArrayList<String> labels = new ArrayList<String>();
+        labels.add("01");
+        labels.add("02");
+        labels.add("03");
+        labels.add("04");
+        labels.add("05");
+        labels.add("06");
+        labels.add("07");
+        labels.add("08");
+        labels.add("09");
+        labels.add("10");
+        labels.add("11");
+        labels.add("12");
+
+        BarData data = new BarData(labels, barDataSet);
+        barChart.setData(data); // set the data and list of labels into chart
+        barChart.setDescription("QuickId");  // set the description
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        barDataSet.setValueTextColor(Color.BLACK);
-        barDataSet.setValueTextSize(10f);
-        BarData barData = new BarData(barDataSet);
-        barChart.setFitBars(true);
-        barChart.setData(barData);
-        barChart.getDescription().setText("QuickId");
         barChart.animateY(2000);
     }
 
     private void pieChart() {
-        visitantes.clear();
+        entries = new ArrayList<>();
+        PieEntryLabels = new ArrayList<String>();
         if (arrayAnio.size() == 0) {
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             int currentYear = calendar.get(Calendar.YEAR);
-            visitantes.add(new PieEntry(currentYear, "0"));
+            entries.add(new BarEntry(-1, 0));
+            PieEntryLabels.add(String.valueOf(currentYear));
         } else {
             for (Map.Entry<String, Integer> entry : arrayAnio.entrySet()) {
                 String key = entry.getKey();
                 Integer contador = entry.getValue();
-                visitantes.add(new PieEntry(Integer.parseInt(key), String.valueOf(contador)));
+                entries.add(new BarEntry(contador, Integer.parseInt(key)));
+                if (!PieEntryLabels.contains(String.valueOf(key))) {
+                    PieEntryLabels.add(String.valueOf(String.valueOf(key)));
+                }
+
             }
         }
-        PieDataSet pieDataSet = new PieDataSet(visitantes, "Asistentes por año");
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        pieDataSet.setValueTextColor(Color.WHITE);
-        pieDataSet.setValueTextSize(10f);
-        PieData pieData = new PieData(pieDataSet);
+
+        pieDataSet = new PieDataSet(entries, "");
+        pieData = new PieData(PieEntryLabels, pieDataSet);
+        pieDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
         pieChart.setData(pieData);
-        pieChart.getDescription().setText("Quickid");
-        pieChart.setCenterText("Asistentes");
-        pieChart.invalidate();
-        pieChart.animate();
+        pieChart.animateY(3000);
     }
 
 
@@ -298,7 +327,7 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
             final Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             Uri photoUri = FileProvider.getUriForFile(getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider", file);
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Imagen QR : "+nombreActividad+" "+ sdf.format(date));
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Imagen QR : " + nombreActividad + " " + sdf.format(date));
             intent.putExtra(Intent.EXTRA_STREAM, photoUri);
             intent.putExtra(Intent.EXTRA_TEXT, "QuickId.");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -330,8 +359,8 @@ public class QRGenAndStatisticsActivity extends AppCompatActivity {
             cs.drawBitmap(qrBits, 0f, 0f, null);
             float height = tPaint.measureText("yY");
             float width = tPaint.measureText(yourText);
-            float x_coord = (qrBits.getWidth() - width)/2;
-            cs.drawText(yourText, x_coord, height+20f, tPaint); // 15f is to put space between top edge and the text, if you want to change it, you can
+            float x_coord = (qrBits.getWidth() - width) / 2;
+            cs.drawText(yourText, x_coord, height + 20f, tPaint); // 15f is to put space between top edge and the text, if you want to change it, you can
             try {
                 imgQR.setImageBitmap(dest);
                 // dest is Bitmap, if you want to preview the final image, you can display it on screen also before saving

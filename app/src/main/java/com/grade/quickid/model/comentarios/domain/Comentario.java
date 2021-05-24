@@ -7,10 +7,10 @@ package com.grade.quickid.model.comentarios.domain;
  * @author Cristian Camilo Soto
  */
 public class Comentario {
-    private String idCOmentario;
-    private String comentario;
-    private String idUsuario;
-    private String fechaComentario;
+    public String idCOmentario;
+    public String comentario;
+    public String idUsuario;
+    public String fechaComentario;
 
 
     public void setIdCOmentario(String idCOmentario) {
